@@ -113,13 +113,13 @@
 #define PACKAGE_BUGREPORT "pcc@lists.ludd.ltu.se"
 
 /* Define to the full name of this package. */
-#define PACKAGE_NAME "pcc"
+#define PACKAGE_NAME "pts-pcc"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "pcc 1.1.0"
+#define PACKAGE_STRING "pts-pcc 1.1.0"
 
 /* Define to the one symbol short name of this package. */
-#define PACKAGE_TARNAME "pcc"
+#define PACKAGE_TARNAME "pts-pcc"
 
 /* Define to the home page for this package. */
 #define PACKAGE_URL ""
@@ -161,7 +161,7 @@
 /* #undef TLS */
 
 /* Version string */
-#define VERSSTR "pcc 1.1.0 20141014 for i386-pc-linux-gnu"
+#define VERSSTR "pts-pcc 1.1.0 20141014 + 20230610 for i386-pc-linux-gnu"
 
 /* Size of wide-character type in chars */
 #define WCHAR_SIZE 4
