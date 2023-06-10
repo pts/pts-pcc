@@ -26,7 +26,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
+#include "config_auto.h"
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>

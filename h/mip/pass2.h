@@ -35,7 +35,7 @@
 #include <sys/types.h>
 
 #ifndef MKEXT
-#include "external.h"
+#include "external_auto.h"
 #else
 typedef unsigned int bittype; /* XXX - for basicblock */
 #define	BIT2BYTE(a)	(((a) + 31) / 32)

@@ -31,7 +31,7 @@
  * from V7 cpp, and at last ansi/c99 support.
  */
 
-#include "config.h"
+#include "config_auto.h"
 
 #include <sys/stat.h>
 
@@ -47,7 +47,7 @@
 
 #include "compat.h"
 #include "cpp.h"
-#include "cpy.h"
+#include "cpy_auto.h"
 
 #ifndef S_ISDIR
 #define S_ISDIR(m)	(((m) & S_IFMT) == S_IFDIR)

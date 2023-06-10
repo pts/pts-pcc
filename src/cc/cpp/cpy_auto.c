@@ -64,7 +64,7 @@
 /* Copy the first part of user declarations.  */
 #line 64 "./cpy.y" /* yacc.c:339  */
 
-#include "config.h"
+#include "config_auto.h"
 
 #include "cpp.h"
 

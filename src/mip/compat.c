@@ -91,7 +91,7 @@
 
 #include <string.h>
 
-#include "config.h"
+#include "config_auto.h"
 #include "compat.h"
 
 #ifndef HAVE_STRLCAT

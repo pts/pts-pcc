@@ -78,7 +78,7 @@
  *
  * This file should be rewritten readable.
  */
-#include "config.h"
+#include "config_auto.h"
 
 #include <sys/types.h>
 #ifdef HAVE_SYS_WAIT_H

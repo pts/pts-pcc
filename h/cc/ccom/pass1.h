@@ -33,7 +33,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
+#include "config_auto.h"
 
 #include <sys/types.h>
 #include <stdarg.h>
@@ -43,7 +43,7 @@
 #endif
 
 #ifndef MKEXT
-#include "external.h"
+#include "external_auto.h"
 #else
 typedef unsigned int bittype; /* XXX - for basicblock */
 #endif

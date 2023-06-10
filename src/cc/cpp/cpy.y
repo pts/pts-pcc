@@ -62,7 +62,7 @@
  */
 
 %{
-#include "config.h"
+#include "config_auto.h"
 
 #include "cpp.h"
 

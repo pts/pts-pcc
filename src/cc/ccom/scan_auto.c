@@ -742,7 +742,7 @@ char *yytext;
 #include <ctype.h>
 
 #include "pass1.h"
-#include "cgram.h"
+#include "cgram_auto.h"
 #include "unicode.h"
 
 static NODE *cvtdig(int radix);

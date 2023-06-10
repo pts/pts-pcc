@@ -39,7 +39,7 @@
  *	- unch() pushes back a character to the input stream.
  */
 
-#include "config.h"
+#include "config_auto.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -50,7 +50,7 @@
 
 #include "compat.h"
 #include "cpp.h"
-#include "cpy.h"
+#include "cpy_auto.h"
 
 static void cvtdig(int);
 static int dig2num(int);

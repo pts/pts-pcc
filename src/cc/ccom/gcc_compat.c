@@ -32,7 +32,7 @@
 #ifdef GCC_COMPAT
 
 #include "pass1.h"
-#include "cgram.h"
+#include "cgram_auto.h"
 
 #include <string.h>
 

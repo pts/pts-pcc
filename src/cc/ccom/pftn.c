@@ -66,7 +66,7 @@
 # include "pass1.h"
 #include "unicode.h"
 
-#include "cgram.h"
+#include "cgram_auto.h"
 
 struct symtab *cftnsp;
 int arglistcnt, dimfuncnt;	/* statistics */
