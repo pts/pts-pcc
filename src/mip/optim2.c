@@ -1710,7 +1710,7 @@ printflowdiagram(struct p2env *p2e, char *type) {
 	DLIST_FOREACH(bbb, &p2e->bblocks, bbelem) {
 		ip=bbb->first;
 		
-		fprintf(flowdiagramfile,"bb%p [shape=record ",bbb);
+		fprintf(flowdiagramfile,"bb%p [shape=record ",(void*)bbb);
 		
 		if (ip->type==IP_PROLOG)
 			fprintf(flowdiagramfile,"root ");
@@ -1760,7 +1760,7 @@ printflowdiagram(struct p2env *p2e, char *type) {
 					color="red";
 			}
 			
-			fprintf(flowdiagramfile,"bb%p -> bb%p [color=%s]\n", bbb,cn->bblock,color);
+			fprintf(flowdiagramfile,"bb%p -> bb%p [color=%s]\n", (void*)bbb,(void*)cn->bblock,color);
 		}
 	}
 	

@@ -169,7 +169,7 @@ buildtree(int o, NODE *l, NODE *r)
 
 #ifdef PCC_DEBUG
 	if (bdebug) {
-		printf("buildtree(%s, %p, %p)\n", copst(o), l, r);
+		printf("buildtree(%s, %p, %p)\n", copst(o), (void*)l, (void*)r);
 		if (l) fwalk(l, eprint, 0);
 		if (r) fwalk(r, eprint, 0);
 	}
@@ -1612,7 +1612,7 @@ tymatch(NODE *p)
 	}
 #ifdef PCC_DEBUG
 	if (tdebug) {
-		printf("tymatch(%p): ", p);
+		printf("tymatch(%p): ", (void*)p);
 		tprint(tl, 0);
 		printf(" %s ", copst(o));
 		tprint(tr, 0);
@@ -1963,18 +1963,18 @@ eprint(NODE *p, int down, int *a, int *b)
 
 	ty = coptype( p->n_op );
 
-	printf("%p) %s, ", p, copst(p->n_op));
+	printf("%p) %s, ", (void*)p, copst(p->n_op));
 	if (p->n_op == XARG || p->n_op == XASM)
 		printf("id '%s', ", p->n_name);
 	if (ty == LTYPE) {
 		printf(CONFMT, p->n_lval);
 		if (p->n_op == NAME || p->n_op == ICON)
-			printf(", %p, ", p->n_sp);
+			printf(", %p, ", (void*)p->n_sp);
 		else
 			printf(", %d, ", p->n_rval);
 	}
 	tprint(p->n_type, p->n_qual);
-	printf( ", %p, ", p->n_df);
+	printf( ", %p, ", (void*)p->n_df);
 #ifdef GCC_COMPAT
 	dump_attr(p->n_ap);
 #endif

@@ -355,7 +355,7 @@ hide(struct symtab *sym)
 #ifdef PCC_DEBUG
 	if (ddebug)
 		printf("\t%s hidden at level %d (%p -> %p)\n",
-		    sym->sname, blevel, sym, new);
+		    sym->sname, blevel, (void*)sym, (void*)new);
 #endif
 	return new;
 }

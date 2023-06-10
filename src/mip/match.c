@@ -92,7 +92,7 @@ tshape(NODE *p, int shape)
 
 #ifdef PCC_DEBUG
 	if (s2debug)
-		printf("tshape(%p, %s) op = %s\n", p, prcook(shape), opst[o]);
+		printf("tshape(%p, %s) op = %s\n", (void*)p, prcook(shape), opst[o]);
 #endif
 
 	if (shape & SPECIAL) {
@@ -416,7 +416,7 @@ swmatch(NODE *p, int shape, int w)
 {
 	int rv = 0;
 
-	F2DEBUG(("swmatch: p=%p, shape=%s, w=%s\n", p, prcook(shape), srtyp[w]));
+	F2DEBUG(("swmatch: p=%p, shape=%s, w=%s\n", (void*)p, prcook(shape), srtyp[w]));
 
 	switch (w) {
 	case SRREG:
@@ -496,7 +496,7 @@ shswitch(int sh, NODE *p, int shape, int cookie, int rew, int go)
 {
 	int lsh;
 
-	F2DEBUG(("shswitch: p=%p, shape=%s, ", p, prcook(shape)));
+	F2DEBUG(("shswitch: p=%p, shape=%s, ", (void*)p, prcook(shape)));
 	F2DEBUG(("cookie=%s, rew=0x%x, go=%s\n", prcook(cookie), rew, srtyp[go]));
 
 	switch (go) {
@@ -538,7 +538,7 @@ findops(NODE *p, int cookie)
 	int lvl = 10, idx = 0, gol = 0, gor = 0;
 	NODE *l, *r;
 
-	F2DEBUG(("findops node %p (%s)\n", p, prcook(cookie)));
+	F2DEBUG(("findops node %p (%s)\n", (void*)p, prcook(cookie)));
 	F2WALK(p);
 
 	ixp = qtable[p->n_op];
@@ -618,7 +618,7 @@ findops(NODE *p, int cookie)
 		else
 			sh = ffs(cookie & qq->visit & INREGS)-1;
 	}
-	F2DEBUG(("findops: node %p sh %d (%s)\n", p, sh, prcook(1 << sh)));
+	F2DEBUG(("findops: node %p sh %d (%s)\n", (void*)p, sh, prcook(1 << sh)));
 	p->n_su = MKIDX(idx, 0);
 	SCLASS(p->n_su, sh);
 	return sh;
@@ -704,7 +704,7 @@ relops(NODE *p)
 	(void)shswitch(-1, p->n_right, q->rshape, INREGS,
 	    q->rewrite & RRIGHT, gor);
 	
-	F2DEBUG(("relops: node %p\n", p));
+	F2DEBUG(("relops: node %p\n", (void*)p));
 	p->n_su = MKIDX(idx, 0);
 	SCLASS(p->n_su, 0); /* XXX */
 	return 0;
@@ -832,7 +832,7 @@ findasg(NODE *p, int cookie)
 		else
 			sh = ffs(cookie & qq->visit & INREGS)-1;
 	}
-	F2DEBUG(("findasg: node %p class %d\n", p, sh));
+	F2DEBUG(("findasg: node %p class %d\n", (void*)p, sh));
 
 	p->n_su = MKIDX(idx, 0);
 	SCLASS(p->n_su, sh);
@@ -856,7 +856,7 @@ findumul(NODE *p, int cookie)
 	int *ixp;
 
 	(void)shr;  /* Mark it as used even without PCC_DEBUG. */
-	F2DEBUG(("findumul p %p (%s)\n", p, prcook(cookie)));
+	F2DEBUG(("findumul p %p (%s)\n", (void*)p, prcook(cookie)));
 	F2WALK(p);
 
 	ixp = qtable[p->n_op];
@@ -904,7 +904,7 @@ findumul(NODE *p, int cookie)
 	if (sh == -1)
 		sh = ffs(cookie & q->visit & INREGS)-1;
 
-	F2DEBUG(("findumul: node %p (%s)\n", p, prcook(1 << sh)));
+	F2DEBUG(("findumul: node %p (%s)\n", (void*)p, prcook(1 << sh)));
 	p->n_su = MKIDX(ixp[i], 0);
 	SCLASS(p->n_su, sh);
 	return sh;
@@ -921,7 +921,7 @@ findleaf(NODE *p, int cookie)
 	int i, sh;
 	int *ixp;
 
-	F2DEBUG(("findleaf p %p (%s)\n", p, prcook(cookie)));
+	F2DEBUG(("findleaf p %p (%s)\n", (void*)p, prcook(cookie)));
 	F2WALK(p);
 
 	ixp = qtable[p->n_op];
@@ -957,7 +957,7 @@ findleaf(NODE *p, int cookie)
 	F2DEBUG(("findleaf entry %d\n", ixp[i]));
 
 	sh = ffs(cookie & q->visit & INREGS)-1;
-	F2DEBUG(("findleaf: node %p (%s)\n", p, prcook(1 << sh)));
+	F2DEBUG(("findleaf: node %p (%s)\n", (void*)p, prcook(1 << sh)));
 	p->n_su = MKIDX(ixp[i], 0);
 	SCLASS(p->n_su, sh);
 	return sh;
@@ -1049,7 +1049,7 @@ finduni(NODE *p, int cookie)
 	if (sh == -1)
 		sh = 0;
 
-	F2DEBUG(("finduni: node %p (%s)\n", p, prcook(1 << sh)));
+	F2DEBUG(("finduni: node %p (%s)\n", (void*)p, prcook(1 << sh)));
 	p->n_su = MKIDX(idx, 0);
 	SCLASS(p->n_su, sh);
 	return sh;
@@ -1187,7 +1187,7 @@ findmops(NODE *p, int cookie)
 		else
 			sh = ffs(cookie & qq->visit & INREGS)-1;
 	}
-	F2DEBUG(("findmops done: node %p class %d\n", p, sh));
+	F2DEBUG(("findmops done: node %p class %d\n", (void*)p, sh));
 
 	/* Trickery:  Set table index on assign to op instead */
 	/* gencode() will remove useless nodes */

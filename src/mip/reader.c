@@ -551,7 +551,7 @@ geninsn(NODE *p, int cookie)
 
 #ifdef PCC_DEBUG
 	if (o2debug) {
-		printf("geninsn(%p, %s)\n", p, prcook(cookie));
+		printf("geninsn(%p, %s)\n", (void*)p, prcook(cookie));
 		fwalk(p, e2print, 0);
 	}
 #endif
@@ -678,7 +678,7 @@ again:	switch (o = p->n_op) {
 		goto again;
 #ifdef PCC_DEBUG
 	if (o2debug) {
-		printf("geninsn(%p, %s) rv %d\n", p, prcook(cookie), rv);
+		printf("geninsn(%p, %s) rv %d\n", (void*)p, prcook(cookie), rv);
 		fwalk(p, e2print, 0);
 	}
 #endif
@@ -714,7 +714,7 @@ ckmove(NODE *p, NODE *q)
 	if (reg < 0 || reg == DECRA(q->n_reg, 0))
 		return; /* no move necessary */
 
-	CDEBUG(("rmove: node %p, %s -> %s\n", p, rnames[DECRA(q->n_reg, 0)],
+	CDEBUG(("rmove: node %p, %s -> %s\n", (void*)p, rnames[DECRA(q->n_reg, 0)],
 	    rnames[reg]));
 	rmove(DECRA(q->n_reg, 0), reg, p->n_type);
 	q->n_reg = q->n_rval = reg;
@@ -762,7 +762,7 @@ rewrite(NODE *p, int dorewrite, int cookie)
 		tfree(r);
 	if (dorewrite == 0)
 		return;
-	CDEBUG(("rewrite: %p, reg %s\n", p,
+	CDEBUG(("rewrite: %p, reg %s\n", (void*)p,
 	    p->n_reg == -1? "<none>" : rnames[DECRA(p->n_reg, 0)]));
 	p->n_rval = DECRA(p->n_reg, 0);
 }
@@ -901,7 +901,7 @@ gencode(NODE *p, int cookie)
 		return;
 	}
 
-	CDEBUG(("gencode: node %p\n", p));
+	CDEBUG(("gencode: node %p\n", (void*)p));
 
 	if (p->n_op == REG && DECRA(p->n_reg, 0) == p->n_rval)
 		return; /* meaningless move to itself */
@@ -982,12 +982,12 @@ gencode(NODE *p, int cookie)
 	    p->n_left->n_rval == p->n_right->n_rval &&
 	    (p->n_su & RVCC) == 0) { /* XXX should check if necessary */
 		/* do not emit anything */
-		CDEBUG(("gencode(%p) assign nothing\n", p));
+		CDEBUG(("gencode(%p) assign nothing\n", (void*)p));
 		rewrite(p, q->rewrite, cookie);
 		return;
 	}
 
-	CDEBUG(("emitting node %p\n", p));
+	CDEBUG(("emitting node %p\n", (void*)p));
 	if (TBLIDX(p->n_su) == 0)
 		return;
 
@@ -996,24 +996,24 @@ gencode(NODE *p, int cookie)
 
 #ifdef FINDMOPS
 	if (ismops && DECRA(p->n_reg, 0) != regno(l) && cookie != FOREFF) {
-		CDEBUG(("gencode(%p) rmove\n", p));
+		CDEBUG(("gencode(%p) rmove\n", (void*)p));
 		rmove(regno(l), DECRA(p->n_reg, 0), p->n_type);
 	} else
 #endif
 	if (callop(p->n_op) && cookie != FOREFF &&
 	    DECRA(p->n_reg, 0) != RETREG(p->n_type)) {
-		CDEBUG(("gencode(%p) retreg\n", p));
+		CDEBUG(("gencode(%p) retreg\n", (void*)p));
 		rmove(RETREG(p->n_type), DECRA(p->n_reg, 0), p->n_type);
 	} else if (q->needs & NSPECIAL) {
 		int rr = rspecial(q, NRES);
 
 		if (rr >= 0 && DECRA(p->n_reg, 0) != rr) {
-			CDEBUG(("gencode(%p) nspec retreg\n", p));
+			CDEBUG(("gencode(%p) nspec retreg\n", (void*)p));
 			rmove(rr, DECRA(p->n_reg, 0), p->n_type);
 		}
 	} else if ((q->rewrite & RESC1) &&
 	    (DECRA(p->n_reg, 1) != DECRA(p->n_reg, 0))) {
-		CDEBUG(("gencode(%p) RESC1 retreg\n", p));
+		CDEBUG(("gencode(%p) RESC1 retreg\n", (void*)p));
 		rmove(DECRA(p->n_reg, 1), DECRA(p->n_reg, 0), p->n_type);
 	}
 #if 0
@@ -1056,7 +1056,7 @@ e2print(NODE *p, int down, int *a, int *b)
 	if( down-- ) printf("    " );
 
 
-	printf("%p) %s", p, opst[p->n_op] );
+	printf("%p) %s", (void*)p, opst[p->n_op] );
 	switch( p->n_op ) { /* special cases */
 
 	case FLD:

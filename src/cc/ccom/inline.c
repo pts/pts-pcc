@@ -136,7 +136,7 @@ inline_addarg(struct interpass *ip)
 {
 	extern NODE *cftnod;
 
-	SDEBUG(("inline_addarg(%p)\n", ip));
+	SDEBUG(("inline_addarg(%p)\n", (void*)ip));
 	DLIST_INSERT_BEFORE(&cifun->shead, ip, qelem);
 	if (ip->type == IP_DEFLAB)
 		nlabs++;
@@ -432,7 +432,7 @@ inlinetree(struct symtab *sp, NODE *f, NODE *ap)
 		return NIL;
 	}
 
-	SDEBUG(("inlinetree(%p,%p) OK %d\n", f, ap, is->flags & CANINL));
+	SDEBUG(("inlinetree(%p,%p) OK %d\n", (void*)f, (void*)ap, is->flags & CANINL));
 
 #ifdef GCC_COMPAT
 	gainl = attr_find(sp->sap, GCC_ATYP_ALW_INL) != NULL;

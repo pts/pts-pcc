@@ -386,13 +386,13 @@ beginit(struct symtab *sp)
 
 #ifdef PCC_DEBUG
 	if (idebug)
-		printf("beginit(%p), sclass %s\n", sp, scnames(sp->sclass));
+		printf("beginit(%p), sclass %s\n", (void*)sp, scnames(sp->sclass));
 #endif
 
 	if (pstk) {
 #ifdef PCC_DEBUG
 		if (idebug)
-			printf("beginit: saving ctx pstk %p\n", pstk);
+			printf("beginit: saving ctx pstk %p\n", (void*)pstk);
 #endif
 		/* save old context */
 		ict = tmpalloc(sizeof(struct initctx));
@@ -662,7 +662,7 @@ scalinit(NODE *p)
 
 #ifdef PCC_DEBUG
 	if (idebug > 2) {
-		printf("scalinit(%p)\n", p);
+		printf("scalinit(%p)\n", (void*)p);
 		fwalk(p, eprint, 0);
 		prtstk(pstk);
 	}
@@ -725,7 +725,7 @@ scalinit(NODE *p)
 	stkpop();
 #ifdef PCC_DEBUG
 	if (idebug > 2) {
-		printf("scalinit e(%p)\n", q);
+		printf("scalinit e(%p)\n", (void*)q);
 	}
 #endif
 	return woff;
@@ -902,7 +902,7 @@ endictx(void)
 	inilnk = inilnk->prev;
 #ifdef PCC_DEBUG
 	if (idebug)
-		printf("endinit: restoring ctx pstk %p\n", pstk);
+		printf("endinit: restoring ctx pstk %p\n", (void*)pstk);
 #endif
 }
 
@@ -973,7 +973,7 @@ mkstack(NODE *p)
 
 #ifdef PCC_DEBUG
 	if (idebug) {
-		printf("mkstack: %p\n", p);
+		printf("mkstack: %p\n", (void*)p);
 		if (idebug > 1 && p)
 			fwalk(p, eprint, 0);
 	}
@@ -1080,7 +1080,7 @@ asginit(NODE *p)
 
 #ifdef PCC_DEBUG
 	if (idebug)
-		printf("asginit %p\n", p);
+		printf("asginit %p\n", (void*)p);
 	if (idebug > 1 && p)
 		fwalk(p, eprint, 0);
 #endif
@@ -1136,7 +1136,7 @@ prtstk(struct instk *in)
 	for (; in != NULL; in = in->in_prev) {
 		for (i = 0; i < o; i++)
 			printf("  ");
-		printf("%p) '%s' ", in, in->in_sym->sname);
+		printf("%p) '%s' ", (void*)in, in->in_sym->sname);
 		tprint(in->in_t, 0);
 		printf(" %s ", scnames(in->in_sym->sclass));
 		if (in->in_df /* && in->in_df->ddim */)

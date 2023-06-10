@@ -197,7 +197,7 @@ newblock(NODE *p)
 		nb->r_class = gclass(p->n_type);
 #ifdef PCC_DEBUG
 	RDEBUG(("newblock: p %p, node %d class %d\n",
-	    p, nb->nodnum, nb->r_class));
+	    (void*)p, nb->nodnum, nb->r_class));
 #endif
 	return nb;
 }
@@ -227,7 +227,7 @@ nsucomp(NODE *p)
 
 	o = optype(p->n_op);
 
-	UDEBUG(("entering nsucomp, node %p\n", p));
+	UDEBUG(("entering nsucomp, node %p\n", (void*)p));
 
 	if (TBLIDX(p->n_su) == 0) {
 		int a = 0, b;
@@ -286,7 +286,7 @@ nsucomp(NODE *p)
 	else
 		left = 0;
 
-	UDEBUG(("node %p left %d right %d\n", p, left, right));
+	UDEBUG(("node %p left %d right %d\n", (void*)p, left, right));
 
 	if (o == BITYPE) {
 		/* Two children */
@@ -319,7 +319,7 @@ nsucomp(NODE *p)
 		(void)newblock(p);
 
 	if (TCLASS(p->n_su) == 0 && nxreg == 0) {
-		UDEBUG(("node %p no class\n", p));
+		UDEBUG(("node %p no class\n", (void*)p));
 		p->n_regw = NULL; /* may be set earlier */
 		return need;
 	}
@@ -337,7 +337,7 @@ nsucomp(NODE *p)
 	}
 #endif
 
-	UDEBUG(("node %p numregs %d\n", p, nxreg+1));
+	UDEBUG(("node %p numregs %d\n", (void*)p, nxreg+1));
 	w = p->n_regw = tmpalloc(sizeof(REGW) * (nxreg+1));
 	memset(w, 0, sizeof(REGW) * (nxreg+1));
 
@@ -374,7 +374,7 @@ nsucomp(NODE *p)
 		DLIST_REMOVE(w,link);
 	}
 
-	UDEBUG(("node %p return regs %d\n", p, need));
+	UDEBUG(("node %p return regs %d\n", (void*)p, need));
 
 	return need;
 }
@@ -905,7 +905,7 @@ setlive(NODE *p, int set, REGW *rv)
 static void
 addedge_r(NODE *p, REGW *w)
 {
-	RRDEBUG(("addedge_r: node %p regw %p\n", p, w));
+	RRDEBUG(("addedge_r: node %p regw %p\n", (void*)p, (void*)w));
 
 	if (p->n_regw != NULL) {
 		if (p->n_regw->nodnum < MAXREGS &&
@@ -952,7 +952,7 @@ setxarg(NODE *p)
 	if (p->n_op == ICON && p->n_type == STRTY)
 		return;
 
-	RDEBUG(("setxarg %p %s\n", p, p->n_name));
+	RDEBUG(("setxarg %p %s\n", (void*)p, p->n_name));
 	cw = xasmcode(p->n_name);
 	if (XASMISINP(cw))
 		in = 1;
@@ -1032,7 +1032,7 @@ insnwalk(NODE *p)
 	NODE *lp, *rp;
 	int i, n;
 
-	RDEBUG(("insnwalk %p\n", p));
+	RDEBUG(("insnwalk %p\n", (void*)p));
 
 	rv = p->n_regw;
 
@@ -1434,7 +1434,7 @@ dce(struct p2env *p2e)
 	DLIST_FOREACH(bb, &p2e->bblocks, bbelem) {
 		bbnum = bb->bbnum;
 		BBDEBUG(("DCE bblock %d, start %p last %p\n",
-		    bbnum, bb->first, bb->last));
+		    bbnum, (void*)bb->first, (void*)bb->last));
 		SETCOPY(lvar, out[bbnum], i, xbits);
 		for (ip = bb->last; ; ip = DLIST_PREV(ip, qelem)) {
 			if (ip->type == IP_NODE && deldead(ip->ip_node, lvar)) {
@@ -1467,7 +1467,7 @@ dce(struct p2env *p2e)
 					}
 					fix++;
 					BDEBUG(("bb %d: DCE ip %p deleted\n",
-					    bbnum, ip));
+					    bbnum, (void*)ip));
 					break;
 				} else while (!DLIST_ISEMPTY(&prepole, qelem)) {
 					struct interpass *tipp;
@@ -2563,7 +2563,7 @@ down:		switch (optype(p->n_op)) {
 		}
 	}
 
-	RDEBUG(("Node %d (%p) to store\n", ASGNUM(w), p));
+	RDEBUG(("Node %d (%p) to store\n", ASGNUM(w), (void*)p));
 	/* ensure that both left and right are addressable */
 	if (!regcanaddr(p) && !callop(p->n_op)) {
 		/* this is neither leaf nor addressable */
@@ -2605,7 +2605,7 @@ down:		switch (optype(p->n_op)) {
 	storemod(p, off, FPREG); /* XXX */
 	DLIST_INSERT_BEFORE(cip, nip, qelem);
 	DLIST_REMOVE(w, link);
-	RDEBUG(("Stored parent node %d (%p)\n", ASGNUM(w), p));
+	RDEBUG(("Stored parent node %d (%p)\n", ASGNUM(w), (void*)p));
 	return 1;
 }
 
@@ -2956,7 +2956,7 @@ ssagain:
 		nblock -= tempmin;
 #ifdef HAVE_C99_FORMAT
 		RDEBUG(("nblock %p num %d size %zu\n",
-		    nblock, tbits, (size_t)(tbits * sizeof(REGW))));
+		    (void*)nblock, tbits, (size_t)(tbits * sizeof(REGW))));
 #endif
 	}
 	live = tmpalloc(BIT2BYTE(xbits));

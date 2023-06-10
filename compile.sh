@@ -3,12 +3,15 @@
 # compile.sh: build script for PCC 1.1.0 on Linux, targeting Linux i386
 # by pts@fazekas.hu at Sat Jun 10 12:46:04 CEST 2023
 #
+# It works with GCC -std=c99 and -std=gnu99, but it doesn't work with -ansi (== -std=c89) or -std=gnu89, mostly because `long long'.
 # Compile with: ./compile.sh gcc   -s -Os -W -Wall -Wmissing-prototypes -Wshadow -Wsign-compare -Wno-unused-parameter -Werror-implicit-function-declaration -std=c99 -pedantic
 # Compile with: ./compile.sh clang -s -Os -W -Wall -Wmissing-prototypes -Wshadow -Wsign-compare -Wno-unused-parameter -Werror-implicit-function-declaration -std=c99 -pedantic
 # Compile with: ./compile.sh owcc -blinux -march=i386 -s -O2 -I"$WATCOM"/lh -fsigned-char -fno-stack-protector -W -Wextra -Wno-n303 -std=c99 -fo=.obj && -f *.obj
 # Compile with: ./compile.sh minicc --gcc --diet -Wno-unused-parameter -std=c99 -pedantic
 # Compile with: ./compile.sh minicc --wcc --diet -Wno-unused-parameter -std=c99 -pedantic
 # Compile with: ./compile.sh minicc --tcc --diet -Wno-unused-parameter -std=c99 -pedantic
+#
+# !! TODO(pts): Disable more debug printfs, even those which are currently unaffected by PCC_DEBUG. Look for %p.
 #
 
 set -ex

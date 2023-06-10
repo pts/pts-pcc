@@ -174,10 +174,10 @@ defid2(NODE *q, int class, char *astr)
 
 #ifdef PCC_DEBUG
 	if (ddebug) {
-		printf("defid(%s '%s'(%p), ", p->sname, p->soname , p);
+		printf("defid(%s '%s'(%p), ", p->sname, p->soname , (void*)p);
 		tprint(q->n_type, q->n_qual);
 		printf(", %s, (%p)), level %d\n\t", scnames(class),
-		    q->n_df, blevel);
+		    (void*)q->n_df, blevel);
 #ifdef GCC_COMPAT
 		dump_attr(q->n_ap);
 #endif
@@ -204,7 +204,7 @@ defid2(NODE *q, int class, char *astr)
 		printf("	previous def'n: ");
 		tprint(stp, stq);
 		printf(", %s, (%p,%p)), level %d\n",
-		    scnames(p->sclass), p->sdf, p->sap, slev);
+		    scnames(p->sclass), (void*)p->sdf, (void*)p->sap, slev);
 	}
 #endif
 
@@ -485,7 +485,7 @@ done:
 #ifdef PCC_DEBUG
 	if (ddebug) {
 		printf( "	sdf, offset: %p, %d\n\t",
-		    p->sdf, p->soffset);
+		    (void*)p->sdf, p->soffset);
 #ifdef GCC_COMPAT
 		dump_attr(p->sap);
 #endif
@@ -956,7 +956,7 @@ dclstruct(struct rstack *r)
 		printf("\tsize %d align %d link %p\n",
 		    aps->amsize, apb->iarg(0), aps->amlist);
 		for (sp = aps->amlist; sp != NULL; sp = sp->snext) {
-			printf("\tmember %s(%p)\n", sp->sname, sp);
+			printf("\tmember %s(%p)\n", sp->sname, (void*)sp);
 		}
 	}
 #endif
@@ -1083,7 +1083,7 @@ ftnarg(NODE *p)
 
 #ifdef PCC_DEBUG
 	if (ddebug > 2)
-		printf("ftnarg(%p)\n", p);
+		printf("ftnarg(%p)\n", (void*)p);
 #endif
 	/*
 	 * Push argument symtab entries onto param stack in reverse order,
@@ -1105,7 +1105,7 @@ ftnarg(NODE *p)
 #ifdef PCC_DEBUG
 			if (ddebug > 2)
 				printf("	saving sym %s (%p) from (%p)\n",
-				    q->n_sp->sname, q->n_sp, q);
+				    q->n_sp->sname, (void*)q->n_sp, (void*)q);
 #endif
 		}
 		p = p->n_left;
@@ -1117,7 +1117,7 @@ ftnarg(NODE *p)
 #ifdef PCC_DEBUG
 	if (ddebug > 2)
 		printf("	saving sym %s (%p) from (%p)\n",
-		    nparams ? p->n_sp->sname : "<noname>", p->n_sp, p);
+		    nparams ? p->n_sp->sname : "<noname>", (void*)p->n_sp, (void*)p);
 #endif
 }
 
@@ -1971,7 +1971,7 @@ arglist(NODE *n)
 
 #ifdef PCC_DEBUG
 	if (pdebug) {
-		printf("arglist %p\n", n);
+		printf("arglist %p\n", (void*)n);
 		fwalk(n, eprint, 0);
 	}
 #endif
@@ -2155,7 +2155,7 @@ tymerge(NODE *typ, NODE *idp)
 
 #ifdef PCC_DEBUG
 	if (ddebug > 2) {
-		printf("tymerge(%p,%p)\n", typ, idp);
+		printf("tymerge(%p,%p)\n", (void*)typ, (void*)idp);
 		fwalk(typ, eprint, 0);
 		fwalk(idp, eprint, 0);
 	}

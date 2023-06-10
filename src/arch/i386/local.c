@@ -392,7 +392,7 @@ clocal(NODE *p)
 
 #ifdef PCC_DEBUG
 	if (xdebug) {
-		printf("clocal: %p\n", p);
+		printf("clocal: %p\n", (void*)p);
 		fwalk(p, eprint, 0);
 	}
 #endif
@@ -731,7 +731,7 @@ clocal(NODE *p)
 	}
 #ifdef PCC_DEBUG
 	if (xdebug) {
-		printf("clocal end: %p\n", p);
+		printf("clocal end: %p\n", (void*)p);
 		fwalk(p, eprint, 0);
 	}
 #endif
