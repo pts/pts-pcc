@@ -431,7 +431,7 @@ CONSZ soft_val(SF);
 #define	FLOAT_MINUS(x1,x2)	(x1) - (x2)
 #define	FLOAT_MUL(x1,x2)	(x1) * (x2)
 #define	FLOAT_DIV(x1,x2)	(x1) / (x2)
-#define	FLOAT_ISZERO(p)		(p) == 0.0
+#define	FLOAT_ISZERO(p)		((p) == 0.0)
 #define FLOAT_VAL(p)		(CONSZ)(p)
 #define FLOAT_EQ(x1,x2)		(x1) == (x2)
 #define FLOAT_NE(x1,x2)		(x1) != (x2)
