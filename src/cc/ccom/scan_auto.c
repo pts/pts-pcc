@@ -3251,7 +3251,7 @@ struct pragmas {
 	{ "STDC", pragmas_stdc },
 	{ "weak", pragmas_weak },
 	{ "ident", NULL },
-	{ 0 },
+	{ 0, 0 },
 };
 
 /*

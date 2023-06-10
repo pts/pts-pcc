@@ -154,7 +154,7 @@ nspecial(struct optab *q)
 	switch (q->op) {
 	case OPLOG:
 		{
-			static struct rspecial s[] = { { NEVER, EAX }, { 0 } };
+			static struct rspecial s[] = { { NEVER, EAX }, { 0, 0 } };
 			return s;
 		}
 
@@ -164,7 +164,7 @@ nspecial(struct optab *q)
 				{ NEVER, EDI }, { NEVER, ESI },
 				{ NRIGHT, ESI }, { NOLEFT, ESI },
 				{ NOLEFT, ECX }, { NORIGHT, ECX },
-				{ NEVER, ECX }, { 0 } };
+				{ NEVER, ECX }, { 0, 0 } };
 			return s;
 		}
 
@@ -172,7 +172,7 @@ nspecial(struct optab *q)
 		{
 			static struct rspecial s[] = {
 				{ NEVER, EDI }, { NEVER, ECX },
-				{ NLEFT, ESI }, { 0 } };
+				{ NLEFT, ESI }, { 0, 0 } };
 			return s;
 		}
 
@@ -180,25 +180,25 @@ nspecial(struct optab *q)
 		if ((q->ltype & (TINT|TUNSIGNED|TSHORT|TUSHORT)) && 
 		    q->rtype == (TCHAR|TUCHAR)) {
 			static struct rspecial s[] = { 
-				{ NOLEFT, ESI }, { NOLEFT, EDI }, { 0 } };
+				{ NOLEFT, ESI }, { NOLEFT, EDI }, { 0, 0 } };
 			return s;
 		} else if ((q->ltype & TINT) &&
 		    q->rtype == (TLONGLONG|TULONGLONG)) {
 			static struct rspecial s[] = {
 				{ NLEFT, EAX }, { NRES, EAXEDX },
-				{ NEVER, EAX }, { NEVER, EDX }, { 0 } };
+				{ NEVER, EAX }, { NEVER, EDX }, { 0, 0 } };
 			return s;
 		} else if (q->ltype == TSHORT &&
 		    q->rtype == (TLONGLONG|TULONGLONG)) {
 			static struct rspecial s[] = {
 				{ NRES, EAXEDX },
-				{ NEVER, EAX }, { NEVER, EDX }, { 0 } };
+				{ NEVER, EAX }, { NEVER, EDX }, { 0, 0 } };
 			return s;
 		} else if (q->ltype == TCHAR &&
 		    q->rtype == (TLONGLONG|TULONGLONG)) {
 			static struct rspecial s[] = {
 				{ NRES, EAXEDX },
-				{ NEVER, EAX }, { NEVER, EDX }, { 0 } };
+				{ NEVER, EAX }, { NEVER, EDX }, { 0, 0 } };
 			return s;
 		}
 		break;
@@ -207,18 +207,18 @@ nspecial(struct optab *q)
 			static struct rspecial s[] = {
 				{ NEVER, AL }, { NEVER, AH },
 				{ NLEFT, AL }, { NRES, AL },
-				{ NORIGHT, AH }, { NORIGHT, AL }, { 0 } };
+				{ NORIGHT, AH }, { NORIGHT, AL }, { 0, 0 } };
 				return s;
 		} else if (q->lshape == SAREG) {
 			static struct rspecial s[] = {
 				{ NEVER, EAX }, { NEVER, EDX },
 				{ NLEFT, EAX }, { NRES, EAX },
-				{ NORIGHT, EDX }, { NORIGHT, EAX }, { 0 } };
+				{ NORIGHT, EDX }, { NORIGHT, EAX }, { 0, 0 } };
 			return s;
 		} else if (q->lshape & SCREG) {
 			static struct rspecial s[] = {
 				{ NEVER, EAX }, { NEVER, EDX },
-				{ NEVER, ECX }, { NRES, EAXEDX }, { 0 } };
+				{ NEVER, ECX }, { NRES, EAXEDX }, { 0, 0 } };
 			return s;
 		}
 		break;
@@ -227,18 +227,18 @@ nspecial(struct optab *q)
 			static struct rspecial s[] = {
 				{ NEVER, AL }, { NEVER, AH },
 				{ NLEFT, AL }, { NRES, AH },
-				{ NORIGHT, AH }, { NORIGHT, AL }, { 0 } };
+				{ NORIGHT, AH }, { NORIGHT, AL }, { 0, 0 } };
 			return s;
 		} else if (q->lshape == SAREG) {
 			static struct rspecial s[] = {
 				{ NEVER, EAX }, { NEVER, EDX },
 				{ NLEFT, EAX }, { NRES, EDX },
-				{ NORIGHT, EDX }, { NORIGHT, EAX }, { 0 } };
+				{ NORIGHT, EDX }, { NORIGHT, EAX }, { 0, 0 } };
 			return s;
 		} else if (q->lshape & SCREG) {
 			static struct rspecial s[] = {
 				{ NEVER, EAX }, { NEVER, EDX },
-				{ NEVER, ECX }, { NRES, EAXEDX }, { 0 } };
+				{ NEVER, ECX }, { NRES, EAXEDX }, { 0, 0 } };
 			return s;
 		}
 		break;
@@ -246,12 +246,12 @@ nspecial(struct optab *q)
 		if (q->lshape == SBREG) {
 			static struct rspecial s[] = {
 				{ NEVER, AL }, { NEVER, AH },
-				{ NLEFT, AL }, { NRES, AL }, { 0 } };
+				{ NLEFT, AL }, { NRES, AL }, { 0, 0 } };
 			return s;
 		} else if (q->lshape & SCREG) {
 			static struct rspecial s[] = {
 				{ NLEFT, EAXEDX }, { NRIGHT, ECXESI },
-				{ NEVER, ESI }, { NRES, EAXEDX }, { 0 } };
+				{ NEVER, ESI }, { NRES, EAXEDX }, { 0, 0 } };
 			return s;
 		}
 		break;
@@ -259,12 +259,12 @@ nspecial(struct optab *q)
 	case RS:
 		if (q->visit & (INAREG|INBREG)) {
 			static struct rspecial s[] = {
-				{ NRIGHT, CL }, { NOLEFT, ECX }, { 0 } };
+				{ NRIGHT, CL }, { NOLEFT, ECX }, { 0, 0 } };
 			return s;
 		} else if (q->visit & INCREG) {
 			static struct rspecial s[] = {
 				{ NLEFT, EAXEDX }, { NRIGHT, CL },
-				{ NRES, EAXEDX }, { 0 } };
+				{ NRES, EAXEDX }, { 0, 0 } };
 			return s;
 		}
 		break;

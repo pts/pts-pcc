@@ -1517,7 +1517,7 @@ struct flgcheck {
 	{ &Oflag, 1, "-D__OPTIMIZE__" },
 	{ &tflag, 1, "-t" },
 	{ &kflag, 1, "-D__PIC__" },
-	{ 0 },
+	{ 0, 0, 0 },
 };
 
 static void
@@ -1748,7 +1748,7 @@ struct flgcheck ccomflgcheck[] = {
 	{ &kflag, 1, "-k" },
 #endif
 	{ &sspflag, 1, "-fstack-protector" },
-	{ 0 }
+	{ 0, 0, 0 }
 };
 
 void
@@ -1796,7 +1796,7 @@ struct flgcheck asflgcheck[] = {
 	{ &amd64_i386, 1, "--32" },
 #endif
 #endif
-	{ 0 }
+	{ 0, 0, 0 }
 };
 void
 setup_as_flags(void)
@@ -1833,7 +1833,7 @@ struct flgcheck ldflgcheck[] = {
 	{ &gflag, 1, "-g" },
 #endif
 	{ &pthreads, 1, "-lpthread" },
-	{ 0 },
+	{ 0, 0, 0 },
 };
 
 static void
