@@ -68,7 +68,7 @@
 
 #include "cpp.h"
 
-void yyerror(const char *);
+void cpp_yyerror(const char *);
 int setd(int l, int r);
 
 #define	EVALUNARY(tok, l, r) l.nd_val = tok r.nd_val; l.op = r.op
@@ -175,9 +175,9 @@ union YYSTYPE
 #endif
 
 
-extern YYSTYPE yylval;
+extern YYSTYPE cpp_yylval;
 
-int yyparse (void);
+int cpp_yyparse (void);
 
 #endif /* !YY_YY_Y_TAB_H_INCLUDED  */
 
@@ -275,7 +275,7 @@ typedef short int yytype_int16;
 #endif
 
 #if defined __GNUC__ && 407 <= __GNUC__ * 100 + __GNUC_MINOR__
-/* Suppress an incorrect diagnostic about yylval being uninitialized.  */
+/* Suppress an incorrect diagnostic about cpp_yylval being uninitialized.  */
 # define YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN \
     _Pragma ("GCC diagnostic push") \
     _Pragma ("GCC diagnostic ignored \"-Wuninitialized\"")\
@@ -437,7 +437,7 @@ union yyalloc
 #define YYNSTATES  65
 
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
-   by yylex, with out-of-bounds checking.  */
+   by cpp_yylex, with out-of-bounds checking.  */
 #define YYUNDEFTOK  2
 #define YYMAXUTOK   274
 
@@ -445,7 +445,7 @@ union yyalloc
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
 
 /* YYTRANSLATE[TOKEN-NUM] -- Symbol number corresponding to TOKEN-NUM
-   as returned by yylex, without out-of-bounds checking.  */
+   as returned by cpp_yylex, without out-of-bounds checking.  */
 static const yytype_uint8 yytranslate[] =
 {
        0,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -663,7 +663,7 @@ static const yytype_uint8 yyr2[] =
 
 
 #define yyerrok         (yyerrstatus = 0)
-#define yyclearin       (yychar = YYEMPTY)
+#define yyclearin       (cpp_yychar = YYEMPTY)
 #define YYEMPTY         (-2)
 #define YYEOF           0
 
@@ -676,17 +676,17 @@ static const yytype_uint8 yyr2[] =
 
 #define YYBACKUP(Token, Value)                                  \
 do                                                              \
-  if (yychar == YYEMPTY)                                        \
+  if (cpp_yychar == YYEMPTY)                                        \
     {                                                           \
-      yychar = (Token);                                         \
-      yylval = (Value);                                         \
+      cpp_yychar = (Token);                                         \
+      cpp_yylval = (Value);                                         \
       YYPOPSTACK (yylen);                                       \
       yystate = *yyssp;                                         \
       goto yybackup;                                            \
     }                                                           \
   else                                                          \
     {                                                           \
-      yyerror (YY_("syntax error: cannot back up")); \
+      cpp_yyerror (YY_("syntax error: cannot back up")); \
       YYERROR;                                                  \
     }                                                           \
 while (0)
@@ -884,7 +884,7 @@ yystpcpy (char *yydest, const char *yysrc)
 
 # ifndef yytnamerr
 /* Copy to YYRES the contents of YYSTR after stripping away unnecessary
-   quotes and backslashes, so that it's suitable for yyerror.  The
+   quotes and backslashes, so that it's suitable for cpp_yyerror.  The
    heuristic is that double-quoting is unnecessary unless the string
    contains an apostrophe, a comma, or backslash (other than
    backslash-backslash).  YYSTR is taken from yytname.  If YYRES is
@@ -958,7 +958,7 @@ yysyntax_error (YYSIZE_T *yymsg_alloc, char **yymsg,
        the only way this function was invoked is if the default action
        is an error action.  In that case, don't check for expected
        tokens because there are none.
-     - The only way there can be no lookahead present (in yychar) is if
+     - The only way there can be no lookahead present (in cpp_yychar) is if
        this state is a consistent state with a default action.  Thus,
        detecting the absence of a lookahead is sufficient to determine
        that there is no unexpected or expected token to report.  In that
@@ -966,7 +966,7 @@ yysyntax_error (YYSIZE_T *yymsg_alloc, char **yymsg,
      - Don't assume there isn't a lookahead just because this state is a
        consistent state with a default action.  There might have been a
        previous inconsistent state, consistent state with a non-default
-       action, or user semantic action that manipulated yychar.
+       action, or user semantic action that manipulated cpp_yychar.
      - Of course, the expected token list depends on states to have
        correct lookahead information, and it depends on the parser not
        to perform extra reductions after fetching a lookahead from the
@@ -1087,20 +1087,20 @@ yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep)
 
 
 /* The lookahead symbol.  */
-int yychar;
+int cpp_yychar;
 
 /* The semantic value of the lookahead symbol.  */
-YYSTYPE yylval;
+YYSTYPE cpp_yylval;
 /* Number of syntax errors so far.  */
-int yynerrs;
+int cpp_yynerrs;
 
 
 /*----------.
-| yyparse.  |
+| cpp_yyparse.  |
 `----------*/
 
 int
-yyparse (void)
+cpp_yyparse (void)
 {
     int yystate;
     /* Number of tokens to shift before error messages enabled.  */
@@ -1154,8 +1154,8 @@ yyparse (void)
 
   yystate = 0;
   yyerrstatus = 0;
-  yynerrs = 0;
-  yychar = YYEMPTY; /* Cause a token to be read.  */
+  cpp_yynerrs = 0;
+  cpp_yychar = YYEMPTY; /* Cause a token to be read.  */
   goto yysetstate;
 
 /*------------------------------------------------------------.
@@ -1253,21 +1253,21 @@ yybackup:
   /* Not known => get a lookahead token if don't already have one.  */
 
   /* YYCHAR is either YYEMPTY or YYEOF or a valid lookahead symbol.  */
-  if (yychar == YYEMPTY)
+  if (cpp_yychar == YYEMPTY)
     {
       YYDPRINTF ((stderr, "Reading a token: "));
-      yychar = yylex ();
+      cpp_yychar = cpp_yylex ();
     }
 
-  if (yychar <= YYEOF)
+  if (cpp_yychar <= YYEOF)
     {
-      yychar = yytoken = YYEOF;
+      cpp_yychar = yytoken = YYEOF;
       YYDPRINTF ((stderr, "Now at end of input.\n"));
     }
   else
     {
-      yytoken = YYTRANSLATE (yychar);
-      YY_SYMBOL_PRINT ("Next token is", yytoken, &yylval, &yylloc);
+      yytoken = YYTRANSLATE (cpp_yychar);
+      YY_SYMBOL_PRINT ("Next token is", yytoken, &cpp_yylval, &yylloc);
     }
 
   /* If the proper action on seeing token YYTOKEN is to reduce or to
@@ -1290,14 +1290,14 @@ yybackup:
     yyerrstatus--;
 
   /* Shift the lookahead token.  */
-  YY_SYMBOL_PRINT ("Shifting", yytoken, &yylval, &yylloc);
+  YY_SYMBOL_PRINT ("Shifting", yytoken, &cpp_yylval, &yylloc);
 
   /* Discard the shifted token.  */
-  yychar = YYEMPTY;
+  cpp_yychar = YYEMPTY;
 
   yystate = yyn;
   YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
-  *++yyvsp = yylval;
+  *++yyvsp = cpp_yylval;
   YY_IGNORE_MAYBE_UNINITIALIZED_END
 
   goto yynewstate;
@@ -1549,12 +1549,12 @@ yyreduce:
 #line 1546 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
-  /* User semantic actions sometimes alter yychar, and that requires
+  /* User semantic actions sometimes alter cpp_yychar, and that requires
      that yytoken be updated with the new translation.  We take the
      approach of translating immediately before every use of yytoken.
      One alternative is translating here after every semantic action,
      but that translation would be missed if the semantic action invokes
-     YYABORT, YYACCEPT, or YYERROR immediately after altering yychar or
+     YYABORT, YYACCEPT, or YYERROR immediately after altering cpp_yychar or
      if it invokes YYBACKUP.  In the case of YYABORT or YYACCEPT, an
      incorrect destructor might then be invoked immediately.  In the
      case of YYERROR or YYBACKUP, subsequent parser actions might lead
@@ -1589,14 +1589,14 @@ yyreduce:
 yyerrlab:
   /* Make sure we have latest lookahead translation.  See comments at
      user semantic actions for why this is necessary.  */
-  yytoken = yychar == YYEMPTY ? YYEMPTY : YYTRANSLATE (yychar);
+  yytoken = cpp_yychar == YYEMPTY ? YYEMPTY : YYTRANSLATE (cpp_yychar);
 
   /* If not already recovering from an error, report this error.  */
   if (!yyerrstatus)
     {
-      ++yynerrs;
+      ++cpp_yynerrs;
 #if ! YYERROR_VERBOSE
-      yyerror (YY_("syntax error"));
+      cpp_yyerror (YY_("syntax error"));
 #else
 # define YYSYNTAX_ERROR yysyntax_error (&yymsg_alloc, &yymsg, \
                                         yyssp, yytoken)
@@ -1623,7 +1623,7 @@ yyerrlab:
                 yymsgp = yymsg;
               }
           }
-        yyerror (yymsgp);
+        cpp_yyerror (yymsgp);
         if (yysyntax_error_status == 2)
           goto yyexhaustedlab;
       }
@@ -1638,17 +1638,17 @@ yyerrlab:
       /* If just tried and failed to reuse lookahead token after an
          error, discard it.  */
 
-      if (yychar <= YYEOF)
+      if (cpp_yychar <= YYEOF)
         {
           /* Return failure if at end of input.  */
-          if (yychar == YYEOF)
+          if (cpp_yychar == YYEOF)
             YYABORT;
         }
       else
         {
           yydestruct ("Error: discarding",
-                      yytoken, &yylval);
-          yychar = YYEMPTY;
+                      yytoken, &cpp_yylval);
+          cpp_yychar = YYEMPTY;
         }
     }
 
@@ -1710,7 +1710,7 @@ yyerrlab1:
     }
 
   YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
-  *++yyvsp = yylval;
+  *++yyvsp = cpp_yylval;
   YY_IGNORE_MAYBE_UNINITIALIZED_END
 
 
@@ -1740,19 +1740,19 @@ yyabortlab:
 | yyexhaustedlab -- memory exhaustion comes here.  |
 `-------------------------------------------------*/
 yyexhaustedlab:
-  yyerror (YY_("memory exhausted"));
+  cpp_yyerror (YY_("memory exhausted"));
   yyresult = 2;
   /* Fall through.  */
 #endif
 
 yyreturn:
-  if (yychar != YYEMPTY)
+  if (cpp_yychar != YYEMPTY)
     {
       /* Make sure we have latest lookahead translation.  See comments at
          user semantic actions for why this is necessary.  */
-      yytoken = YYTRANSLATE (yychar);
+      yytoken = YYTRANSLATE (cpp_yychar);
       yydestruct ("Cleanup: discarding lookahead",
-                  yytoken, &yylval);
+                  yytoken, &cpp_yylval);
     }
   /* Do not reclaim the symbols of the rule whose action triggered
      this YYABORT or YYACCEPT.  */
@@ -1778,7 +1778,7 @@ yyreturn:
 
 
 void
-yyerror(const char *err)
+cpp_yyerror(const char *err)
 {
 	error(err);
 }

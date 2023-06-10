@@ -30,7 +30,7 @@
  *	- fastscan() loops over the input stream searching for magic
  *		characters that may require actions.
  *	- sloscan() tokenize the input stream and returns tokens.
- *	- yylex() returns something from the input stream that
+ *	- cpp_yylex() returns something from the input stream that
  *		is suitable for yacc.
  *
  *	Other functions of common use:
@@ -74,7 +74,7 @@ static void elifstmt(void);
 #define MAX_INCLEVEL	100
 static int inclevel;
 
-usch yytext[CPPBUF];
+usch cpp_yytext[CPPBUF];
 
 struct includ *ifiles;
 
@@ -520,7 +520,7 @@ con:			PUTCH(ch);
 #endif
 		ident:
 			i = 0;
-			yytext[i++] = (usch)ch;
+			cpp_yytext[i++] = (usch)ch;
 			for (;;) {
 				if ((ch = inch()) == -1)
 					break;
@@ -534,16 +534,16 @@ con:			PUTCH(ch);
 					unch(ch);
 					break;
 				}
-				yytext[i++] = (usch)ch;
+				cpp_yytext[i++] = (usch)ch;
 			}
-			yytext[i] = 0;
+			cpp_yytext[i] = 0;
 
 			if (flslvl == 0) {
 				cp = stringbuf;
-				if ((nl = lookup(yytext, FIND)) && kfind(nl))
+				if ((nl = cpp_lookup(cpp_yytext, FIND)) && kfind(nl))
 					putstr(stringbuf);
 				else
-					putstr(yytext);
+					putstr(cpp_yytext);
 				stringbuf = cp;
 			}
 			if (ch == -1)
@@ -575,14 +575,14 @@ sloscan(void)
 zagain:
 	yyp = 0;
 	ch = inch();
-	yytext[yyp++] = (usch)ch;
+	cpp_yytext[yyp++] = (usch)ch;
 	switch (ch) {
 	case -1: /* EOF */
 		return 0;
 
 	case '\n': /* do not pass NL */
 		unch(ch);
-		yytext[yyp] = 0;
+		cpp_yytext[yyp] = 0;
 		return ch;
 
 	case '\r': /* Ignore CR */
@@ -596,10 +596,10 @@ ppnum:		for (;;) {
 			if (ch == -1)
 				break;
 			if ((spechr[ch] & C_EP)) {
-				yytext[yyp++] = (usch)ch;
+				cpp_yytext[yyp++] = (usch)ch;
 				ch = inch();
 				if (ch == '-' || ch == '+') {
-					yytext[yyp++] = (usch)ch;
+					cpp_yytext[yyp++] = (usch)ch;
 				} else
 					unch(ch);
 				if ((spechr[ch = inch()] & C_DIGIT) == 0)
@@ -608,13 +608,13 @@ ppnum:		for (;;) {
 				continue;
 			}
 			if ((spechr[ch] & C_ID) || ch == '.') {
-				yytext[yyp++] = (usch)ch;
+				cpp_yytext[yyp++] = (usch)ch;
 				continue;
 			}
 			break;
 		}
 		unch(ch);
-		yytext[yyp] = 0;
+		cpp_yytext[yyp] = 0;
 		return NUMBER;
 
 	case '\'':
@@ -623,37 +623,37 @@ chlit:
 			if ((ch = inch()) == '\\') {
 				if (chkucn())
 					continue;
-				yytext[yyp++] = (usch)ch;
+				cpp_yytext[yyp++] = (usch)ch;
 				ch = inch();
 			} else if (ch == '\'')
 				break;
 			if (ch == -1 || ch == '\n') {
 				/* not a constant */
 				while (yyp > 1)
-					unch(yytext[--yyp]);
+					unch(cpp_yytext[--yyp]);
 				goto any;
 			}
-			yytext[yyp++] = (usch)ch;
+			cpp_yytext[yyp++] = (usch)ch;
 		}
-		yytext[yyp++] = (usch)'\'';
-		yytext[yyp] = 0;
+		cpp_yytext[yyp++] = (usch)'\'';
+		cpp_yytext[yyp] = 0;
 		return NUMBER;
 
 	case ' ':
 	case '\t':
 		while ((ch = inch()) == ' ' || ch == '\t')
-			yytext[yyp++] = (usch)ch;
+			cpp_yytext[yyp++] = (usch)ch;
 		unch(ch);
-		yytext[yyp] = 0;
+		cpp_yytext[yyp] = 0;
 		return WSPACE;
 
 	case '/':
 		if ((ch = inch()) == '/') {	/* C++ comment */
 			do {
-				yytext[yyp++] = (usch)ch;
+				cpp_yytext[yyp++] = (usch)ch;
 				ch = inch();
 			} while (ch != -1 && ch != '\n');
-			yytext[yyp] = 0;
+			cpp_yytext[yyp] = 0;
 			unch(ch);
 			goto zagain;
 		} else if (ch == '*') {		/* C comment */
@@ -662,7 +662,7 @@ chlit:
 
 			if (Cflag && !flslvl && readmac) {
 				unch(ch);
-				yytext[yyp] = 0;
+				cpp_yytext[yyp] = 0;
 				return CMNT;
 			}
 
@@ -697,7 +697,7 @@ chlit:
 		if ((ch = inch()) == -1)
 			goto any;
 		if ((spechr[ch] & C_DIGIT)) {
-			yytext[yyp++] = (usch)ch;
+			cpp_yytext[yyp++] = (usch)ch;
 			goto ppnum;
 		}
 		unch(ch);
@@ -711,10 +711,10 @@ chlit:
 			if ((ch = inch()) == '\\') {
 				if (chkucn())
 					continue;
-				yytext[yyp++] = (usch)ch;
+				cpp_yytext[yyp++] = (usch)ch;
 				ch = inch();
 			} else if (ch == '\"') {
-				yytext[yyp++] = (usch)ch;
+				cpp_yytext[yyp++] = (usch)ch;
 				break;
 			}
 			if (ch == -1 || ch == '\n') {
@@ -722,9 +722,9 @@ chlit:
 				unch(ch);
 				break;	// XXX the STRING does not have a closing quote
 			}
-			yytext[yyp++] = (usch)ch;
+			cpp_yytext[yyp++] = (usch)ch;
 		}
-		yytext[yyp] = 0;
+		cpp_yytext[yyp] = 0;
 		return STRING;
 
 	case '\\':
@@ -736,10 +736,10 @@ chlit:
 
 	case 'L':
 		if ((ch = inch()) == '\"' && !tflag) {
-			yytext[yyp++] = (usch)ch;
+			cpp_yytext[yyp++] = (usch)ch;
 			goto strng;
 		} else if (ch == '\'' && !tflag) {
-			yytext[yyp++] = (usch)ch;
+			cpp_yytext[yyp++] = (usch)ch;
 			goto chlit;
 		}
 		unch(ch);
@@ -772,9 +772,9 @@ chlit:
 				unch(ch);
 				break;
 			}
-			yytext[yyp++] = (usch)ch;
+			cpp_yytext[yyp++] = (usch)ch;
 		}
-		yytext[yyp] = 0; /* need already string */
+		cpp_yytext[yyp] = 0; /* need already string */
 		return IDENT;
 
 	default:
@@ -782,15 +782,15 @@ chlit:
 			goto ident;
 
 	any:
-		yytext[yyp] = 0;
-		return yytext[0];
+		cpp_yytext[yyp] = 0;
+		return cpp_yytext[0];
 	} /* endcase */
 
 	/* NOTREACHED */
 }
 
 int
-yylex(void)
+cpp_yylex(void)
 {
 	static int ifdef, noex;
 	struct symtab *nl;
@@ -842,25 +842,25 @@ yylex(void)
 				break;
 			goto c1;
 		}
-		return yylex();
+		return cpp_yylex();
 
 	case NUMBER:
-		if (yytext[0] == '\'') {
-			yylval.node.op = NUMBER;
-			yylval.node.nd_val = charcon(yytext);
+		if (cpp_yytext[0] == '\'') {
+			cpp_yylval.node.op = NUMBER;
+			cpp_yylval.node.nd_val = charcon(cpp_yytext);
 		} else
-			cvtdig(yytext[0] != '0' ? 10 :
-			    yytext[1] == 'x' || yytext[1] == 'X' ? 16 : 8);
+			cvtdig(cpp_yytext[0] != '0' ? 10 :
+			    cpp_yytext[1] == 'x' || cpp_yytext[1] == 'X' ? 16 : 8);
 		return NUMBER;
 
 	case IDENT:
-		if (strcmp((char *)yytext, "defined") == 0) {
+		if (strcmp((char *)cpp_yytext, "defined") == 0) {
 			ifdef = 1;
 			return DEFINED;
 		}
-		nl = lookup(yytext, FIND);
+		nl = cpp_lookup(cpp_yytext, FIND);
 		if (ifdef) {
-			yylval.node.nd_val = nl != NULL;
+			cpp_yylval.node.nd_val = nl != NULL;
 			ifdef = 0;
 		} else if (nl && noex == 0) {
 			usch *och = stringbuf;
@@ -874,17 +874,17 @@ yylex(void)
 				unpstr(nl->namep);
 			stringbuf = och;
 			noex = 1;
-			return yylex();
+			return cpp_yylex();
 		} else {
-			yylval.node.nd_val = 0;
+			cpp_yylval.node.nd_val = 0;
 		}
-		yylval.node.op = NUMBER;
+		cpp_yylval.node.op = NUMBER;
 		return NUMBER;
 	case WARN:
 		noex = 0;
 		/* FALLTHROUGH */
 	case PHOLD:
-		return yylex();
+		return cpp_yylex();
 	default:
 		return ch;
 	}
@@ -1032,7 +1032,7 @@ prtline(void)
 }
 
 void
-cunput(int c)
+cpp_cunput(int c)
 {
 #ifdef PCC_DEBUG
 //	if (dflag)printf(": '%c'(%d)\n", c > 31 ? c : ' ', c);
@@ -1060,7 +1060,7 @@ cvtdig(int rad)
 {
 	unsigned long long rv = 0;
 	unsigned long long rv2 = 0;
-	usch *y = yytext;
+	usch *y = cpp_yytext;
 	int c;
 
 	c = *y++;
@@ -1070,20 +1070,20 @@ cvtdig(int rad)
 		rv = rv * rad + dig2num(c);
 		/* check overflow */
 		if (rv / rad < rv2)
-			error("constant \"%s\" is out of range", yytext);
+			error("constant \"%s\" is out of range", cpp_yytext);
 		rv2 = rv;
 		c = *y++;
 	}
 	y--;
 	while (*y == 'l' || *y == 'L')
 		y++;
-	yylval.node.op = *y == 'u' || *y == 'U' ? UNUMBER : NUMBER;
-	yylval.node.nd_uval = rv;
-	if ((rad == 8 || rad == 16) && yylval.node.nd_val < 0)
-		yylval.node.op = UNUMBER;
-	if (yylval.node.op == NUMBER && yylval.node.nd_val < 0)
+	cpp_yylval.node.op = *y == 'u' || *y == 'U' ? UNUMBER : NUMBER;
+	cpp_yylval.node.nd_uval = rv;
+	if ((rad == 8 || rad == 16) && cpp_yylval.node.nd_val < 0)
+		cpp_yylval.node.op = UNUMBER;
+	if (cpp_yylval.node.op == NUMBER && cpp_yylval.node.nd_val < 0)
 		/* too large for signed, see 6.4.4.1 */
-		error("constant \"%s\" is out of range", yytext);
+		error("constant \"%s\" is out of range", cpp_yytext);
 }
 
 static int
@@ -1137,13 +1137,13 @@ chknl(int ignore)
 	if (t != '\n') {
 		if (t) {
 			if (ignore) {
-				warning("newline expected, got \"%s\"", yytext);
+				warning("newline expected, got \"%s\"", cpp_yytext);
 				/* ignore rest of line */
 				while ((t = sloscan()) && t != '\n')
 					;
 			}
 			else
-				error("newline expected, got \"%s\"", yytext);
+				error("newline expected, got \"%s\"", cpp_yytext);
 		} else {
 			if (ignore)
 				warning("no newline at end of file");
@@ -1189,7 +1189,7 @@ ifdefstmt(void)
 		;
 	if (t != IDENT)
 		error("bad #ifdef");
-	if (lookup(yytext, FIND) == NULL)
+	if (cpp_lookup(cpp_yytext, FIND) == NULL)
 		flslvl++;
 	else
 		trulvl++;
@@ -1211,7 +1211,7 @@ ifndefstmt(void)
 		;
 	if (t != IDENT)
 		error("bad #ifndef");
-	if (lookup(yytext, FIND) != NULL)
+	if (cpp_lookup(cpp_yytext, FIND) != NULL)
 		flslvl++;
 	else
 		trulvl++;
@@ -1236,7 +1236,7 @@ endifstmt(void)
 static void
 ifstmt(void)
 {
-	if (flslvl || yyparse() == 0)
+	if (flslvl || cpp_yyparse() == 0)
 		flslvl++;
 	else
 		trulvl++;
@@ -1252,7 +1252,7 @@ elifstmt(void)
 			;
 		else if (--flslvl!=0)
 			flslvl++;
-		else if (yyparse())
+		else if (cpp_yyparse())
 			trulvl++;
 		else
 			flslvl++;
@@ -1322,7 +1322,7 @@ undefstmt(void)
 		return;
 	if (sloscan() != WSPACE || sloscan() != IDENT)
 		error("bad #undef");
-	if ((np = lookup(yytext, FIND)) != NULL)
+	if ((np = cpp_lookup(cpp_yytext, FIND)) != NULL)
 		np->value = 0;
 	chknl(0);
 }

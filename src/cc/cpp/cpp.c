@@ -127,7 +127,7 @@ usch *stringbuf = sbf;
  * expanded identifier.
  */
 
-/* args for lookup() */
+/* args for cpp_lookup() */
 #define	FIND	0
 #define	ENTER	1
 
@@ -156,7 +156,7 @@ extern int optind;
 #endif
 
 int
-main(int argc, char **argv)
+cpp_main(int argc, char **argv)
 {
 	struct initar *it;
 	struct symtab *nl;
@@ -267,13 +267,13 @@ main(int argc, char **argv)
 	argc -= optind;
 	argv += optind;
 
-	filloc = lookup((const usch *)"__FILE__", ENTER);
-	linloc = lookup((const usch *)"__LINE__", ENTER);
+	filloc = cpp_lookup((const usch *)"__FILE__", ENTER);
+	linloc = cpp_lookup((const usch *)"__LINE__", ENTER);
 	filloc->value = linloc->value = stringbuf;
 	savch(OBJCT);
 
 	/* create a complete macro for pragma */
-	pragloc = lookup((const usch *)"_Pragma", ENTER);
+	pragloc = cpp_lookup((const usch *)"_Pragma", ENTER);
 	savch(0);
 	savstr((const usch *)"_Pragma(");
 	savch(0);
@@ -289,21 +289,21 @@ main(int argc, char **argv)
 		/*
 		 * Manually move in the predefined macros.
 		 */
-		nl = lookup((const usch *)"__TIME__", ENTER);
+		nl = cpp_lookup((const usch *)"__TIME__", ENTER);
 		savch(0); savch('"');  n[19] = 0; savstr(&n[11]); savch('"');
 		savch(OBJCT);
 		nl->value = stringbuf-1;
 
-		nl = lookup((const usch *)"__DATE__", ENTER);
+		nl = cpp_lookup((const usch *)"__DATE__", ENTER);
 		savch(0); savch('"'); n[24] = n[11] = 0; savstr(&n[4]);
 		savstr(&n[20]); savch('"'); savch(OBJCT);
 		nl->value = stringbuf-1;
 
-		nl = lookup((const usch *)"__STDC__", ENTER);
+		nl = cpp_lookup((const usch *)"__STDC__", ENTER);
 		savch(0); savch('1'); savch(OBJCT);
 		nl->value = stringbuf-1;
 
-		nl = lookup((const usch *)"__STDC_VERSION__", ENTER);
+		nl = cpp_lookup((const usch *)"__STDC_VERSION__", ENTER);
 		savch(0); savstr((const usch *)"199901L"); savch(OBJCT);
 		nl->value = stringbuf-1;
 	}
@@ -409,18 +409,18 @@ line(void)
 	usch *p;
 	int c;
 
-	if ((c = yylex()) != NUMBER)
+	if ((c = cpp_yylex()) != NUMBER)
 		goto bad;
-	ifiles->lineno = (int)(yylval.node.nd_val - 1);
+	ifiles->lineno = (int)(cpp_yylval.node.nd_val - 1);
 	ifiles->escln = 0;
 
-	if ((c = yylex()) == '\n')
+	if ((c = cpp_yylex()) == '\n')
 		goto okret;
 
 	if (c != STRING)
 		goto bad;
 
-	p = yytext;
+	p = cpp_yytext;
 	if (*p++ == 'L')
 		p++;
 	c = strlen((char *)p);
@@ -437,7 +437,7 @@ line(void)
 	}
 	memcpy(lbuf, p, c);
 	ifiles->fname = lbuf;
-	if (yylex() != '\n')
+	if (cpp_yylex() != '\n')
 		goto bad;
 
 okret:	prtline();
@@ -614,9 +614,9 @@ include(void)
 		usch *sb;
 
 		/* use sloscan() to read the identifier, then expand it */
-		cunput(c);
+		cpp_cunput(c);
 		c = sloscan();
-		if ((nl = lookup(yytext, FIND)) == NULL)
+		if ((nl = cpp_lookup(cpp_yytext, FIND)) == NULL)
 			goto bad;
 
 		sb = stringbuf;
@@ -686,9 +686,9 @@ include_next(void)
 		usch *sb;
 
 		/* use sloscan() to read the identifier, then expand it */
-		cunput(c);
+		cpp_cunput(c);
 		c = sloscan();
-		if ((nl = lookup(yytext, FIND)) == NULL)
+		if ((nl = cpp_lookup(cpp_yytext, FIND)) == NULL)
 			goto bad;
 
 		sb = stringbuf;
@@ -736,7 +736,7 @@ getcmnt(void)
 {
 	int c;
 
-	savstr(yytext);
+	savstr(cpp_yytext);
 	savch(cinput()); /* Lost * */
 	for (;;) {
 		c = cinput();
@@ -746,7 +746,7 @@ getcmnt(void)
 				savstr((const usch *)"*/");
 				return;
 			}
-			cunput(c);
+			cpp_cunput(c);
 			c = '*';
 		}
 		savch(c);
@@ -787,12 +787,12 @@ isell(void)
 	int ch;
 
 	if ((ch = cinput()) != '.') {
-		cunput(ch);
+		cpp_cunput(ch);
 		return 0;
 	}
 	if ((ch = cinput()) != '.') {
-		cunput(ch);
-		cunput('.');
+		cpp_cunput(ch);
+		cpp_cunput('.');
 		return 0;
 	}
 	return 1;
@@ -816,7 +816,7 @@ define(void)
 	if (sloscan() != WSPACE || sloscan() != IDENT)
 		goto bad;
 
-	np = lookup(yytext, ENTER);
+	np = cpp_lookup(cpp_yytext, ENTER);
 	redef = np->value != NULL;
 
 	defining = readmac = 1;
@@ -837,12 +837,12 @@ define(void)
 			if (c == IDENT) {
 				/* make sure there is no arg of same name */
 				for (i = 0; i < narg; i++)
-					if (!strcmp((char *) args[i], (char *)yytext))
+					if (!strcmp((char *) args[i], (char *)cpp_yytext))
 						error("Duplicate macro "
-						  "parameter \"%s\"", yytext);
+						  "parameter \"%s\"", cpp_yytext);
 				if (narg == MAXARGS)
 					error("Too many macro args");
-				args[narg++] = xstrdup(yytext);
+				args[narg++] = xstrdup(cpp_yytext);
 				if ((c = definp()) == ',') {
 					if ((c = definp()) == ')')
 						goto bad;
@@ -895,7 +895,7 @@ loop:
 		case WSPACE:
 			/* remove spaces if it surrounds a ## directive */
 			ubuf = stringbuf;
-			savstr(yytext);
+			savstr(cpp_yytext);
 			c = sloscan();
 			if (c == '#') {
 				if ((c = sloscan()) != '#')
@@ -939,14 +939,14 @@ in2:			if (narg < 0) {
 			if (c == WSPACE)
 				c = sloscan(); /* whitespace, ignore */
 			mkstr = 1;
-			if (c == IDENT && strcmp((char *)yytext, "__VA_ARGS__") == 0)
+			if (c == IDENT && strcmp((char *)cpp_yytext, "__VA_ARGS__") == 0)
 				continue;
 
 			/* FALLTHROUGH */
 		case IDENT:
-			if (strcmp((char *)yytext, "__VA_ARGS__") == 0) {
+			if (strcmp((char *)cpp_yytext, "__VA_ARGS__") == 0) {
 				if (ellips == 0)
-					error("unwanted %s", yytext);
+					error("unwanted %s", cpp_yytext);
 #ifdef GCC_COMPAT
 				savch(wascon ? GCCARG : VARG);
 #else
@@ -962,12 +962,12 @@ in2:			if (narg < 0) {
 				goto id; /* just add it if object */
 			/* check if its an argument */
 			for (i = 0; i < narg; i++)
-				if (strcmp((char *)yytext, (char *)args[i]) == 0)
+				if (strcmp((char *)cpp_yytext, (char *)args[i]) == 0)
 					break;
 			if (i == narg) {
 #ifdef GCC_COMPAT
 				if (gccvari &&
-				    strcmp((char *)yytext, (char *)gccvari) == 0) {
+				    strcmp((char *)cpp_yytext, (char *)gccvari) == 0) {
 					savch(wascon ? GCCARG : VARG);
 					savch(WARN);
 					if (mkstr)
@@ -994,7 +994,7 @@ in2:			if (narg < 0) {
 			/* fallthrough */
 
 		default:
-id:			savstr(yytext);
+id:			savstr(cpp_yytext);
 			break;
 		}
 		c = sloscan();
@@ -1206,7 +1206,7 @@ pragoper(void)
 	if (t != STRING)
 		error("_Pragma() must have string argument");
 	savstr((const usch *)"\n#pragma ");
-	s = yytext;
+	s = cpp_yytext;
 	if (*s == 'L')
 		s++;
 	for (; *s; s++) {
@@ -1270,12 +1270,12 @@ insblock(int bnr)
 				savch(EBLOCK), savch(bptr[i] & 255),
 				    savch(bptr[i] >> 8);
 		}
-		savstr(yytext);
+		savstr(cpp_yytext);
 		if (c == '\n')
 			(void)cinput();
 	}
 	savch(0);
-	cunput(WARN);
+	cpp_cunput(WARN);
 	unpstr(bp);
 	stringbuf = bp;
 	readmac--;
@@ -1298,7 +1298,7 @@ delwarn(void)
 		} else if (c == '\n') {
 			putch(cinput());
 		} else
-			savstr(yytext);
+			savstr(cpp_yytext);
 	}
 	if (stringbuf[-1] == '/')
 		savch(PHOLD); /* avoid creating comments */
@@ -1332,9 +1332,9 @@ kfind(struct symtab *sp)
 			return 1;
 		}
 		IMP("END1");
-		cunput(WARN);
+		cpp_cunput(WARN);
 		for (cbp = sp->value-1; *cbp; cbp--)
-			cunput(*cbp);
+			cpp_cunput(*cbp);
 		insblock(addmac(sp));
 		IMP("ENDX");
 		exparg(1);
@@ -1355,7 +1355,7 @@ upp:		sbp = stringbuf;
 
 			case STRING:
 				/* Remove embedded directives */
-				for (cbp = yytext; *cbp; cbp++) {
+				for (cbp = cpp_yytext; *cbp; cbp++) {
 					if (*cbp == EBLOCK)
 						cbp+=2;
 					else if (*cbp != CONC)
@@ -1376,7 +1376,7 @@ upp:		sbp = stringbuf;
 				 * BUT: if this macro is blocked then this
 				 * should not be done.
 				 */
-				nl = lookup(yytext, FIND);
+				nl = cpp_lookup(cpp_yytext, FIND);
 				o = okexp(nl);
 				bidx = 0;
 				/* Deal with pragmas here */
@@ -1386,23 +1386,23 @@ upp:		sbp = stringbuf;
 				}
 				if (nl == NULL || !o || *nl->value == OBJCT) {
 					/* Not fun-like macro */
-					savstr(yytext);
+					savstr(cpp_yytext);
 					break;
 				}
 				c = cinput();
 				if (c == WARN) {
 					/* succeeded, push back */
-					unpstr(yytext);
+					unpstr(cpp_yytext);
 				} else {
-					savstr(yytext);
+					savstr(cpp_yytext);
 				}
-				cunput(c);
+				cpp_cunput(c);
 				break;
 
 			default:
 				if (chkf && c < 127)
 					putch(' ');
-				savstr(yytext);
+				savstr(cpp_yytext);
 				break;
 			}
 			chkf = 0;
@@ -1424,7 +1424,7 @@ upp:		sbp = stringbuf;
 	savch(0);
 	stringbuf = sbp;
 	if (c != '(') {
-		cunput(c);
+		cpp_cunput(c);
 		unpstr(sbp);
 		return 0; /* Failed */
 	}
@@ -1443,7 +1443,7 @@ upp:		sbp = stringbuf;
 
 	c = addmac(sp);
 	sbp = stringbuf;
-	cunput(WARN);
+	cpp_cunput(WARN);
 
 	IMP("KEXP");
 	subarg(sp, argary, 1);
@@ -1489,10 +1489,10 @@ submac(struct symtab *sp, int lvl)
 		DPRINT(("submac: exp object macro '%s'\n",sp->namep));
 		/* expand object-type macros */
 		ch = addmac(sp);
-		cunput(WARN);
+		cpp_cunput(WARN);
 
 		for (cp = sp->value-1; *cp; cp--)
-			cunput(*cp);
+			cpp_cunput(*cp);
 		insblock(ch);
 		delwarn();
 		return 1;
@@ -1512,7 +1512,7 @@ submac(struct symtab *sp, int lvl)
 	savch(0);
 	stringbuf = bp;
 	if (ch != '(') {
-		cunput(ch);
+		cpp_cunput(ch);
 		unpstr(bp);
 		return 0; /* Failed */
 	}
@@ -1537,7 +1537,7 @@ submac(struct symtab *sp, int lvl)
 	ch = addmac(sp);
 
 	DDPRINT(("%d:submac pre\n", lvl));
-	cunput(WARN);
+	cpp_cunput(WARN);
 
 	subarg(sp, argary, lvl+1);
 
@@ -1638,7 +1638,7 @@ readargs(struct symtab *sp, const usch **args)
 				plev++;
 			if (c == ')')
 				plev--;
-			savstr(yytext);
+			savstr(cpp_yytext);
 oho:			while ((c = sloscan()) == '\n') {
 				ifiles->lineno++;
 				putch(cinput());
@@ -1685,7 +1685,7 @@ oho:			while ((c = sloscan()) == '\n') {
 			if (c == EBLOCK) {
 				sss();
 			} else
-				savstr(yytext);
+				savstr(cpp_yytext);
 			while ((c = sloscan()) == '\n') {
 				ifiles->lineno++;
 				cinput();
@@ -1706,7 +1706,7 @@ oho:			while ((c = sloscan()) == '\n') {
 	if (c != ')' || (i != narg && ellips == 0) || (i < narg && ellips == 1))
 		error("wrong arg count");
 	while (warn)
-		cunput(WARN), warn--;
+		cpp_cunput(WARN), warn--;
 	return 0;
 }
 
@@ -1744,7 +1744,7 @@ subarg(struct symtab *nl, const usch **args, int lvl)
 	 */
 	while (*sp != 0) {
 		if (*sp == SNUFF)
-			cunput('\"'), snuff ^= 1;
+			cpp_cunput('\"'), snuff ^= 1;
 		else if (*sp == CONC)
 			;
 		else if (*sp == WARN) {
@@ -1777,7 +1777,7 @@ subarg(struct symtab *nl, const usch **args, int lvl)
 				 *  after all macros contained therein have
 				 *  been expanded.".
 				 */
-				cunput(WARN);
+				cpp_cunput(WARN);
 				unpstr(bp);
 				exparg(lvl+1);
 				delwarn();
@@ -1789,23 +1789,23 @@ subarg(struct symtab *nl, const usch **args, int lvl)
 					if (snuff && !instr && iswsnl(*bp)) {
 						while (iswsnl(*bp))
 							bp--;
-						cunput(' ');
+						cpp_cunput(' ');
 					}
 
-					cunput(*bp);
+					cpp_cunput(*bp);
 					if (snuff && (*bp == '\'' || *bp == '"')) {
 						instr ^= 1;
 						for (tp = bp - 1; *tp == '\\'; tp--)
 							instr ^= 1;
 						if (*bp == '"')
-							cunput('\\');
+							cpp_cunput('\\');
 					}
 					if (snuff && instr && *bp == '\\')
-						cunput('\\');
+						cpp_cunput('\\');
 				}
 			}
 		} else
-			cunput(*sp);
+			cpp_cunput(*sp);
 		sp--;
 	}
 	DPRINT(("%d:Return subarg\n", lvl));
@@ -1851,7 +1851,7 @@ rescan:
 			och = stringbuf;
 			gmult = 0;
 
-sav:			savstr(yytext);
+sav:			savstr(cpp_yytext);
 
 			if ((c = cinput()) == EBLOCK) {
 				/* yep, are concatenating; add blocks */
@@ -1861,12 +1861,12 @@ sav:			savstr(yytext);
 				} while ((c = sloscan()) == EBLOCK);
 				goto sav;
 			}
-			cunput(c);
+			cpp_cunput(c);
 
 			DPRINT(("%d:exparg: str '%s'\n", lvl, och));
 			IMP("EA1");
 			/* see if ident is expandable */
-			if ((nl = lookup(och, FIND)) && okexp(nl)) {
+			if ((nl = cpp_lookup(och, FIND)) && okexp(nl)) {
 				/* Save blocks */
 				int donothing;
 				unsigned short *svidx =
@@ -1886,16 +1886,16 @@ sav:			savstr(yytext);
 					int c2 = cinput();
 					if (c2 == '\"' || c2 == '\'')
 						donothing = 1;
-					cunput(c2);
+					cpp_cunput(c2);
 				}
-				cunput(c);
+				cpp_cunput(c);
 
 				if (donothing == 0)
 				    if ((spechr[c] & C_ID0) || c == EBLOCK) {
 					for (i = 0; i < svbidx; i++) {
-						cunput(svidx[i] >> 8);
-						cunput(svidx[i] & 255);
-						cunput(EBLOCK);
+						cpp_cunput(svidx[i] >> 8);
+						cpp_cunput(svidx[i] & 255);
+						cpp_cunput(EBLOCK);
 					}
 				}
 				free(svidx);
@@ -1910,7 +1910,7 @@ sav:			savstr(yytext);
 				for (i = 0; i < bidx; i++)
 					savch(EBLOCK), savch(bptr[i] & 255),
 					    savch(bptr[i] >> 8);
-				savstr(yytext);
+				savstr(cpp_yytext);
 			}
 			bidx = 0;
 			IMP("EA2");
@@ -1926,12 +1926,12 @@ sav:			savstr(yytext);
 			break;
 
 		default:
-			savstr(yytext);
+			savstr(cpp_yytext);
 			break;
 		}
 	}
 	*stringbuf = 0;
-	cunput(WARN);
+	cpp_cunput(WARN);
 	unpstr(osb);
 	DPRINT(("%d:exparg return: change %d\n", lvl, anychange));
 	IMP("EXPRET");
@@ -2016,7 +2016,7 @@ unpstr(const usch *c)
 		d++;
 	}
 	while (d > c) {
-		cunput(*--d);
+		cpp_cunput(*--d);
 	}
 }
 
@@ -2173,11 +2173,11 @@ getsymtab(const usch *str)
 }
 
 /*
- * Do symbol lookup in a patricia tree.
+ * Do symbol cpp_lookup in a patricia tree.
  * Only do full string matching, no pointer optimisations.
  */
 struct symtab *
-lookup(const usch *key, int enterf)
+cpp_lookup(const usch *key, int enterf)
 {
 	struct symtab *sp;
 	struct tree *w, *new, *last;

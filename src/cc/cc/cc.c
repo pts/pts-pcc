@@ -130,13 +130,10 @@
 #define	CPPROGNAME	"cpp"	/* cc used as cpp */
 #endif
 #ifndef PREPROCESSOR
-#define	PREPROCESSOR	"cpp"	/* "real" preprocessor name */
+#define	PREPROCESSOR	"//cpp//"	/* "real" preprocessor name */
 #endif
 #ifndef COMPILER
-#define COMPILER	"ccom"
-#endif
-#ifndef CXXCOMPILER
-#define CXXCOMPILER	"cxxcom"
+#define COMPILER	"//ccom//"
 #endif
 #ifndef ASSEMBLER
 #define ASSEMBLER	"as"
@@ -144,9 +141,6 @@
 #ifndef LINKER
 #define LINKER		"ld"
 #endif
-char	*passp = PREPROCESSOR;
-char	*pass0 = COMPILER;
-char	*passxx0 = CXXCOMPILER;
 char	*as = ASSEMBLER;
 char	*ld = LINKER;
 char	*sysroot = "", *isysroot;
@@ -266,31 +260,31 @@ static void expand_sysroot(void);
 char *win32pathsubst(char *);
 char *win32commandline(struct strlist *l);
 #endif
-int	sspflag;
-int	freestanding;
+int	pcc_sspflag;
+int	pcc_freestanding;
 int	Sflag;
 int	cflag;
-int	gflag;
+int	pcc_gflag;
 int	rflag;
 int	vflag;
-int	tflag;
-int	Eflag;
+int	pcc_tflag;
+int	pcc_Eflag;
 int	Oflag;
-int	kflag;	/* generate PIC/pic code */
+int	pcc_kflag;	/* generate PIC/pic code */
 #define F_PIC	1
 #define F_pic	2
-int	Mflag, needM, MDflag, MMDflag;	/* dependencies only */
+int	pcc_Mflag, needM, MDflag, pcc_MMDflag;	/* dependencies only */
 int	pgflag;
 int	Xflag;
 int	nostartfiles, Bstatic, shared;
 int	nostdinc, nostdlib;
 int	pthreads;
-int	xgnu89, xgnu99;
+int	pcc_xgnu89, pcc_xgnu99;
 int 	ascpp;
 #ifdef CHAR_UNSIGNED
-int	xuchar = 1;
+int	pcc_xuchar = 1;
 #else
-int	xuchar = 0;
+int	pcc_xuchar = 0;
 #endif
 int	cxxflag;
 int	cppflag;
@@ -303,12 +297,12 @@ int amd64_i386;
 #define	match(a,b)	(strcmp(a,b) == 0)
 
 /* handle gcc warning emulations */
-struct Wflags {
+struct pcc_Wflags {
 	char *name;
 	int flags;
 #define	INWALL		1
 #define	INWEXTRA	2
-} Wflags[] = {
+} pcc_Wflags[] = {
 	{ "truncate", 0 },
 	{ "strict-prototypes", INWEXTRA },
 	{ "missing-prototypes", INWEXTRA },
@@ -399,7 +393,7 @@ struct strlist compiler_flags;
 int
 main(int argc, char *argv[])
 {
-	struct Wflags *Wf;
+	struct pcc_Wflags *Wf;
 	struct string *s;
 	char *t, *u, *argp;
 	char *msuffix;
@@ -435,7 +429,7 @@ main(int argc, char *argv[])
 	if (match(t, "p++")) {
 		cxxflag = 1;
 	} else if (match(t, "cpp") || match(t, CPPROGNAME)) {
-		Eflag = cppflag = 1;
+		pcc_Eflag = cppflag = 1;
 	}
 
 #ifdef PCC_EARLY_SETUP
@@ -454,8 +448,6 @@ main(int argc, char *argv[])
 #ifdef PCCLIBDIR
 	pcclibdir = win32pathsubst(pcclibdir);
 #endif
-	passp = win32pathsubst(passp);
-	pass0 = win32pathsubst(pass0);
 #ifdef STARTFILES
 	for (i = 0; startfiles[i] != NULL; i++)
 		startfiles[i] = win32pathsubst(startfiles[i]);
@@ -545,7 +537,7 @@ main(int argc, char *argv[])
 			break;
 
 		case 'E':
-			Eflag++;
+			pcc_Eflag++;
 			break;
 
 		case 'f': /* GCC compatibility flags */
@@ -554,25 +546,25 @@ main(int argc, char *argv[])
 			if (strncmp(u, "no-", 3) == 0)
 				j = 1, u += 3;
 			if (match(u, "PIC") || match(u, "pic")) {
-				kflag = j ? 0 : *u == 'P' ? F_PIC : F_pic;
-			} else if (match(u, "freestanding")) {
-				freestanding = j ? 0 : 1;
+				pcc_kflag = j ? 0 : *u == 'P' ? F_PIC : F_pic;
+			} else if (match(u, "pcc_freestanding")) {
+				pcc_freestanding = j ? 0 : 1;
 			} else if (match(u, "signed-char")) {
-				xuchar = j ? 1 : 0;
+				pcc_xuchar = j ? 1 : 0;
 			} else if (match(u, "unsigned-char")) {
-				xuchar = j ? 0 : 1;
+				pcc_xuchar = j ? 0 : 1;
 			} else if (match(u, "stack-protector") ||
 			    match(u, "stack-protector-all")) {
-				sspflag = j ? 0 : 1;
+				pcc_sspflag = j ? 0 : 1;
 			}
 			/* silently ignore the rest */
 			break;
 
 		case 'g': /* create debug output */
 			if (argp[2] == '0')
-				gflag = 0;
+				pcc_gflag = 0;
 			else
-				gflag++;
+				pcc_gflag++;
 			break;
 
 
@@ -606,7 +598,7 @@ main(int argc, char *argv[])
 			break;
 
 		case 'k': /* generate PIC code */
-			kflag = argp[2] ? argp[2] - '0' : F_pic;
+			pcc_kflag = argp[2] ? argp[2] - '0' : F_pic;
 			break;
 
 		case 'l':
@@ -620,8 +612,9 @@ main(int argc, char *argv[])
 #ifdef mach_amd64
 			/* need to call i386 ccom for this */
 			if (strcmp(argp, "-melf_i386") == 0) {
-				pass0 = LIBEXECDIR "/ccom_i386";
-				amd64_i386 = 1;
+				errorx(99, "32-bit compilation on ams64 not supported");
+				/* pass0 = LIBEXECDIR "/ccom_i386"; */
+				/* amd64_i386 = 1; */
 				break;
 			}
 #endif
@@ -693,9 +686,9 @@ main(int argc, char *argv[])
 			} else if (strncmp(argp, "-std", 4) == 0) {
 				if (strcmp(&argp[5], "gnu99") == 0 ||
 				    strcmp(&argp[5], "gnu9x") == 0)
-					xgnu99 = 1;
+					pcc_xgnu99 = 1;
 				if (strcmp(&argp[5], "gnu89") == 0)
-					xgnu89 = 1;
+					pcc_xgnu89 = 1;
 			} else
 				oerror(argp);
 			break;
@@ -706,7 +699,7 @@ main(int argc, char *argv[])
 			break;
 
 		case 't':
-			tflag++;
+			pcc_tflag++;
 			break;
 
 		case 'o':
@@ -734,7 +727,7 @@ main(int argc, char *argv[])
 		case 'M':
 			needM = 1;
 			if (match(argp, "-M")) {
-				Mflag++;
+				pcc_Mflag++;
 				strlist_append(&depflags, argp);
 			} else if (match(argp, "-MP")) {
 				strlist_append(&depflags, "-xMP");
@@ -749,7 +742,7 @@ main(int argc, char *argv[])
 				needM = 0;
 				strlist_append(&depflags, "-M");
 			} else if (match(argp, "-MMD")) {
-				MMDflag++;
+				pcc_MMDflag++;
 				needM = 0;
 				strlist_append(&depflags, "-M");
 				strlist_append(&depflags, "-xMMD");
@@ -793,17 +786,17 @@ main(int argc, char *argv[])
 			} else if (strcmp(argp, "-Werror-implicit-function-declaration") == 0) {
 				strlist_append(&compiler_flags, argp);
 			} else if (strcmp(argp, "-Wall") == 0) {
-				for (Wf = Wflags; Wf->name; Wf++)
+				for (Wf = pcc_Wflags; Wf->name; Wf++)
 					if (Wf->flags & INWALL)
 						strlist_append(&compiler_flags,
 						    cat("-W", Wf->name));
 			} else if (strcmp(argp, "-Wextra") == 0 || strcmp(argp, "-W") == 0) {
-				for (Wf = Wflags; Wf->name; Wf++)
+				for (Wf = pcc_Wflags; Wf->name; Wf++)
 					if (Wf->flags & INWEXTRA)
 						strlist_append(&compiler_flags,
 						    cat("-W", Wf->name));
 			} else if (strcmp(argp, "-WW") == 0) {
-				for (Wf = Wflags; Wf->name; Wf++)
+				for (Wf = pcc_Wflags; Wf->name; Wf++)
 					strlist_append(&compiler_flags,
 					    cat("-W", Wf->name));
 			} else {
@@ -813,7 +806,7 @@ main(int argc, char *argv[])
 					t += 3;
 				if (strncmp(t, "error=", 6) == 0)
 					t += 6;
-				for (Wf = Wflags; Wf->name; Wf++) {
+				for (Wf = pcc_Wflags; Wf->name; Wf++) {
 					if (strcmp(t, Wf->name) == 0)
 						strlist_append(&compiler_flags,
 						    argp);
@@ -859,14 +852,14 @@ main(int argc, char *argv[])
 	}
 	if (ninput == 0 && !(printprogname || printfilename))
 		errorx(8, "no input files");
-	if (outfile && (cflag || Sflag || Eflag) && ninput > 1)
+	if (outfile && (cflag || Sflag || pcc_Eflag) && ninput > 1)
 		errorx(8, "-o given with -c || -E || -S and more than one file");
 #if 0
 	if (outfile && clist[0] && strcmp(outfile, clist[0]) == 0)
 		errorx(8, "output file will be clobbered");
 #endif
 
-	if (needM && !Mflag && !MDflag && !MMDflag)
+	if (needM && !pcc_Mflag && !MDflag && !pcc_MMDflag)
 		errorx(8, "to make dependencies needs -M");
 
 
@@ -925,21 +918,21 @@ main(int argc, char *argv[])
 		ascpp = match(suffix, "S");
 		if (ascpp || match(suffix, "c") || cxxsuf(suffix)) {
 			/* find out next output file */
-			if (Mflag || MDflag || MMDflag) {
+			if (pcc_Mflag || MDflag || pcc_MMDflag) {
 				char *Mofile = NULL;
 
 				if (MFfile)
 					Mofile = MFfile;
 				else if (outfile)
 					Mofile = setsuf(outfile, 'd');
-				else if (MDflag || MMDflag)
+				else if (MDflag || pcc_MMDflag)
 					Mofile = setsuf(ifile, 'd');
 				if (preprocess_input(ifile, Mofile, 1))
 					exandrm(Mofile);
 			}
-			if (Mflag)
+			if (pcc_Mflag)
 				continue;
-			if (Eflag) {
+			if (pcc_Eflag) {
 				/* last pass */
 				ofile = outfile;
 			} else {
@@ -948,7 +941,7 @@ main(int argc, char *argv[])
 			}
 			if (preprocess_input(ifile, ofile, 0))
 				exandrm(ofile);
-			if (Eflag)
+			if (pcc_Eflag)
 				continue;
 			ifile = ofile;
 			suffix = match(suffix, "S") ? "s" : "i";
@@ -990,13 +983,13 @@ main(int argc, char *argv[])
 			ifile = ofile;
 		}
 
-		if (ninput > 1 && !Eflag && ifile == ofile && ifile[0] != '-')
+		if (ninput > 1 && !pcc_Eflag && ifile == ofile && ifile[0] != '-')
 			printf("%s:\n", ifile);
 
 		strlist_append(&middle_linker_flags, ifile);
 	}
 
-	if (cflag || Eflag || Mflag)
+	if (cflag || pcc_Eflag || pcc_Mflag)
 		dexit(0);
 
 	/*
@@ -1114,8 +1107,8 @@ compile_input(char *input, char *output)
 	strlist_append_list(&args, &compiler_flags);
 	strlist_append(&args, input);
 	strlist_append(&args, output);
-	strlist_prepend(&args,
-	    find_file(cxxflag ? passxx0 : pass0, &progdirs, X_OK));
+	if (cxxflag) errorx(99, "C++ compilation not supported");
+	strlist_prepend(&args, COMPILER);
 	retval = strlist_exec(&args);
 	strlist_free(&args);
 	return retval;
@@ -1183,7 +1176,7 @@ preprocess_input(char *input, char *output, int dodep)
 	if (output)
 		strlist_append(&args, output);
 
-	strlist_prepend(&args, find_file(passp, &progdirs, X_OK));
+	strlist_prepend(&args, PREPROCESSOR);
 	retval = strlist_exec(&args);
 	strlist_free(&args);
 	return retval;
@@ -1313,6 +1306,10 @@ strlist_exec(struct strlist *l)
 
 #else
 
+/* TODO(pts): Add these for Win32 as well. */
+int cpp_main(int argc, char **argv);  /* C preprocesor. */
+int ccom_main(int argc, char **argv);  /* C compiler. */
+
 static int
 strlist_exec(struct strlist *l)
 {
@@ -1331,6 +1328,11 @@ strlist_exec(struct strlist *l)
 
 	switch ((child = fork())) {
 	case 0:
+		if (strcmp(argv[0], PREPROCESSOR) == 0) {
+			exit(cpp_main(argc, argv));
+		} else if (strcmp(argv[0], COMPILER) == 0) {
+			exit(ccom_main(argc, argv));
+		}
 		/* glibc, uClibc and diet libc have: int execvp(const char *file, char *const argv[]) */
 		/* OpenWatcom libc has: execvp( const char *file, const char *const argv[]); */
 		execvp(argv[0], (void*)argv);
@@ -1508,15 +1510,15 @@ struct flgcheck {
 	char *def;
 } cppflgcheck[] = {
 	{ &vflag, 1, "-v" },
-	{ &freestanding, 1, "-D__STDC_HOSTED__=0" },
-	{ &freestanding, 0, "-D__STDC_HOSTED__=1" },
+	{ &pcc_freestanding, 1, "-D__STDC_HOSTED__=0" },
+	{ &pcc_freestanding, 0, "-D__STDC_HOSTED__=1" },
 	{ &cxxflag, 1, "-D__cplusplus" },
-	{ &xuchar, 1, "-D__CHAR_UNSIGNED__" },
-	{ &sspflag, 1, "-D__SSP__" },
+	{ &pcc_xuchar, 1, "-D__CHAR_UNSIGNED__" },
+	{ &pcc_sspflag, 1, "-D__SSP__" },
 	{ &pthreads, 1, "-D_PTHREADS" },
 	{ &Oflag, 1, "-D__OPTIMIZE__" },
-	{ &tflag, 1, "-t" },
-	{ &kflag, 1, "-D__PIC__" },
+	{ &pcc_tflag, 1, "-t" },
+	{ &pcc_kflag, 1, "-D__PIC__" },
 	{ 0, 0, 0 },
 };
 
@@ -1696,7 +1698,7 @@ setup_cpp_flags(void)
 
 	for (i = 0; i < (int)sizeof(gcppflags)/(int)sizeof(char *); i++)
 		strlist_prepend(&preprocessor_flags, gcppflags[i]);
-	strlist_prepend(&preprocessor_flags, xgnu89 ?
+	strlist_prepend(&preprocessor_flags, pcc_xgnu89 ?
 	    "-D__GNUC_GNU_INLINE__" : "-D__GNUC_STDC_INLINE__");
 
 	cksetflags(cppflgcheck, &preprocessor_flags, 'p');
@@ -1730,24 +1732,24 @@ struct flgcheck ccomflgcheck[] = {
 #ifdef notyet
 	{ &Oflag, 1, "-xssa" },
 #endif
-	{ &freestanding, 1, "-ffreestanding" },
+	{ &pcc_freestanding, 1, "-ffreestanding" },
 	{ &pgflag, 1, "-p" },
-	{ &gflag, 1, "-g" },
-	{ &xgnu89, 1, "-xgnu89" },
-	{ &xgnu99, 1, "-xgnu99" },
-	{ &xuchar, 1, "-xuchar" },
+	{ &pcc_gflag, 1, "-g" },
+	{ &pcc_xgnu89, 1, "-pcc_xgnu89" },
+	{ &pcc_xgnu99, 1, "-pcc_xgnu99" },
+	{ &pcc_xuchar, 1, "-pcc_xuchar" },
 #if !defined(os_sunos) && !defined(mach_i386)
 	{ &vflag, 1, "-v" },
 #endif
 #ifdef os_darwin
 	{ &Bstatic, 0, "-k" },
 #elif defined(os_sunos) && defined(mach_i386)
-	{ &kflag, 1, "-K" },
-	{ &kflag, 1, "pic" },
+	{ &pcc_kflag, 1, "-K" },
+	{ &pcc_kflag, 1, "pic" },
 #else
-	{ &kflag, 1, "-k" },
+	{ &pcc_kflag, 1, "-k" },
 #endif
-	{ &sspflag, 1, "-fstack-protector" },
+	{ &pcc_sspflag, 1, "-fstack-protector" },
 	{ 0, 0, 0 }
 };
 
@@ -1782,7 +1784,7 @@ struct flgcheck asflgcheck[] = {
 #if !defined(USE_YASM)
 	{ &vflag, 1, "-v" },
 #endif
-	{ &kflag, 1, "-k" },
+	{ &pcc_kflag, 1, "-k" },
 #ifdef os_darwin
 	{ &one, 1, "-arch" },
 #if mach_amd64
@@ -1830,7 +1832,7 @@ struct flgcheck ldflgcheck[] = {
 	{ &Bstatic, 1, "-Bstatic" },
 #endif
 #if !defined(os_darwin) && !defined(os_sunos)
-	{ &gflag, 1, "-g" },
+	{ &pcc_gflag, 1, "-g" },
 #endif
 	{ &pthreads, 1, "-lpthread" },
 	{ 0, 0, 0 },

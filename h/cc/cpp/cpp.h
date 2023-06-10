@@ -28,7 +28,7 @@
 #include <stdio.h>	/* for debug/printf */
 
 typedef unsigned char usch;
-extern usch yytext[];
+extern usch cpp_yytext[];
 extern usch *stringbuf;
 
 extern	int	trulvl;
@@ -42,7 +42,7 @@ extern	usch	*Mfile, *MPfile;
 extern	int	ofd;
 extern	int	defining;
 
-/* args for lookup() */
+/* args for cpp_lookup() */
 #define FIND    0
 #define ENTER   1
 
@@ -83,7 +83,7 @@ extern int bidx;
 
 /* quick checks for some characters */
 #define C_SPEC	0001		/* for fastscan() parsing */
-#define C_2	0002		/* for yylex() tokenizing */
+#define C_2	0002		/* for cpp_yylex() tokenizing */
 #define C_WSNL	0004		/* ' ','\t','\r','\n' */
 #define C_ID	0010		/* [_a-zA-Z0-9] */
 #define C_ID0	0020		/* [_a-zA-Z] */
@@ -152,7 +152,7 @@ struct nd {
 #define nd_val n.val
 #define nd_uval n.uval
 
-struct symtab *lookup(const usch *namep, int enterf);
+struct symtab *cpp_lookup(const usch *namep, int enterf);
 usch *gotident(struct symtab *nl);
 int submac(struct symtab *nl, int);
 int kfind(struct symtab *nl);
@@ -168,14 +168,14 @@ void line(void);
 int pushfile(const usch *fname, const usch *fn, int idx, void *incs);
 void popfile(void);
 void prtline(void);
-int yylex(void);
+int cpp_yylex(void);
 int sloscan(void);
-void cunput(int);
+void cpp_cunput(int);
 int curline(void);
 char *curfile(void);
 void setline(int);
 void setfile(char *);
-int yyparse(void);
+int cpp_yyparse(void);
 void unpstr(const usch *);
 usch *savstr(const usch *str);
 void savch(int c);

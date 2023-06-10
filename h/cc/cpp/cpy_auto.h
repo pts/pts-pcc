@@ -99,8 +99,8 @@ union YYSTYPE
 #endif
 
 
-extern YYSTYPE yylval;
+extern YYSTYPE cpp_yylval;
 
-int yyparse (void);
+int cpp_yyparse (void);
 
 #endif /* !YY_YY_Y_TAB_H_INCLUDED  */

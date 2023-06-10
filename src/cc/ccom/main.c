@@ -132,7 +132,7 @@ extern int optind;
 
 /* control multiple files */
 int
-main(int argc, char *argv[])
+ccom_main(int argc, char *argv[])
 {
 	int ch;
 
