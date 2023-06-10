@@ -46,7 +46,7 @@ ls -ld pccbin/pcc pccbin/ccom pccbin/cpp
 # With -static: ld -o hello -v -d -Bstatic crt1.o crti.o crtbeginT.o /tmp/ctm.98t5r2 -L/usr/local/lib/pcc/i386-pc-linux-gnu/1.1.0/lib/ -L/usr/lib/ -lpcc -lc -lpcc crtendT.o crtn.o
 #pcc -v -static -o hello demo_c_hello_noinc.c
 # The original $PATH is needed for as(1) called by pcc(1).
-PATH="$PWD/pccbin.mini:$PATH" pcc -v -c -o examples/hello.o examples/demo_c_hello_noinc.c
+PATH="$PWD/pccbin.mini:$PATH" pcc -W -Wall -WW -Werror -v -c -o examples/hello.o examples/demo_c_hello_noinc.c
 $I386_CCLD -s -o examples/hello examples/hello.o
 examples/hello
 test "$(examples/hello)" = "Hello, World!"
@@ -54,7 +54,7 @@ test "$(examples/hello)" = "Hello, World!"
 if test -f examples/mininasm_noh.c && test -f examples/mininasm.c; then
   # !! examples/mininasm.c:2559: warning: declaration of 'message' shadows a global declaration
   # !! examples/mininasm.c:3726: warning: statement not reached
-  PATH=pccbin pcc -O2 -S -W -Wall -Wmissing-prototypes -Wshadow -Wsign-compare -Wno-unused-parameter -o examples/mininasm.tmp.s examples/mininasm_noh.c
+  PATH=pccbin pcc -O2 -S -W -Wall -Wmissing-prototypes -Wshadow -Wsign-compare -Wno-unused-parameter -Werror-implicit-function-declaration -Werror -o examples/mininasm.tmp.s examples/mininasm_noh.c
   $I386_CCLD -s -o examples/mininasm examples/mininasm.tmp.s
   examples/mininasm -O9 -f bin -o examples/minnnasm.com -l examples/minnnasm.lst examples/minnnasm.na
   cmp examples/minnnasm.com.good examples/minnnasm.com

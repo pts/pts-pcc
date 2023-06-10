@@ -251,6 +251,9 @@ Wflags(char *str)
 	struct Warning *w;
 	int isset, iserr;
 
+	/* For compatibility with GCC 4.1. */
+	if (strcmp(str, "error-implicit-function-declaration") == 0) { isset = 1; goto found_err; }
+
 	/* handle -Werror specially */
 	if (strcmp("error", str) == 0) {
 		for (w = Warnings; w->flag; w++)
@@ -268,9 +271,12 @@ Wflags(char *str)
 
 	iserr = 0;
 	if (strncmp("error=", str, 6) == 0) {
+	      found_err:
 		str += 6;
 		iserr = 1;
 	}
+	/* Temporary fix until -Wimplicit-function-declaration is implemented. */
+	if (strcmp(str, "implicit-function-declaration") == 0) str = "missing-prototypes";
 
 	for (w = Warnings; w->flag; w++) {
 		if (strcmp(w->flag, str) != 0)
