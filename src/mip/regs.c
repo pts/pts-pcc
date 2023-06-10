@@ -36,6 +36,8 @@
 #endif
 #include <stdlib.h>
 
+extern int ffs(int x);  /* Pacify GCC -Wimplicit-function-declaration. */
+
 #define	MAXLOOP	20 /* Max number of allocation loops XXX 3 should be enough */
 
 #ifndef MAX

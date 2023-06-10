@@ -67,7 +67,7 @@ segvcatch(int a)
 
 	snprintf(buf, sizeof buf, "%sinternal compiler error: %s, line %d\n",
 	    nerrors ? "" : "major ", ftitle, lineno);
-	(void)write(STDERR_FILENO, buf, strlen(buf));
+	(void)!write(STDERR_FILENO, buf, strlen(buf));
 	_exit(1);
 }
 

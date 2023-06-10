@@ -410,6 +410,8 @@ ejobcode(int flag)
 void
 bjobcode(void)
 {
+	int fcw;
+	(void)fcw;
 #ifdef os_sunos
 	astypnames[SHORT] = astypnames[USHORT] = "\t.2byte";
 #endif
@@ -418,14 +420,18 @@ bjobcode(void)
 	DLIST_INIT(&stublist, link);
 	DLIST_INIT(&nlplist, link);
 #endif
-#if defined(__GNUC__) || defined(__PCC__)
 	/* Be sure that the compiler uses full x87 */
 	/* XXX cross-compiling will fail here */
-	int fcw;
+#if defined(__GNUC__) || defined(__TINYC__)  /* Better describe the data flow for GCC, prevent uninitialized variable warning. */
+	__asm("fstcw %0" : "=m" (fcw));
+	fcw |= 0x300;
+	__asm("fldcw %0" : : "m" (fcw));
+#elif defined(__PCC__)
 	__asm("fstcw (%0)" : : "r"(&fcw));
 	fcw |= 0x300;
 	__asm("fldcw (%0)" : : "r"(&fcw));
 #endif
+
 }
 
 /*

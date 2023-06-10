@@ -52,6 +52,9 @@
 #include "cpp.h"
 #include "cpy_auto.h"
 
+extern size_t strlcat(char *dst, const char *src, size_t siz);  /* Pacify GCC -Wmissing-prototypes. */
+extern size_t strlcpy(char *dst, const char *src, size_t siz);  /* Pacify GCC -Wmissing-prototypes. */
+
 static void cvtdig(int);
 static int dig2num(int);
 static int charcon(usch *);

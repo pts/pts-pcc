@@ -66,6 +66,8 @@
 #include <strings.h>
 #endif
 
+extern int ffs(int x);  /* Pacify GCC -Wimplicit-function-declaration. */
+
 void setclass(int tmp, int class);
 int getclass(int tmp);
 

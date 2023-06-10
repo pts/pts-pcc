@@ -69,6 +69,9 @@
 #include <stdarg.h>
 #include <stdlib.h>
 
+extern size_t strlcat(char *dst, const char *src, size_t siz);  /* Pacify GCC -Wmissing-prototypes. */
+extern size_t strlcpy(char *dst, const char *src, size_t siz);  /* Pacify GCC -Wmissing-prototypes. */
+
 /*	some storage declarations */
 int nrecur;
 int thisline;

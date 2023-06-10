@@ -3258,6 +3258,8 @@ cxop(int op, NODE *l, NODE *r)
 	if (op != UMINUS) {
 		real_r = structref(ccopy(rtemp), STREF, real);
 		imag_r = structref(rtemp, STREF, imag);
+	} else {
+		real_r = imag_r = 0;  /* Pacify GCC -Wmaybe-uninitialized. Actually this adds bloat, because it won't be used uninitialized below. */
 	}
 
 	/* get storage on stack for the result */

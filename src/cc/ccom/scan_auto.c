@@ -1,5 +1,5 @@
 
-#line 3 "lex.yy.c"
+#line 3 "scan_auto.c"
 
 #define  YY_INT_ALIGNED short int
 
@@ -777,7 +777,7 @@ extern int yyget_lineno (void);
 extern void yyset_lineno (int);
 #endif
 
-#line 781 "lex.yy.c"
+#line 781 "scan_auto.c"
 
 #define INITIAL 0
 
@@ -970,7 +970,7 @@ YY_DECL
 #line 86 "./scan.l"
 
 
-#line 974 "lex.yy.c"
+#line 974 "scan_auto.c"
 
 	if ( !(yy_init) )
 		{
@@ -1625,7 +1625,7 @@ YY_RULE_SETUP
 #line 237 "./scan.l"
 ECHO;
 	YY_BREAK
-#line 1629 "lex.yy.c"
+#line 1629 "scan_auto.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2523,9 +2523,9 @@ int yyget_debug  (void)
         return yy_flex_debug;
 }
 
-void yyset_debug (int  bdebug )
+void yyset_debug (int  bdebug_arg )
 {
-        yy_flex_debug = bdebug ;
+        yy_flex_debug = bdebug_arg ;  /* By calling it bdebug_arg, we pacify GCC -Wshadow. */
 }
 
 static int yy_init_globals (void)

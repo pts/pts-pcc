@@ -27,6 +27,9 @@
 
 #include "pass1.h"
 
+extern size_t strlcat(char *dst, const char *src, size_t siz);  /* Pacify GCC -Wmissing-prototypes. */
+extern size_t strlcpy(char *dst, const char *src, size_t siz);  /* Pacify GCC -Wmissing-prototypes. */
+
 /*	this file contains code which is dependent on the target machine */
 
 #ifdef notyet
