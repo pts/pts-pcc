@@ -717,8 +717,7 @@ builtin_nanx(const struct bitable *bt, NODE *a)
 	} else if (a->n_op == STRING && *a->n_name == '\0') {
 		a->n_op = FCON;
 		a->n_type = bt->rt;
-		if (sizeof(nLDOUBLE) < sizeof(a->n_dcon))
-			cerror("nLDOUBLE too small");
+		(void)(sizeof(nLDOUBLE) < sizeof(a->n_dcon) ? (cerror("nLDOUBLE too small"), 0) : 0);  /* Using `?:' instead of `if' to pacify __WATCOMC__ warning W021 (unreachable code). */
 		memcpy(&a->n_dcon, nLDOUBLE, sizeof(a->n_dcon));
 	} else
 		a = binhelp(eve(a), bt->rt, &bt->name[10]);

@@ -1410,10 +1410,22 @@ expand_sysroot(void)
 	struct string *s;
 	struct strlist *lists[] = { &crtdirs, &sysincdirs, &incdirs,
 	    &user_sysincdirs, &libdirs, &progdirs, &dirafterdirs, NULL };
-	const char *sysroots[] = { sysroot, isysroot, isysroot, isysroot,
-	    sysroot, sysroot, isysroot, NULL };
 	size_t i, sysroot_len, value_len;
 	char *path;
+#if 0  /* __WATCOMC__ doesn't allow this, because the initializer isn't a constant. */
+	const char *sysroots[] = { sysroot, isysroot, isysroot, isysroot,
+	    sysroot, sysroot, isysroot, NULL };
+#else
+	const char *sysroots[8];
+	sysroots[0] = sysroot;
+	sysroots[1] = isysroot;
+	sysroots[2] = isysroot;
+	sysroots[3] = isysroot;
+	sysroots[4] = sysroot;
+	sysroots[5] = sysroot;
+	sysroots[6] = isysroot;
+	sysroots[7] = NULL;
+#endif
 
 	assert(sizeof(lists) / sizeof(lists[0]) ==
 	       sizeof(sysroots) / sizeof(sysroots[0]));

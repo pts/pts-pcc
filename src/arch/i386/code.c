@@ -127,13 +127,14 @@ efcode(void)
 {
 	extern int gotnr;
 	NODE *p, *q;
+	int sz;
 
 	gotnr = 0;	/* new number for next fun */
 	if (cftnsp->stype != STRTY+FTN && cftnsp->stype != UNIONTY+FTN)
 		return;
 
 	/* struct return for small structs */
-	int sz = tsize(BTYPE(cftnsp->stype), cftnsp->sdf, cftnsp->sap);
+	sz = tsize(BTYPE(cftnsp->stype), cftnsp->sdf, cftnsp->sap);
 #if defined(os_openbsd)
 	if (sz == SZCHAR || sz == SZSHORT || sz == SZINT || sz == SZLONGLONG) {
 #else
@@ -410,8 +411,9 @@ ejobcode(int flag)
 void
 bjobcode(void)
 {
+#if defined(__GNUC__) || defined(__TINYC__) || defined(__PCC__)
 	int fcw;
-	(void)fcw;
+#endif
 #ifdef os_sunos
 	astypnames[SHORT] = astypnames[USHORT] = "\t.2byte";
 #endif
@@ -430,8 +432,15 @@ bjobcode(void)
 	__asm("fstcw (%0)" : : "r"(&fcw));
 	fcw |= 0x300;
 	__asm("fldcw (%0)" : : "r"(&fcw));
+#elif defined(__WATCOMC__)
+	__asm {
+		push eax
+		fstcw [esp]
+		or byte ptr [esp+1], 3
+		fldcw [esp]
+		add esp, 4
+	}
 #endif
-
 }
 
 /*

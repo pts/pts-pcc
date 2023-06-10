@@ -686,12 +686,6 @@ gcc_modefix(NODE *p)
 		p->n_ap = attr_add(p->n_ap, a2);
 		break;
 #endif
-	case 1 ... MAXTYPES:
-		MODTYPE(p->n_type, ctype(i));
-		if (u)
-			p->n_type = ENUNSIGN(p->n_type);
-		break;
-
 	case FCOMPLEX:
 	case COMPLEX:
 	case LCOMPLEX:
@@ -713,7 +707,11 @@ gcc_modefix(NODE *p)
 		break;
 
 	default:
-		cerror("gcc_modefix");
+		if (i - 1U > MAXTYPES - 1U)
+			cerror("gcc_modefix");
+		MODTYPE(p->n_type, ctype(i));
+		if (u)
+			p->n_type = ENUNSIGN(p->n_type);
 	}
 }
 

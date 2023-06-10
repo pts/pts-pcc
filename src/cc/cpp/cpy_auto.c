@@ -79,8 +79,12 @@ int setd(int l, int r);
 	if (d.op == NUMBER) d.nd_val = l.nd_val tok r.nd_val;	\
 	else d.nd_uval = l.nd_uval tok r.nd_uval;		\
 	if (t && d.op) d.op = NUMBER
+#define	EVALUBINT0(tok, d, l, r)				\
+	d.op = setd(l.op, r.op);				\
+	if (d.op == NUMBER) d.nd_val = l.nd_val tok r.nd_val;	\
+	else d.nd_uval = l.nd_uval tok r.nd_uval;
 #define	XEVALUBIN(tok, d, l, r)					\
-	if (r.nd_val) { EVALUBIN(tok, d, l, r, 0); } else d.op = 0
+	if (r.nd_val) { EVALUBINT0(tok, d, l, r); } else d.op = 0
 
 #line 86 "y.tab.c" /* yacc.c:339  */
 
@@ -1342,7 +1346,7 @@ yyreduce:
 
   case 3:
 #line 120 "./cpy.y" /* yacc.c:1646  */
-    { EVALUBIN(*, (yyval.node), (yyvsp[-2].node), (yyvsp[0].node), 0); }
+    { EVALUBINT0(*, (yyval.node), (yyvsp[-2].node), (yyvsp[0].node)); }
 #line 1347 "y.tab.c" /* yacc.c:1646  */
     break;
 
@@ -1378,7 +1382,7 @@ yyreduce:
 
   case 9:
 #line 132 "./cpy.y" /* yacc.c:1646  */
-    { EVALUBIN(>>, (yyval.node), (yyvsp[-2].node), (yyvsp[0].node), 0); }
+    { EVALUBINT0(>>, (yyval.node), (yyvsp[-2].node), (yyvsp[0].node)); }
 #line 1383 "y.tab.c" /* yacc.c:1646  */
     break;
 

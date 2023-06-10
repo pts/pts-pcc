@@ -2643,7 +2643,7 @@ char *ftitle = "<stdin>";
 int
 yywrap(void)
 {
-	if (0) unput(0); /* quiet gcc */
+	(void)(0 ? (unput(0), 0) : 0); /* quiet gcc */
 	return(1);
 }
 

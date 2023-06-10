@@ -73,7 +73,7 @@
 
 int nerrors = 0;  /* number of errors */
 extern char *ftitle;
-int lineno;
+extern int lineno;
 
 int warniserr = 0;
 
