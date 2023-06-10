@@ -47,6 +47,13 @@ typedef uint16_t flex_uint16_t;
 typedef int32_t flex_int32_t;
 typedef uint32_t flex_uint32_t;
 #else
+#include "config_auto.h"  /* For HAVE_STDINT_H. */
+#ifndef __STDC_LIMIT_MACROS
+#define __STDC_LIMIT_MACROS 1
+#endif
+#ifdef HAVE_STDINT_H
+#include <stdint.h>  /* To prevent redefinition of INT8_MIN etc. below. Unfortunately it's not possible to contribute this back to scan.l, this is too early in this file. */
+#endif
 typedef signed char flex_int8_t;
 typedef short int flex_int16_t;
 typedef int flex_int32_t;
