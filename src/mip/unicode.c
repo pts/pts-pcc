@@ -41,17 +41,17 @@
 unsigned int 
 u82cp(char **q)
 {
-	unsigned char *t = (unsigned char *)*q;
+	char *t = *q;
 	unsigned int c, r;
 	int i, sz;
 
 	if (*t == '\\')
-		c = esccon((char **)&t);
+		c = esccon(&t);
 	else
-		c = *t++;
+		c = *(unsigned char*)t++;
 
 	/* always eat the first value */
-	*q = (char *)t;
+	*q = t;
 
 	if (c > 0x7F) {
 		if ((c & 0xE0) == 0xC0) {
@@ -76,9 +76,9 @@ u82cp(char **q)
 
 		for (i = 1; i < sz; i++) {
 			if (*t == '\\')
-				c = esccon((char **)&t);
+				c = esccon(&t);
 			else
-				c = *t++;
+				c = *(unsigned char*)t++;
 
 			if ((c & 0xC0) == 0x80) {
 				r = (r << 6) + (c & 0x3F);
@@ -88,7 +88,7 @@ u82cp(char **q)
 			}
 		}
 
-		*q = (char *)t;
+		*q = t;
 	} else {
 		r = c;
 	}
