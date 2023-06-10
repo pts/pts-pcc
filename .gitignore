@@ -1,5 +1,16 @@
 *~
+/examples/*.o
+/examples/*.tmp.s
 /examples/hello
-/examples/hello.o
 /pccbin.mini
 /pccbin
+/examples/bbprintf.c
+/examples/bbprintf.h
+/examples/mininasm
+/examples/mininasm.c
+/examples/mininasm_noh.c
+/examples/minnnasm.com
+/examples/minnnasm.com.good
+/examples/minnnasm.lst
+/examples/minnnasm.lst.good
+/examples/minnnasm.na

@@ -51,4 +51,14 @@ $I386_CCLD -s -o examples/hello examples/hello.o
 examples/hello
 test "$(examples/hello)" = "Hello, World!"
 
+if test -f examples/mininasm_noh.c; then
+  # !! examples/mininasm.c:2559: warning: declaration of 'message' shadows a global declaration
+  # !! examples/mininasm.c:3726: warning: statement not reached
+  PATH=pccbin pcc -O2 -S -Wall -WW -Wno-truncate -o examples/mininasm.tmp.s examples/mininasm_noh.c
+  $I386_CCLD -s -o examples/mininasm examples/mininasm.tmp.s
+  examples/mininasm -O9 -f bin -o examples/minnnasm.com -l examples/minnnasm.lst examples/minnnasm.na
+  cmp examples/minnnasm.com.good examples/minnnasm.com
+  diff examples/minnnasm.lst.good examples/minnnasm.lst
+fi
+
 : "$0" OK.
