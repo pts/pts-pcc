@@ -307,19 +307,20 @@ struct Wflags {
 	char *name;
 	int flags;
 #define	INWALL		1
+#define	INWEXTRA	2
 } Wflags[] = {
 	{ "truncate", 0 },
-	{ "strict-prototypes", 0 },
-	{ "missing-prototypes", 0 },
+	{ "strict-prototypes", INWEXTRA },
+	{ "missing-prototypes", INWEXTRA },
 	{ "implicit-int", INWALL },
 	{ "implicit-function-declaration", INWALL },
 	{ "shadow", 0 },
 	{ "pointer-sign", INWALL },
-	{ "sign-compare", 0 },
+	{ "sign-compare", INWEXTRA },
 	{ "unknown-pragmas", INWALL },
-	{ "unreachable-code", 0 },
-	{ "deprecated-declarations", 0 },
-	{ "attributes", 0 },
+	{ "unreachable-code", INWEXTRA },
+	{ "deprecated-declarations", INWEXTRA },
+	{ "attributes", INWEXTRA },
 	{ NULL, 0 },
 };
 
@@ -792,6 +793,11 @@ main(int argc, char *argv[])
 			} else if (strcmp(argp, "-Wall") == 0) {
 				for (Wf = Wflags; Wf->name; Wf++)
 					if (Wf->flags & INWALL)
+						strlist_append(&compiler_flags,
+						    cat("-W", Wf->name));
+			} else if (strcmp(argp, "-Wextra") == 0 || strcmp(argp, "-W") == 0) {
+				for (Wf = Wflags; Wf->name; Wf++)
+					if (Wf->flags & INWEXTRA)
 						strlist_append(&compiler_flags,
 						    cat("-W", Wf->name));
 			} else if (strcmp(argp, "-WW") == 0) {
