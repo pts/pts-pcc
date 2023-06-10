@@ -221,7 +221,7 @@ struct Warning Warnings[] = {
 	}, {
 		"attributes", 1, 0,
 		"unsupported attribute `%s'"
-	}, {	NULL	}
+	}, {	NULL, 0, 0, NULL }
 };
 
 /*

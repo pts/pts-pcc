@@ -1785,7 +1785,7 @@ struct flgcheck asflgcheck[] = {
 void
 setup_as_flags(void)
 {
-	one = one;
+	one = one + 0;  /* Mark it as used. */
 #ifdef PCC_SETUP_AS_ARGS
 	PCC_SETUP_AS_ARGS
 #endif

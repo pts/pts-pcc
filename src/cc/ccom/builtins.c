@@ -658,11 +658,15 @@ static const unsigned char vLDOUBLE[] = { 0,0,0,0,0,0,0, 0, 0, 0, 0, 0, 0, 0x80,
 #else /* LDBL_80 */
 static const unsigned char vLDOUBLE[] = { 0, 0, 0, 0, 0, 0, 0, 0x80, 0xff, 0x7f,0,0,0,0,0,0 };
 #endif
-static const unsigned char nFLOAT[] = { 0, 0, 0xc0, 0x7f };
-static const unsigned char nDOUBLE[] = { 0, 0, 0, 0, 0, 0, 0xf8, 0x7f };
+#define sizeof__nFLOAT 4
+/*static const unsigned char nFLOAT[] = { 0, 0, 0xc0, 0x7f };*/
+#define sizeof__nDOUBLE 8
+/*static const unsigned char nDOUBLE[] = { 0, 0, 0, 0, 0, 0, 0xf8, 0x7f };*/
 #ifdef LDBL_128
-static const unsigned char nLDOUBLE[] = { 0,0,0,0,0,0,0,0, 0, 0, 0, 0, 0, 0xc0, 0xff, 0x7f };
+#define sizeof__nLDOUBLE 16
+/*static const unsigned char nLDOUBLE[] = { 0,0,0,0,0,0,0,0, 0, 0, 0, 0, 0, 0xc0, 0xff, 0x7f };*/
 #else /* LDBL_80 */
+#define sizeof__nLDOUBLE 16  /* Ditto, it's indeed also 16 bytes. */
 static const unsigned char nLDOUBLE[] = { 0, 0, 0, 0, 0, 0, 0, 0xc0, 0xff, 0x7f,0,0,0,0,0,0 };
 #endif
 #else
@@ -686,7 +690,7 @@ static const unsigned char nLDOUBLE[] = { 0x7f, 0xff, 0xc0, 0, 0, 0, 0, 0, 0, 0,
 	typ d;							\
 	int x;							\
 	NODE *f;						\
-	x = MIN(sizeof(n ## TYP), sizeof(d));			\
+	x = MIN(sizeof__n ## TYP, sizeof(d));			\
 	memcpy(&d, v ## TYP, x);				\
 	f = block(FCON, NIL, NIL, TYP, NULL, 0);	\
 	f->n_dcon = d;						\
