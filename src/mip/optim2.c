@@ -1561,8 +1561,9 @@ printip2(struct interpass *ip)
 	switch (ip->type) {
 	case IP_NODE: printf("\n");
 #ifdef PCC_DEBUG
-	fwalk(ip->ip_node, e2print, 0); break;
+		fwalk(ip->ip_node, e2print, 0);
 #endif
+		break;
 	case IP_PROLOG:
 		ipplg = (struct interpass_prolog *)ip;
 		printf("%s %s regs",
