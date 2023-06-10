@@ -466,6 +466,7 @@ runtime:
 
 		case NAME:
 			cerror("buildtree NAME");
+			/* fallthrough */
 
 		case STREF:
 			/* p->x turned into *(p+offset) */
@@ -2333,6 +2334,7 @@ rmcops(NODE *p)
 		break;
 	case COMOP:
 		cerror("COMOP error");
+		/* fallthrough */
 
 	default:
 		if (ty == LTYPE)

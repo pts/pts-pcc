@@ -984,6 +984,7 @@ in2:			if (narg < 0) {
 
 		case 0:
 			prem();
+			/* fallthrough */
 
 		default:
 id:			savstr(yytext);

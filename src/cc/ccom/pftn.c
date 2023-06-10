@@ -343,6 +343,7 @@ defid2(NODE *q, int class, char *astr)
 	case MOU:
 	case MOS:
 		cerror("field6");
+		/* fallthrough */
 
 	case EXTDEF:
 		switch (scl) {
@@ -1191,6 +1192,7 @@ tsize(TWORD ty, union dimfun *d, struct attr *apl)
 
 		case FTN:
 			uerror( "cannot take size of function");
+			/* fallthrough */
 		case PTR:
 			return( SZPOINT(ty) * mult );
 		case ARY:
@@ -2701,8 +2703,10 @@ fixclass(int class, TWORD type)
 		switch( class ) {
 		default:
 			uerror( "function has illegal storage class" );
+			/* fallthrough */
 		case AUTO:
 			class = EXTERN;
+			break;
 		case EXTERN:
 		case EXTDEF:
 		case TYPEDEF:
@@ -2721,6 +2725,7 @@ fixclass(int class, TWORD type)
 	case MOS:
 	case MOU:
 		cerror("field4");
+		/* fallthrough */
 
 	case REGISTER:
 		if (blevel == 0)

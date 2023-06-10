@@ -365,6 +365,7 @@ tcopy(NODE *p)
 	switch (optype(q->n_op)) {
 	case BITYPE:
 		q->n_right = tcopy(p->n_right);
+		/* fallthrough */
 	case UTYPE:
 		q->n_left = tcopy(p->n_left);
 	}

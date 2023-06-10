@@ -602,8 +602,8 @@ again:	switch (o = p->n_op) {
 #ifdef FINDMOPS
 		if ((rv = findmops(p, cookie)) != FFAIL)
 			break;
-		/* FALLTHROUGH */
 #endif
+		/* fallthrough */
 	case STASG:
 		rv = findasg(p, cookie);
 		break;
