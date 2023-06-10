@@ -52,7 +52,7 @@ offstar(NODE *p, int shape)
 	NODE *r;
 
 	if (x2debug)
-		printf("offstar(%p)\n", p);
+		printf("offstar(%p)\n", (void*)p);
 
 	if (isreg(p))
 		return; /* Is already OREG */
@@ -86,7 +86,7 @@ myormake(NODE *q)
 	NODE *p, *r;
 
 	if (x2debug)
-		printf("myormake(%p)\n", q);
+		printf("myormake(%p)\n", (void*)q);
 
 	p = q->n_left;
 	if (p->n_op == PLUS && (r = p->n_right)->n_op == LS &&
@@ -107,7 +107,7 @@ shumul(NODE *p, int shape)
 {
 
 	if (x2debug)
-		printf("shumul(%p)\n", p);
+		printf("shumul(%p)\n", (void*)p);
 
 	/* Turns currently anything into OREG on x86 */
 	if (shape & SOREG)
@@ -124,7 +124,7 @@ setbin(NODE *p)
 {
 
 	if (x2debug)
-		printf("setbin(%p)\n", p);
+		printf("setbin(%p)\n", (void*)p);
 	return 0;
 
 }
@@ -134,7 +134,7 @@ int
 setasg(NODE *p, int cookie)
 {
 	if (x2debug)
-		printf("setasg(%p)\n", p);
+		printf("setasg(%p)\n", (void*)p);
 	return(0);
 }
 

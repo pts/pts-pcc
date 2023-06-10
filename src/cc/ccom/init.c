@@ -620,7 +620,7 @@ nsetval(CONSZ off, int fsz, NODE *p)
 	struct ilist *il;
 
 	if (idebug>1)
-		printf("setval: off " CONFMT " fsz %d p %p\n", off, fsz, p);
+		printf("setval: off " CONFMT " fsz %d p %p\n", off, fsz, (void*)p);
 
 	if (fsz == 0)
 		return;

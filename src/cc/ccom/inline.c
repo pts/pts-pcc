@@ -104,7 +104,7 @@ tcnt(NODE *p, void *arg)
 	if (p->n_op == NAME || p->n_op == ICON)
 		p->n_sp = NULL; /* let symtabs be freed for inline funcs */
 	if (ndebug)
-		printf("locking node %p\n", p);
+		printf("locking node %p\n", (void*)p);
 }
 
 static struct istat *
@@ -346,9 +346,9 @@ printip(struct interpass *pole)
 
 	DLIST_FOREACH(ip, pole, qelem) {
 		if (ip->type > MAXIP)
-			printf("IP(%d) (%p): ", ip->type, ip);
+			printf("IP(%d) (%p): ", ip->type, (void*)ip);
 		else
-			printf("%s (%p): ", foo[ip->type], ip);
+			printf("%s (%p): ", foo[ip->type], (void*)ip);
 		switch (ip->type) {
 		case IP_NODE: printf("\n");
 #ifdef PCC_DEBUG

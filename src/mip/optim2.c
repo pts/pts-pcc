@@ -714,7 +714,7 @@ bblocks_build(struct p2env *p2e)
 	int count = 0;
 	int i;
 
-	BDEBUG(("bblocks_build (%p, %p)\n", &p2e->labinfo, &p2e->bbinfo));
+	BDEBUG(("bblocks_build (%p, %p)\n", (void*)&p2e->labinfo, (void*)&p2e->bbinfo));
 	low = p2e->ipp->ip_lblnum;
 	high = p2e->epp->ip_lblnum;
 
@@ -760,8 +760,8 @@ bblocks_build(struct p2env *p2e)
 		printf("Basic blocks in func: %d, low %d, high %d\n",
 		    count, low, high);
 		DLIST_FOREACH(bb, &p2e->bblocks, bbelem) {
-			printf("bb(%d) %p: first %p last %p\n", bb->bbnum, bb,
-			    bb->first, bb->last);
+			printf("bb(%d) %p: first %p last %p\n", bb->bbnum, (void*)bb,
+			    (void*)bb->first, (void*)bb->last);
 		}
 	}
 
@@ -798,7 +798,7 @@ bblocks_build(struct p2env *p2e)
 		for (i = 0; i < p2e->labinfo.size; i++)
 			if (p2e->labinfo.arr[i])
 				printf("Label %d bblock %p\n", i+low,
-				    p2e->labinfo.arr[i]);
+				    (void*)p2e->labinfo.arr[i]);
 	}
 }
 
@@ -1197,7 +1197,7 @@ placePhiFunctions(struct p2env *p2e)
 				if (phifound==0) {
 					if (b2debug)
 					    printf("Phi in %d(%d) (%p) for %d\n",
-					    y->dfnum,y->bbnum,y,i+defsites.low);
+					    y->dfnum,y->bbnum,(void*)y,i+defsites.low);
 
 					/* If no live in, no phi node needed */
 					if (!TESTBIT(y->in,
@@ -1388,7 +1388,7 @@ removephi(struct p2env *p2e)
 				
 				complex = pred_unknown ;
 				
-				BDEBUG(("removephi: %p in %d",pip,bb->dfnum));
+				BDEBUG(("removephi: %p in %d",(void*)pip,bb->dfnum));
 
 				if (pip->type == IP_NODE && pip->ip_node->n_op == GOTO) {
 					BDEBUG((" GOTO "));
@@ -1422,7 +1422,7 @@ removephi(struct p2env *p2e)
 							     mktemp(phi->newtmpregno, n_type),
 							     mktemp(phi->intmpregno[i],n_type),
 							     n_type));
-							BDEBUG(("(%p, %d -> %d) ", ip, phi->intmpregno[i], phi->newtmpregno));
+							BDEBUG(("(%p, %d -> %d) ", (void*)ip, phi->intmpregno[i], phi->newtmpregno));
 				
 							DLIST_INSERT_BEFORE((bbparent->last), ip, qelem);
 						}
@@ -1446,7 +1446,7 @@ removephi(struct p2env *p2e)
 							     mktemp(phi->intmpregno[i],n_type),
 							     n_type));
 
-							BDEBUG(("(%p, %d -> %d) ", ip, phi->intmpregno[i], phi->newtmpregno));
+							BDEBUG(("(%p, %d -> %d) ", (void*)ip, phi->intmpregno[i], phi->newtmpregno));
 							DLIST_INSERT_BEFORE((bb->first), ip, qelem);
 						}
 					}
@@ -1484,7 +1484,7 @@ removephi(struct p2env *p2e)
 								mktemp(phi->intmpregno[i],n_type),
 								n_type));
 
-							BDEBUG(("(%p, %d -> %d) ", ip, phi->intmpregno[i], phi->newtmpregno));
+							BDEBUG(("(%p, %d -> %d) ", (void*)ip, phi->intmpregno[i], phi->newtmpregno));
 							DLIST_INSERT_AFTER((bbparent->last), ip, qelem);
 						}
 					}
@@ -1555,9 +1555,9 @@ printip2(struct interpass *ip)
 	int *l;
 
 	if (ip->type > MAXIP)
-		printf("IP(%d) (%p): ", ip->type, ip);
+		printf("IP(%d) (%p): ", ip->type, (void*)ip);
 	else
-		printf("%s (%p): ", foo[ip->type], ip);
+		printf("%s (%p): ", foo[ip->type], (void*)ip);
 	switch (ip->type) {
 	case IP_NODE: printf("\n");
 #ifdef PCC_DEBUG
