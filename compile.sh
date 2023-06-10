@@ -25,7 +25,7 @@ I386_CCLD="${I386_CCLD:-gcc -m32}"
 CFLAGS='-DPCC_DEBUG'
 
 test -d pccbin || mkdir pccbin
-$CC -DLIBEXECDIR=\"/usr/local/libexec/\" -DGCC_COMPAT $CFLAGS -DINCLUDEDIR=\"/usr/local/h/\" -DPCCINCDIR=\"/usr/local/lib/pcc/i386-pc-linux-gnu/1.1.0/h/\" -DPCCLIBDIR=\"/usr/local/lib/pcc/i386-pc-linux-gnu/1.1.0/lib/\" -Dos_linux -Dmach_i386 -DTARGOSVER=0 -DCPPROGNAME=\"pcpp\" \
+$CC -DLIBEXECDIR=\"/dev/null/libexec/\" -DGCC_COMPAT $CFLAGS -DINCLUDEDIR=\"/dev/null/h/\" -DPCCINCDIR=\"/dev/null/hh/\" -DPCCLIBDIR=\"/dev/null/lib/\" -Dos_linux -Dmach_i386 -DTARGOSVER=0 -DCPPROGNAME=\"pcpp\" \
     -Ih/cc/driver -Ih/top -Ih/os/linux -Ih/mip -Ih/arch/i386 \
     src/cc/cc/cc.c src/mip/compat.c src/cc/driver/strlist.c src/cc/driver/xalloc.c src/bsd/strlcpy.c src/bsd/strlcat.c \
     -o pccbin/pcc
