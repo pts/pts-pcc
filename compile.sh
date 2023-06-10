@@ -3,12 +3,12 @@
 # compile.sh: build script for PCC 1.1.0 on Linux, targeting Linux i386
 # by pts@fazekas.hu at Sat Jun 10 12:46:04 CEST 2023
 #
-# Compile with: ./compile.sh gcc   -s -Os -W -Wall -Wmissing-prototypes -Wshadow -Wsign-compare -Wno-unused-parameter -Werror-implicit-function-declaration
-# Compile with: ./compile.sh clang -s -Os -W -Wall -Wmissing-prototypes -Wshadow -Wsign-compare -Wno-unused-parameter -Werror-implicit-function-declaration
-# Compile with: ./compile.sh owcc -blinux -march=i386 -s -O2 -I"$WATCOM"/lh -fsigned-char -fno-stack-protector -W -Wextra -Wno-n303
-# Compile with: ./compile.sh minicc --gcc --diet -Wno-unused-parameter
-# Compile with: ./compile.sh minicc --wcc --diet -Wno-unused-parameter
-# Compile with: ./compile.sh minicc --tcc --diet -Wno-unused-parameter
+# Compile with: ./compile.sh gcc   -s -Os -W -Wall -Wmissing-prototypes -Wshadow -Wsign-compare -Wno-unused-parameter -Werror-implicit-function-declaration -std=c99 -pedantic -Wno-format -Wno-format-pedantic
+# Compile with: ./compile.sh clang -s -Os -W -Wall -Wmissing-prototypes -Wshadow -Wsign-compare -Wno-unused-parameter -Werror-implicit-function-declaration -std=c99 -pedantic -Wno-format -Wno-format-pedantic
+# Compile with: ./compile.sh owcc -blinux -march=i386 -s -O2 -I"$WATCOM"/lh -fsigned-char -fno-stack-protector -W -Wextra -Wno-n303 -std=c99
+# Compile with: ./compile.sh minicc --gcc --diet -Wno-unused-parameter -std=c99 -pedantic -Wno-format -Wno-format-pedantic
+# Compile with: ./compile.sh minicc --wcc --diet -Wno-unused-parameter -std=c99 -pedantic -Wno-format -Wno-format-pedantic
+# Compile with: ./compile.sh minicc --tcc --diet -Wno-unused-parameter -std=c99 -pedantic -Wno-format -Wno-format-pedantic
 #
 
 set -ex

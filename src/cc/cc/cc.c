@@ -1349,6 +1349,10 @@ strlist_exec(struct strlist *l)
 
 #endif
 
+#ifdef __STRICT_ANSI__  /* For __GNUC__. */
+extern int snprintf(char *str, size_t size, const char *format, ...);
+#endif
+
 /*
  * Catenate two (optional) strings together
  */
@@ -1392,6 +1396,10 @@ gettmp(void)
 }
 
 #else
+
+#ifdef __STRICT_ANSI__  /* For __GNUC__. */
+extern int mkstemp(char *template_);
+#endif
 
 char *
 gettmp(void)

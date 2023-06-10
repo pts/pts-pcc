@@ -34,6 +34,7 @@
 #include "config_auto.h"
 
 #include <sys/stat.h>
+#include <sys/types.h>
 
 #include <fcntl.h>
 #ifdef HAVE_UNISTD_H
@@ -147,6 +148,12 @@ static void usage(void);
 static usch *xstrdup(const usch *str);
 static void addidir(char *idir, struct incs **ww);
 static void vsheap(const char *, va_list);
+
+#ifdef __STRICT_ANSI__
+extern int getopt(int argc, char *const argv[], const char *optstring);
+extern char *optarg;
+extern int optind;
+#endif
 
 int
 main(int argc, char **argv)
@@ -2274,11 +2281,12 @@ lookup(const usch *key, int enterf)
 static usch *
 xstrdup(const usch *str)
 {
-	usch *rv;
+	const size_t size = strlen((const char *)str) + 1;
+	char *buf;
 
-	if ((rv = (usch *)strdup((const char *)str)) == NULL)
+	if ((buf = malloc(size)) == NULL)
 		error("xstrdup: out of mem");
-	return rv;
+	return (usch*)memcpy(buf, str, size);
 }
 
 void

@@ -75,9 +75,10 @@ xrealloc(void *buf, size_t len)
 char *
 xstrdup(const char *str)
 {
+	const size_t size = strlen(str) + 1;
 	char *buf;
 
-	if ((buf = strdup(str)) == NULL)
+	if ((buf = malloc(size)) == NULL)
 		error("strdup failed");
-	return buf;
+	return memcpy(buf, str, size);
 }

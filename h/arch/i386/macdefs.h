@@ -103,9 +103,15 @@
 /*
  * Use large-enough types.
  */
+#if (defined(__GNUC__) || defined(__TINYC__)) && defined(__STRICT_ANSI__)
+__extension__ typedef long long CONSZ;
+__extension__ typedef unsigned long long U_CONSZ;
+__extension__ typedef long long OFFSZ;
+#else
 typedef	long long CONSZ;
 typedef	unsigned long long U_CONSZ;
 typedef long long OFFSZ;
+#endif
 
 #define CONFMT	"%lld"		/* format for printing constants */
 #if defined(ELFABI)

@@ -2188,6 +2188,10 @@ static void yy_load_buffer_state  (void)
 #ifndef __cplusplus
 extern int isatty (int );
 #endif /* __cplusplus */
+
+#ifdef __STRICT_ANSI__
+extern int fileno(FILE *stream);
+#endif
     
 /* Initializes or reinitializes a buffer.
  * This function is sometimes called more than once on the same buffer,

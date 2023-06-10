@@ -124,6 +124,12 @@ fflags(char *str)
 	}
 }
 
+#ifdef __STRICT_ANSI__
+extern int getopt(int argc, char *const argv[], const char *optstring);
+extern char *optarg;
+extern int optind;
+#endif
+
 /* control multiple files */
 int
 main(int argc, char *argv[])
