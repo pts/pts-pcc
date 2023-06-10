@@ -855,6 +855,7 @@ findumul(NODE *p, int cookie)
 	int i, shl = 0, shr = 0, sh;
 	int *ixp;
 
+	(void)shr;  /* Mark it as used even without PCC_DEBUG. */
 	F2DEBUG(("findumul p %p (%s)\n", p, prcook(cookie)));
 	F2WALK(p);
 
@@ -1030,8 +1031,9 @@ finduni(NODE *p, int cookie)
 
 	if (num == 4) {
 		F2DEBUG(("finduni failed\n"));
-	} else
+	} else {
 		F2DEBUG(("finduni entry %d(%s)\n", idx, srtyp[num]));
+	}
 
 	if (num == 4) {
 		if (setuni(p, cookie))

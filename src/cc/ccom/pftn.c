@@ -153,7 +153,10 @@ defid2(NODE *q, int class, char *astr)
 	struct attr *ap;
 	struct symtab *p;
 	TWORD type, qual;
-	TWORD stp, stq;
+	TWORD stp;
+#ifdef PCC_DEBUG
+	TWORD stq;
+#endif
 	int scl;
 	union dimfun *dsym, *ddef;
 	int slev, temp, changed;
@@ -188,7 +191,9 @@ defid2(NODE *q, int class, char *astr)
 	class = fixclass(class, type);
 
 	stp = p->stype;
+#ifdef PCC_DEBUG
 	stq = p->squal;
+#endif
 	slev = p->slevel;
 
 #ifdef PCC_DEBUG
