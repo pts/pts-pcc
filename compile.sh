@@ -3,6 +3,7 @@
 # compile.sh: build script for PCC 1.1.0 on Linux, targeting Linux i386
 # by pts@fazekas.hu at Sat Jun 10 12:46:04 CEST 2023
 #
+# It compiles cleanly (without warnings) with GCC 4.1 .. 4.9, GCC 7.5.0, Clang 6.0.0 and OpenWatcom 2023-03-04.
 # It works with GCC -std=c99 and -std=gnu99, but it doesn't work with -ansi (== -std=c89) or -std=gnu89, mostly because `long long'.
 # Compile with: ./compile.sh gcc   -s -Os -W -Wall -Wmissing-prototypes -Wshadow -Wsign-compare -Wno-unused-parameter -Werror-implicit-function-declaration -std=c99 -pedantic
 # Compile with: ./compile.sh clang -s -Os -W -Wall -Wmissing-prototypes -Wshadow -Wsign-compare -Wno-unused-parameter -Werror-implicit-function-declaration -std=c99 -pedantic
