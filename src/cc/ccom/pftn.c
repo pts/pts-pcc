@@ -2107,6 +2107,7 @@ tyreduce(NODE *p, struct tylnk **tylkp, int *ntdim)
 		if (p->n_right->n_op != ICON) {
 			r = p->n_right;
 			o = RB;
+			goto set_dfun_null;  /* Pacify GCC 4.5 warning about dim.ddim not being initialized. */
 		} else {
 			dim.ddim = (int)p->n_right->n_lval;
 			nfree(p->n_right);
@@ -2117,6 +2118,9 @@ tyreduce(NODE *p, struct tylnk **tylkp, int *ntdim)
 #endif
 		}
 		break;
+	default:
+	set_dfun_null:
+		dim.dfun = NULL;  /* Pacify GCC 4.5 warning about dim.ddim not being initialized. */
 	}
 
 	p->n_left->n_type = t;
@@ -3259,8 +3263,10 @@ cxop(int op, NODE *l, NODE *r)
 		r = buildtree(ASSIGN, ccopy(rtemp), r);
 
 		p = comop(l, r);
-	} else
+	} else {
 		p = l;
+		rtemp = 0;  /* Pacify GCC 4.5 warning about rtemp not being initialized. It is only used if `op != UMINUS', and then it is initialized elsewhere. */
+	}
 
 	/* create the four trees needed for calculation */
 	real_l = structref(ccopy(ltemp), STREF, real);
