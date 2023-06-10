@@ -15,7 +15,6 @@ I386_CCLD="${I386_CCLD:-$CC -m32}"
 test -d pccbin || mkdir pccbin
 $CC -s -Os -Wall -Wmissing-prototypes -Wshadow -Wsign-compare -DLIBEXECDIR=\"/usr/local/libexec/\" -DGCC_COMPAT -DPCC_DEBUG -DINCLUDEDIR=\"/usr/local/h/\" -DPCCINCDIR=\"/usr/local/lib/pcc/i386-pc-linux-gnu/1.1.0/h/\" -DPCCLIBDIR=\"/usr/local/lib/pcc/i386-pc-linux-gnu/1.1.0/lib/\" -Dos_linux -Dmach_i386 -DTARGOSVER=0 -DCPPROGNAME=\"pcpp\" \
     -Ih/cc/driver -Ih/top -Ih/os/linux -Ih/mip -Ih/arch/i386 \
-    -DPCC_EARLY_AS_ARGS='strlist_append(&args, "--32");' \
     src/cc/cc/cc.c src/mip/compat.c src/cc/driver/strlist.c src/cc/driver/xalloc.c src/bsd/strlcpy.c src/bsd/strlcat.c \
     -o pccbin/pcc
 $CC -s -Os -Wall -Wmissing-prototypes -Wshadow -Wsign-compare -DGCC_COMPAT -DPCC_DEBUG -D_ISOC99_SOURCE -Dos_linux -Dmach_i386 \

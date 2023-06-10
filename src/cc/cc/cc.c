@@ -1123,6 +1123,7 @@ assemble_input(char *input, char *output)
 #ifdef PCC_EARLY_AS_ARGS
 	PCC_EARLY_AS_ARGS
 #endif
+	strlist_append(&args, "--32");
 	strlist_append_list(&args, &assembler_flags);
 	strlist_append(&args, input);
 	strlist_append(&args, "-o");
