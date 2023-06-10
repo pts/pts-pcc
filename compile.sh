@@ -52,8 +52,6 @@ examples/hello
 test "$(examples/hello)" = "Hello, World!"
 
 if test -f examples/mininasm_noh.c && test -f examples/mininasm.c; then
-  # !! examples/mininasm.c:2559: warning: declaration of 'message' shadows a global declaration
-  # !! examples/mininasm.c:3726: warning: statement not reached
   PATH=pccbin pcc -O2 -S -W -Wall -Wmissing-prototypes -Wshadow -Wsign-compare -Wno-unused-parameter -Werror-implicit-function-declaration -Werror -o examples/mininasm.tmp.s examples/mininasm_noh.c
   $I386_CCLD -s -o examples/mininasm examples/mininasm.tmp.s
   examples/mininasm -O9 -f bin -o examples/minnnasm.com -l examples/minnnasm.lst examples/minnnasm.na
