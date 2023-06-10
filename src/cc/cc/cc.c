@@ -1323,7 +1323,9 @@ strlist_exec(struct strlist *l)
 
 	switch ((child = fork())) {
 	case 0:
-		execvp(argv[0], argv);
+		/* glibc, uClibc and diet libc have: int execvp(const char *file, char *const argv[]) */
+		/* OpenWatcom libc has: execvp( const char *file, const char *const argv[]); */
+		execvp(argv[0], (void*)argv);
 		result = write(STDERR_FILENO, "Exec of ", 8);
 		result = write(STDERR_FILENO, argv[0], strlen(argv[0]));
 		result = write(STDERR_FILENO, " failed\n", 7);

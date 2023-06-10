@@ -8,21 +8,21 @@ set -ex
 
 # !! There is also libpcc with divdi3 in a separate download: http://pcc.ludd.ltu.se/ftp/pub/pcc-releases/pcc-libs-1.1.0.tgz
 
-CC=gcc
+CC='gcc -s -Os -Wall -Wmissing-prototypes -Wshadow -Wsign-compare'
 test $# = 0 || CC="$*"
-I386_CCLD="${I386_CCLD:-$CC -m32}"
+I386_CCLD="${I386_CCLD:-gcc -m32}"
 
 test -d pccbin || mkdir pccbin
-$CC -s -Os -Wall -Wmissing-prototypes -Wshadow -Wsign-compare -DLIBEXECDIR=\"/usr/local/libexec/\" -DGCC_COMPAT -DPCC_DEBUG -DINCLUDEDIR=\"/usr/local/h/\" -DPCCINCDIR=\"/usr/local/lib/pcc/i386-pc-linux-gnu/1.1.0/h/\" -DPCCLIBDIR=\"/usr/local/lib/pcc/i386-pc-linux-gnu/1.1.0/lib/\" -Dos_linux -Dmach_i386 -DTARGOSVER=0 -DCPPROGNAME=\"pcpp\" \
+$CC -DLIBEXECDIR=\"/usr/local/libexec/\" -DGCC_COMPAT -DPCC_DEBUG -DINCLUDEDIR=\"/usr/local/h/\" -DPCCINCDIR=\"/usr/local/lib/pcc/i386-pc-linux-gnu/1.1.0/h/\" -DPCCLIBDIR=\"/usr/local/lib/pcc/i386-pc-linux-gnu/1.1.0/lib/\" -Dos_linux -Dmach_i386 -DTARGOSVER=0 -DCPPROGNAME=\"pcpp\" \
     -Ih/cc/driver -Ih/top -Ih/os/linux -Ih/mip -Ih/arch/i386 \
     src/cc/cc/cc.c src/mip/compat.c src/cc/driver/strlist.c src/cc/driver/xalloc.c src/bsd/strlcpy.c src/bsd/strlcat.c \
     -o pccbin/pcc
-$CC -s -Os -Wall -Wmissing-prototypes -Wshadow -Wsign-compare -DGCC_COMPAT -DPCC_DEBUG -D_ISOC99_SOURCE -Dos_linux -Dmach_i386 \
+$CC -DGCC_COMPAT -DPCC_DEBUG -D_ISOC99_SOURCE -Dos_linux -Dmach_i386 \
    -Ih/cc/ccom -Ih/top -Ih/mip -Ih/arch/i386 -Ih/os/linux \
     src/cc/ccom/builtins.c src/cc/ccom/cgram_auto.c src/arch/i386/code.c src/mip/common.c src/mip/compat.c src/cc/ccom/external_auto.c src/cc/ccom/gcc_compat.c src/cc/ccom/init.c src/cc/ccom/inline.c src/arch/i386/local.c src/arch/i386/local2.c src/cc/ccom/main.c \
     src/mip/match.c src/cc/ccom/optim.c src/mip/optim2.c src/arch/i386/order.c src/cc/ccom/pftn.c src/mip/reader.c src/mip/regs.c src/cc/ccom/scan_auto.c src/cc/ccom/stabs.c src/cc/ccom/symtabs.c src/arch/i386/table.c src/cc/ccom/trees.c src/mip/unicode.c src/bsd/strlcpy.c src/bsd/strlcat.c \
     -o pccbin/ccom
-$CC -s -Os -Wall -Wmissing-prototypes -Wshadow -Wsign-compare -DGCC_COMPAT -DPCC_DEBUG -D_ISOC99_SOURCE -Dos_linux -Dmach_i386 \
+$CC -DGCC_COMPAT -DPCC_DEBUG -D_ISOC99_SOURCE -Dos_linux -Dmach_i386 \
     -Ih/cc/cpp -Ih/top -Ih/mip -Ih/arch/i386 \
     src/mip/compat.c src/cc/cpp/cpp.c src/cc/cpp/cpy_auto.c src/cc/cpp/token.c src/bsd/strlcpy.c src/bsd/strlcat.c \
     -o pccbin/cpp
