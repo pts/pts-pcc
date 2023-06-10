@@ -47,7 +47,7 @@ ls -ld pccbin/pcc pccbin/ccom pccbin/cpp
 # With -static: ld -o hello -v -d -Bstatic crt1.o crti.o crtbeginT.o /tmp/ctm.98t5r2 -L/usr/local/lib/pcc/i386-pc-linux-gnu/1.1.0/lib/ -L/usr/lib/ -lpcc -lc -lpcc crtendT.o crtn.o
 #pcc -v -static -o hello demo_c_hello_noinc.c
 # The original $PATH is needed for as(1) called by pcc(1).
-PATH="$PWD/pccbin.mini:$PATH" pcc -W -Wall -WW -Werror -v -c -o examples/hello.o examples/demo_c_hello_noinc.c
+PATH="$PWD/pccbin:$PATH" pcc -W -Wall -WW -Werror -v -c -o examples/hello.o examples/demo_c_hello_noinc.c
 $I386_CCLD -s -o examples/hello examples/hello.o
 examples/hello
 test "$(examples/hello)" = "Hello, World!"
