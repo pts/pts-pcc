@@ -131,6 +131,8 @@ extern int optind;
 #endif
 
 /* control multiple files */
+int ccom_main(int argc, char *argv[]);
+
 int
 ccom_main(int argc, char *argv[])
 {

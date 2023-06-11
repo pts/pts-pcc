@@ -155,6 +155,8 @@ extern char *optarg;
 extern int optind;
 #endif
 
+int cpp_main(int argc, char **argv);
+
 int
 cpp_main(int argc, char **argv)
 {
