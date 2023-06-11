@@ -683,7 +683,7 @@ main(int argc, char *argv[])
 			} else if (match(argp, "-symbolic")) {
 				strlist_append(&middle_linker_flags,
 				    "-Bsymbolic");
-			} else if (strncmp(argp, "-std", 4) == 0) {
+			} else if (strncmp(argp, "-std=", 5) == 0) {
 				if (strcmp(&argp[5], "gnu99") == 0 ||
 				    strcmp(&argp[5], "gnu9x") == 0)
 					pcc_xgnu99 = 1;
