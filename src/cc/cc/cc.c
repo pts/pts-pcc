@@ -1735,9 +1735,9 @@ struct flgcheck ccomflgcheck[] = {
 	{ &pcc_freestanding, 1, "-ffreestanding" },
 	{ &pgflag, 1, "-p" },
 	{ &pcc_gflag, 1, "-g" },
-	{ &pcc_xgnu89, 1, "-pcc_xgnu89" },
-	{ &pcc_xgnu99, 1, "-pcc_xgnu99" },
-	{ &pcc_xuchar, 1, "-pcc_xuchar" },
+	{ &pcc_xgnu89, 1, "-xgnu89" },
+	{ &pcc_xgnu99, 1, "-xgnu99" },
+	{ &pcc_xuchar, 1, "-xuchar" },
 #if !defined(os_sunos) && !defined(mach_i386)
 	{ &vflag, 1, "-v" },
 #endif
