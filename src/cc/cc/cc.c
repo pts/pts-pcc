@@ -675,6 +675,13 @@ main(int argc, char *argv[])
 				strlist_append(&inputs, nxtopt(0));
 			break;
 
+		case 'a':
+			if (match(argp, "-ansi")) {
+				/* NOTHING YET */;
+			} else {
+				oerror(argp);
+			}
+			break;
 		case 's':
 			if (match(argp, "-shared")) {
 				shared = 1;
