@@ -22,7 +22,7 @@ set -ex
 
 # !! There is also libpcc with divdi3 in a separate download: http://pcc.ludd.ltu.se/ftp/pub/pcc-releases/pcc-libs-1.1.0.tgz
 
-CC='gcc -s -Os -W -Wall -Wmissing-prototypes -Wshadow -Wsign-compare'
+CC='gcc -s -Os -W -Wall -Wmissing-prototypes -Wshadow -Wsign-compare -Wno-unused-parameter'
 test $# = 0 || CC="$*"
 I386_CCLD="${I386_CCLD:-gcc -m32}"
 #CFLAGS=''  # -DPCC_DEBUG
