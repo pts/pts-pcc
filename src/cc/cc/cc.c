@@ -81,17 +81,26 @@
 #include "config_auto.h"
 
 #include <sys/types.h>
-#ifdef HAVE_SYS_WAIT_H
-#include <sys/wait.h>
+#ifdef __MINILIBC686__
+#else
+#  ifdef HAVE_SYS_WAIT_H
+#    include <sys/wait.h>
+#  endif
 #endif
 
 #include <ctype.h>
 #include <errno.h>
 #include <fcntl.h>
-#ifdef HAVE_LIBGEN_H
-#include <libgen.h>
+#ifdef __MINILIBC686__
+#else
+#  ifdef HAVE_LIBGEN_H
+#    include <libgen.h>
+#  endif
 #endif
-#include <signal.h>
+#ifdef __MINILIBC686__
+#else
+#  include <signal.h>
+#endif
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -99,7 +108,6 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#include <assert.h>
 
 #ifdef os_win32
 #include <windows.h>
@@ -1444,6 +1452,11 @@ expand_sysroot(void)
 	    sysroot, sysroot, isysroot, NULL };
 #else
 	const char *sysroots[8];
+#endif
+	char assert_sysroots_size[sizeof(lists) / sizeof(lists[0]) == sizeof(sysroots) / sizeof(sysroots[0]) ? 1 : -1];
+	(void)assert_sysroots_size;
+#if 0
+#else
 	sysroots[0] = sysroot;
 	sysroots[1] = isysroot;
 	sysroots[2] = isysroot;
@@ -1453,9 +1466,6 @@ expand_sysroot(void)
 	sysroots[6] = isysroot;
 	sysroots[7] = NULL;
 #endif
-
-	assert(sizeof(lists) / sizeof(lists[0]) ==
-	       sizeof(sysroots) / sizeof(sysroots[0]));
 
 	for (i = 0; lists[i] != NULL; ++i) {
 		STRLIST_FOREACH(s, lists[i]) {
