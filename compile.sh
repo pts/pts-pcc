@@ -7,20 +7,23 @@
 # than with `--wcc' or `--tcc' or GCC 7.5.0 or Clang 6.0.0.
 #
 # It compiles cleanly (without warnings) with GCC 4.1 .. 4.9, GCC 7.5.0, Clang 6.0.0 and OpenWatcom 2023-03-04.
-# It works with GCC -std=c99 and -std=gnu99, but it doesn't work with -ansi (== -std=c89) or -std=gnu89, mostly because `long long'.
+# It works with GCC -std=c99 and -std=gnu99, but it doesn't work with `-ansi (== -std=c89) -pedantic' or `-std=gnu89 -pedantic', mostly because `long long'.
 # Compile with: ./compile.sh gcc   -s -Os -W -Wall -Wmissing-prototypes -Wshadow -Wsign-compare -Wno-unused-parameter -Werror-implicit-function-declaration -std=c99 -pedantic
 # Compile with: ./compile.sh clang -s -Os -W -Wall -Wmissing-prototypes -Wshadow -Wsign-compare -Wno-unused-parameter -Werror-implicit-function-declaration -std=c99 -pedantic
-# Compile with: ./compile.sh owcc -blinux -march=i386 -s -O2 -I"$WATCOM"/lh -fsigned-char -fno-stack-protector -W -Wextra -Wno-n303 -std=c99 -fo=.obj && -f *.obj
+# Compile with: ./compile.sh owcc -blinux -march=i386 -s -O2 -I"$WATCOM"/lh -fsigned-char -fno-stack-protector -W -Wextra -Wno-n303 -std=c99 -fo=.obj && -f *.obj  # But silently breaks for `long long'.
 # Compile with: ./compile.sh minicc --gcc --diet -Wno-unused-parameter -std=c99 -pedantic
-# Compile with: ./compile.sh minicc --wcc --diet -Wno-unused-parameter -std=c99 -pedantic
+# Compile with: ./compile.sh minicc --wcc --diet -Wno-unused-parameter -std=c99 -pedantic  # But silently breaks for `long long'.
 # Compile with: ./compile.sh minicc --tcc --diet -Wno-unused-parameter -std=c99 -pedantic
+# Compile with: ./compile.sh minicc --pcc --diet -Wno-unused-parameter -std=c99 -pedantic
 #
-# !! TODO(pts): Disable more debug printfs, even those which are currently unaffected by PCC_DEBUG. Look for %p.
+# !! TODO(pts): Disable more debug printfs (but not assertions), even those which are currently unaffected by PCC_DEBUG. Look for %p.
+# !! TODO(pts): This segfaults (only EGLIBC + old GCC): ./compile.sh ../minilibc686/pathbin/minicc --eglibc --gcc=4.5 -ansi -Wno-unused-parameter
+#               It is caused by `tools/elfxfix -p', without `minicc -g0'.
+# !! TODO(pts): There is also libpcc with divdi3 in a separate download: http://pcc.ludd.ltu.se/ftp/pub/pcc-releases/pcc-libs-1.1.0.tgz
 #
 
 set -ex
 
-# !! There is also libpcc with divdi3 in a separate download: http://pcc.ludd.ltu.se/ftp/pub/pcc-releases/pcc-libs-1.1.0.tgz
 
 CC='gcc -s -Os -W -Wall -Wmissing-prototypes -Wshadow -Wsign-compare -Wno-unused-parameter'
 test $# = 0 || CC="$*"
@@ -29,7 +32,7 @@ I386_CCLD="${I386_CCLD:-gcc -m32}"
 CFLAGS='-DPCC_DEBUG'
 
 test -d pccbin || mkdir pccbin
-$CC -DGCC_COMPAT $CFLAGS -D_ISOC99_SOURCE -Dos_linux -Dmach_i386 \
+$CC -DGCC_COMPAT $CFLAGS -Dos_linux -Dmach_i386 \
     -DLIBEXECDIR=\"/dev/null/libexec/\" -DINCLUDEDIR=\"/dev/null/h/\" -DPCCINCDIR=\"/dev/null/hh/\" -DPCCLIBDIR=\"/dev/null/lib/\" -DTARGOSVER=0 -DCPPROGNAME=\"pcpp\" \
     -Ih/cc/driver -Ih/cc/ccom -Ih/cc/cpp -Ih/top -Ih/mip -Ih/arch/i386 -Ih/os/linux \
      src/cc/cc/cc.c src/mip/compat.c src/cc/driver/strlist.c src/cc/driver/xalloc.c \

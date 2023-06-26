@@ -16,10 +16,21 @@
 /* First, we deal with  platform-specific or compiler-specific issues. */
 
 /* begin standard C headers. */
-#include <stdio.h>
+#ifdef __MINILIBC686__
+#  include <stdio.h>
+  int ferror(FILE *stream);
+  void clearerr(FILE *stream);
+#else
+#  include <stdio.h>
+#endif
 #include <string.h>
 #include <errno.h>
 #include <stdlib.h>
+
+#ifdef __STRICT_ANSI__  /* For __GNUC__. */
+extern int snprintf(char *str, size_t size, const char *format, ...);
+long double strtold(const char *nptr, char **endptr);
+#endif
 
 /* end standard C headers. */
 

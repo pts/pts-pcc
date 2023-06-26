@@ -80,8 +80,40 @@
  */
 #include "config_auto.h"
 
+#define _SVID_SOURCE 1  /* For mkstemp(3). */
+#define _DEFAULT_SOURCE 1  /* For mkstemp(3). */
+
 #include <sys/types.h>
-#ifdef __MINILIBC686__
+#  ifdef __MINILIBC686__
+#  define WNOHANG 0x00000001
+#  define WUNTRACED 0x00000002
+#  define WSTOPPED WUNTRACED
+#  define WEXITED 0x00000004
+#  define WCONTINUED 0x00000008
+#  define WNOWAIT 0x01000000
+#  define __WNOTHREAD 0x20000000
+#  define __WALL 0x40000000
+#  define __WCLONE 0x80000000
+#  define __WEXITSTATUS(status) (((status) & 0xff00) >> 8)
+#  define WEXITSTATUS __WEXITSTATUS
+#  define __WTERMSIG(status) ((status) & 0x7f)
+#  define WTERMSIG __WTERMSIG
+#  define __WSTOPSIG(status) __WEXITSTATUS(status)
+#  define WSTOPSIG __WSTOPSIG
+#  define WIFEXITED(status) (__WTERMSIG(status) == 0)
+#  define WIFSIGNALED(status) (!WIFSTOPPED(status) && !WIFEXITED(status))
+#  define WIFSTOPPED(status) (((status) & 0xff) == 0x7f)
+#  define WCOREDUMP(status) ((status) & 0x80)
+#  define W_STOPCODE(sig) ((sig) << 8 | 0x7f)
+  typedef int id_t;  /* <sys/types.h> */
+  struct rusage;
+  struct siginfo;  /* TODO(pts): typedef struct siginfo { ... } siginfo_t. */
+  pid_t wait(int *status);
+  pid_t waitpid(pid_t pid, int *status, int options);
+  pid_t wait3(int *status, int options, struct rusage *rusage);  /* TODO(pts): Not a syscall, implement it in libc. */
+  pid_t wait4(pid_t pid, int *status, int options, struct rusage *rusage);
+  typedef enum { P_ALL, P_PID, P_PGID } idtype_t;
+  int waitid(idtype_t idtype, id_t id, struct siginfo *infop, int options);
 #else
 #  ifdef HAVE_SYS_WAIT_H
 #    include <sys/wait.h>
@@ -98,16 +130,39 @@
 #  endif
 #endif
 #ifdef __MINILIBC686__
+#  define SIGINT 2
+#  define SIGTERM 15
+#  define SIG_DFL ((sighandler_t)0L)
+#  define SIG_IGN ((sighandler_t)1L)
+#  define SIG_ERR ((sighandler_t)-1L)
+  typedef int sig_atomic_t;
+  typedef void (*sighandler_t)(int);
+  sighandler_t signal(int signum, sighandler_t handler);  /* !! TODO(pts): Does the reset behavior matter? */
 #else
 #  include <signal.h>
 #endif
 #include <stdarg.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
+#ifdef __MINILIBC686__
+#  include <stdlib.h>
+  int mkstemp(char *template);
+#else
+#  include <stdlib.h>
 #endif
+#ifdef __MINILIBC686__
+#  include <string.h>
+  char *strerror(int errnum);
+#else
+#  include <string.h>
+#endif
+#ifdef __MINILIBC686__
+#  include <unistd.h>
+  int execvp(const char *file, char *const argv[]);
+#else
+#endif
+#  ifdef HAVE_UNISTD_H
+#    include <unistd.h>
+#  endif
 
 #ifdef os_win32
 #include <windows.h>
@@ -1421,10 +1476,6 @@ gettmp(void)
 }
 
 #else
-
-#ifdef __STRICT_ANSI__  /* For __GNUC__. */
-extern int mkstemp(char *template_);
-#endif
 
 char *
 gettmp(void)

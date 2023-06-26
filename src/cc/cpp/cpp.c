@@ -44,7 +44,12 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
+#ifdef __MINILIBC686__
+#  include <time.h>
+  char *ctime(const time_t *timep);
+#else
+#  include <time.h>
+#endif
 
 #include "compat.h"
 #include "cpp.h"
@@ -85,6 +90,12 @@ struct initar *initar;
 int readmac;
 int defining;
 int warnings;
+
+#ifdef __MINILIBC686__
+#  define stat stat64
+  typedef unsigned long long dev_t;
+  typedef unsigned long long ino_t;
+#endif
 
 /* include dirs */
 struct incs {

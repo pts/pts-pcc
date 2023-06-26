@@ -27,6 +27,10 @@
 
 #include "pass1.h"
 
+#ifdef __STRICT_ANSI__  /* For __GNUC__. */
+extern int snprintf(char *str, size_t size, const char *format, ...);
+#endif
+
 extern size_t strlcat(char *dst, const char *src, size_t siz);  /* Pacify GCC -Wmissing-prototypes. */
 extern size_t strlcpy(char *dst, const char *src, size_t siz);  /* Pacify GCC -Wmissing-prototypes. */
 

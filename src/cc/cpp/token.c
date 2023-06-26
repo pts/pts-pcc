@@ -153,7 +153,7 @@ inpbuf(void)
 /*
  * return a raw character from the input stream
  */
-static inline int
+static __inline int
 inpch(void)
 {
 
@@ -239,7 +239,7 @@ chkeol(void)
  * return next char, after converting trigraphs and
  * skipping escaped line endings
  */
-static inline int
+static __inline int
 inch(void)
 {
 	int ch;
@@ -279,8 +279,8 @@ chkucn(void)
 	while (n-- > 0) {
 		if ((ch = inch()) == -1 || (spechr[ch] & C_HEX) == 0) {
 			warning("invalid universal character name");
-			// XXX should actually unput the chars and return 0
-			unch(ch); // XXX eof
+			/* XXX should actually unput the chars and return 0 */
+			unch(ch); /* XXX eof */
 			break;
 		}
 		cp = cp * 16 + dig2num(ch);
@@ -720,7 +720,7 @@ chlit:
 			if (ch == -1 || ch == '\n') {
 				warning("unterminated string");
 				unch(ch);
-				break;	// XXX the STRING does not have a closing quote
+				break;	/* XXX the STRING does not have a closing quote */
 			}
 			cpp_yytext[yyp++] = (usch)ch;
 		}
@@ -1035,7 +1035,7 @@ void
 cpp_cunput(int c)
 {
 #ifdef PCC_DEBUG
-//	if (dflag)printf(": '%c'(%d)\n", c > 31 ? c : ' ', c);
+/*	if (dflag)printf(": '%c'(%d)\n", c > 31 ? c : ' ', c); */
 #endif
 	unch(c);
 }

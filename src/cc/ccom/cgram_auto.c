@@ -69,6 +69,10 @@
 # include <string.h>
 # include <stdlib.h>
 
+#ifdef __STRICT_ANSI__  /* For __GNUC__. */
+extern int snprintf(char *str, size_t size, const char *format, ...);
+#endif
+
 int fun_inline;	/* Reading an inline function */
 int oldstyle;	/* Current function being defined */
 static struct symtab *xnf;

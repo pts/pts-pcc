@@ -28,15 +28,40 @@
 
 #include "config_auto.h"
 
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
+#ifdef __MINILIBC686__
+#  include <unistd.h>
+  int getopt(int argc, char * const argv[], const char *optstring);
+  extern char *optarg;
+  extern int optind;
+#else
+#  ifdef HAVE_UNISTD_H
+#    include <unistd.h>
+#  endif
 #endif
-#include <signal.h>
+#ifdef __MINILIBC686__
+#  define SIGBUS 7
+#  define SIGSEGV 11
+  typedef void (*sighandler_t)(int);
+  sighandler_t signal(int signum, sighandler_t handler);  /* !! TODO(pts): Does the reset behavior matter? */
+#else
+#  include <signal.h>
+#endif
 #include <string.h>
 #include <stdlib.h>
+#ifdef __MINILIBC686__
+#  include <stdio.h>
+  FILE *freopen(const char *pathname, const char *mode, FILE *stream);
+  void perror(const char *s);
+#else
+#  include <stdio.h>
+#endif
 
 #include "pass1.h"
 #include "pass2.h"
+
+#ifdef __STRICT_ANSI__  /* For __GNUC__. */
+extern int snprintf(char *str, size_t size, const char *format, ...);
+#endif
 
 int bdebug, ddebug, edebug, idebug, ndebug;
 int odebug, pdebug, sdebug, tdebug, xdebug, wdebug;
@@ -128,6 +153,7 @@ fflags(char *str)
 extern int getopt(int argc, char *const argv[], const char *optstring);
 extern char *optarg;
 extern int optind;
+FILE *freopen(const char *pathname, const char *mode, FILE *stream);
 #endif
 
 /* control multiple files */
@@ -138,7 +164,7 @@ ccom_main(int argc, char *argv[])
 {
 	int ch;
 
-//kflag = 1;
+/*kflag = 1;*/
 #ifdef TIMING
 	struct timeval t1, t2;
 

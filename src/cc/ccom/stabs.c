@@ -42,6 +42,11 @@
 #include <stdarg.h>
 #include <string.h>
 
+#ifdef __STRICT_ANSI__  /* For __GNUC__. */
+extern int snprintf(char *str, size_t size, const char *format, ...);
+extern int vsnprintf(char *str, size_t size, const char *format, va_list ap);
+#endif
+
 #define	STABHASH	256
 #define	INTNUM		1	/* internal number of type "int" */
 #undef BIT2BYTE /* from external_auto.h */

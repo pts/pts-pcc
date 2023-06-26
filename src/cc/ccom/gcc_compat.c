@@ -36,6 +36,10 @@
 
 #include <string.h>
 
+#ifdef __STRICT_ANSI__  /* For __GNUC__. */
+extern int snprintf(char *str, size_t size, const char *format, ...);
+#endif
+
 static struct kw {
 	char *name, *ptr;
 	int rv;

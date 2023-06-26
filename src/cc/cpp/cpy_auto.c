@@ -338,7 +338,7 @@ typedef short int yytype_int16;
 #  ifndef YYSTACK_ALLOC_MAXIMUM
 #   define YYSTACK_ALLOC_MAXIMUM YYSIZE_MAXIMUM
 #  endif
-#  if (defined __cplusplus && ! defined EXIT_SUCCESS \
+#  if ((defined(__cplusplus) || defined(__MINILIBC686__)) && ! defined EXIT_SUCCESS \
        && ! ((defined YYMALLOC || defined malloc) \
              && (defined YYFREE || defined free)))
 #   include <stdlib.h> /* INFRINGES ON USER NAME SPACE */

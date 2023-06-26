@@ -72,6 +72,10 @@
 # include <stdarg.h>
 # include <string.h>
 
+#ifdef __STRICT_ANSI__  /* For __GNUC__. */
+extern int snprintf(char *str, size_t size, const char *format, ...);
+#endif
+
 static void chkpun(NODE *p);
 static int opact(NODE *p);
 static int moditype(TWORD);
@@ -810,8 +814,8 @@ concast(NODE *p, TWORD t)
 	if (((p->n_type & TMASK) && t != BOOL) || (t & TMASK)) /* no pointers */
 		return 0;
 
-//printf("concast till %d\n", t);
-//fwalk(p, eprint, 0);
+/*printf("concast till %d\n", t);*/
+/*fwalk(p, eprint, 0);*/
 
 #define	TYPMSK(y) ((((1LL << (y-1))-1) << 1) | 1)
 	if (p->n_op == ICON) {
@@ -846,7 +850,7 @@ concast(NODE *p, TWORD t)
 		}
 	}
 	p->n_type = t;
-//fwalk(p, eprint, 0);
+/*fwalk(p, eprint, 0);*/
 	return 1;
 }
 

@@ -354,7 +354,7 @@ extern	char *opst[];	/* a vector containing names for ops */
 
 #ifdef PCC_DEBUG
 
-static inline int
+static __inline int
 optype(int o)
 {
 	if (o >= MAXOP+1)
@@ -362,7 +362,7 @@ optype(int o)
 	return (dope[o]&TYFLG);
 }
 
-static inline int
+static __inline int
 asgop(int o)
 {
 	if (o >= MAXOP+1)
@@ -370,7 +370,7 @@ asgop(int o)
 	return (dope[o]&ASGFLG);
 }
 
-static inline int
+static __inline int
 logop(int o)
 {
 	if (o >= MAXOP+1)
@@ -378,7 +378,7 @@ logop(int o)
 	return (dope[o]&LOGFLG);
 }
 
-static inline int
+static __inline int
 callop(int o)
 {
 	if (o >= MAXOP+1)

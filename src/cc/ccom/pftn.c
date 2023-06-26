@@ -68,6 +68,10 @@
 
 #include "cgram_auto.h"
 
+#ifdef __STRICT_ANSI__  /* For __GNUC__. */
+extern int snprintf(char *str, size_t size, const char *format, ...);
+#endif
+
 struct symtab *cftnsp;
 int arglistcnt, dimfuncnt;	/* statistics */
 int symtabcnt, suedefcnt;	/* statistics */

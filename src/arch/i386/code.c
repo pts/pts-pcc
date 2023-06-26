@@ -29,6 +29,10 @@
 
 # include "pass1.h"
 
+#ifdef __STRICT_ANSI__  /* For __GNUC__. */
+extern int snprintf(char *str, size_t size, const char *format, ...);
+#endif
+
 /*
  * Print out assembler segment name.
  */

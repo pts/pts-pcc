@@ -31,6 +31,10 @@
 #include <string.h>
 #include <stdlib.h>
 
+#ifdef __STRICT_ANSI__  /* For __GNUC__. */
+extern int snprintf(char *str, size_t size, const char *format, ...);
+#endif
+
 #ifndef MIN
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #endif
