@@ -17,8 +17,6 @@
 # Compile with: ./compile.sh minicc --pcc --diet -Wno-unused-parameter -std=c99 -pedantic
 #
 # !! TODO(pts): Disable more debug printfs (but not assertions), even those which are currently unaffected by PCC_DEBUG. Look for %p.
-# !! TODO(pts): This segfaults (only EGLIBC + old GCC): ./compile.sh ../minilibc686/pathbin/minicc --eglibc --gcc=4.5 -ansi -Wno-unused-parameter
-#               It is caused by `tools/elfxfix -p', without `minicc -g0'.
 # !! TODO(pts): There is also libpcc with divdi3 in a separate download: http://pcc.ludd.ltu.se/ftp/pub/pcc-releases/pcc-libs-1.1.0.tgz
 #
 
