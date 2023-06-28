@@ -6,6 +6,11 @@
 # minicc with the `--gcc=4.8' flag creates shorter output (272876 bytes)
 # than with `--wcc' or `--tcc' or GCC 7.5.0 or Clang 6.0.0.
 #
+# There is also libpcc with divdi3 in a separate download:
+# http://pcc.ludd.ltu.se/ftp/pub/pcc-releases/pcc-libs-1.1.0.tgz , but it is
+# not needed for https://github.com/pts/minilibc686, because all needed
+# functions are integrated to minilibc686.
+#
 # It compiles cleanly (without warnings) with GCC 4.1 .. 4.9, GCC 7.5.0, Clang 6.0.0 and OpenWatcom 2023-03-04.
 # It works with GCC -std=c99 and -std=gnu99, but it doesn't work with `-ansi (== -std=c89) -pedantic' or `-std=gnu89 -pedantic', mostly because `long long'.
 # Compile with: ./compile.sh gcc   -s -Os -W -Wall -Wshadow -Wno-unused-parameter -Werror-implicit-function-declaration -std=c99 -pedantic
@@ -17,7 +22,6 @@
 # Compile with: ./compile.sh minicc --pcc --diet -Wno-unused-parameter -std=c99 -pedantic
 #
 # !! TODO(pts): Disable more debug printfs (but not assertions), even those which are currently unaffected by PCC_DEBUG. Look for %p.
-# !! TODO(pts): There is also libpcc with divdi3 in a separate download: http://pcc.ludd.ltu.se/ftp/pub/pcc-releases/pcc-libs-1.1.0.tgz
 #
 
 set -ex
