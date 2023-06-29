@@ -1416,9 +1416,11 @@ strlist_exec(struct strlist *l)
 	default:
 		while (waitpid(child, &result, 0) == -1 && errno == EINTR)
 			/* nothing */(void)0;
-		result = WEXITSTATUS(result);
-		if (result)
+		if (result) {
+			if (WIFSIGNALED(result)) errorx(1, "%s terminated with signal %d", argv[0], WTERMSIG(result));
+			result = WIFEXITED(result) ? WEXITSTATUS(result) : -1;
 			errorx(1, "%s terminated with status %d", argv[0], result);
+		}
 		while (argc-- > 0)
 			free(argv[argc]);
 		free(argv);
