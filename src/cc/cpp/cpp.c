@@ -44,12 +44,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef __MINILIBC686__
-#  include <time.h>
-  char *ctime(const time_t *timep);
-#else
-#  include <time.h>
-#endif
+#include <time.h>
 
 #include "compat.h"
 #include "cpp.h"
@@ -297,7 +292,8 @@ cpp_main(int argc, char **argv)
 
 	if (tflag == 0) {
 		time_t t = time(NULL);
-		usch *n = (usch *)ctime(&t);
+		usch *n = (usch *)ctime
+		(&t);
 
 		/*
 		 * Manually move in the predefined macros.
