@@ -16,13 +16,7 @@
 /* First, we deal with  platform-specific or compiler-specific issues. */
 
 /* begin standard C headers. */
-#ifdef __MINILIBC686__
-#  include <stdio.h>
-  int ferror(FILE *stream);
-  void clearerr(FILE *stream);
-#else
-#  include <stdio.h>
-#endif
+#include <stdio.h>
 #include <string.h>
 #include <errno.h>
 #include <stdlib.h>
@@ -896,6 +890,31 @@ static int input (void );
  * is returned in "result".
  */
 #ifndef YY_INPUT
+#ifdef CONFIG_NO_FERROR  /* Typically for __MINILIBC686__. */
+#define YY_INPUT(buf,result,max_size) \
+	if ( YY_CURRENT_BUFFER_LVALUE->yy_is_interactive ) \
+		{ \
+		int c = '*'; \
+		size_t n; \
+		errno = 0; \
+		for ( n = 0; n < max_size && \
+			     (c = getc( yyin )) != EOF && c != '\n'; ++n ) \
+			buf[n] = (char) c; \
+		if ( c == '\n' ) \
+			buf[n++] = (char) c; \
+		if ( c == EOF && errno != 0 ) \
+			YY_FATAL_ERROR( "input in flex scanner failed" ); \
+		result = n; \
+		} \
+	else \
+		{ \
+		errno=0; \
+		if ( (result = fread(buf, 1, max_size, yyin))==0 && errno != 0 ) \
+			{ \
+			YY_FATAL_ERROR( "input in flex scanner failed" ); \
+			} \
+		}
+#else
 #define YY_INPUT(buf,result,max_size) \
 	if ( YY_CURRENT_BUFFER_LVALUE->yy_is_interactive ) \
 		{ \
@@ -923,9 +942,8 @@ static int input (void );
 			errno=0; \
 			clearerr(yyin); \
 			} \
-		}\
-\
-
+		}
+#endif
 #endif
 
 /* No semi-colon after return; correct usage is to write "yyterminate();" -

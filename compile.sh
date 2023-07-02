@@ -30,6 +30,7 @@ set -ex
 CC='gcc -s -Os -W -Wall -Wshadow -Wno-unused-parameter'
 test $# = 0 || CC="$*"
 I386_CCLD="${I386_CCLD:-gcc -m32}"
+# Typical flays in $*: -DCONFIG_NO_FERROR
 #CFLAGS=''  # -DPCC_DEBUG
 CFLAGS='-DPCC_DEBUG'
 
