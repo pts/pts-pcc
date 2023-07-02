@@ -48,12 +48,11 @@
 #endif
 #include <string.h>
 #include <stdlib.h>
+#include <errno.h>
+#include <stdio.h>
 #ifdef __MINILIBC686__
-#  include <stdio.h>
   FILE *freopen(const char *pathname, const char *mode, FILE *stream);
-  void perror(const char *s);
-#else
-#  include <stdio.h>
+  char *strerror(int errnum);
 #endif
 
 #include "pass1.h"
@@ -293,17 +292,13 @@ ccom_main(int argc, char *argv[])
 
 	if (argc > 0 && strcmp(argv[0], "-") != 0) {
 		if (freopen(argv[0], "r", stdin) == NULL) {
-			fprintf(stderr, "open input file '%s':",
-			    argv[0]);
-			perror(NULL);
+			fprintf(stderr, "open input file '%s': %s\n", argv[0], strerror(errno));
 			exit(1);
 		}
 	}
 	if (argc > 1 && strcmp(argv[1], "-") != 0) {
 		if (freopen(argv[1], "w", stdout) == NULL) {
-			fprintf(stderr, "open output file '%s':",
-			    argv[1]);
-			perror(NULL);
+			fprintf(stderr, "open output file '%s': %s\n", argv[1], strerror(errno));
 			exit(1);
 		}
 	}
