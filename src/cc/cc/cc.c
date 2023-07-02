@@ -84,40 +84,8 @@
 #define _DEFAULT_SOURCE 1  /* For mkstemp(3). */
 
 #include <sys/types.h>
-#  ifdef __MINILIBC686__
-#  define WNOHANG 0x00000001
-#  define WUNTRACED 0x00000002
-#  define WSTOPPED WUNTRACED
-#  define WEXITED 0x00000004
-#  define WCONTINUED 0x00000008
-#  define WNOWAIT 0x01000000
-#  define __WNOTHREAD 0x20000000
-#  define __WALL 0x40000000
-#  define __WCLONE 0x80000000
-#  define __WEXITSTATUS(status) (((status) & 0xff00) >> 8)
-#  define WEXITSTATUS __WEXITSTATUS
-#  define __WTERMSIG(status) ((status) & 0x7f)
-#  define WTERMSIG __WTERMSIG
-#  define __WSTOPSIG(status) __WEXITSTATUS(status)
-#  define WSTOPSIG __WSTOPSIG
-#  define WIFEXITED(status) (__WTERMSIG(status) == 0)
-#  define WIFSIGNALED(status) (!WIFSTOPPED(status) && !WIFEXITED(status))
-#  define WIFSTOPPED(status) (((status) & 0xff) == 0x7f)
-#  define WCOREDUMP(status) ((status) & 0x80)
-#  define W_STOPCODE(sig) ((sig) << 8 | 0x7f)
-  typedef int id_t;  /* <sys/types.h> */
-  struct rusage;
-  struct siginfo;  /* TODO(pts): typedef struct siginfo { ... } siginfo_t. */
-  pid_t wait(int *status);
-  pid_t waitpid(pid_t pid, int *status, int options);
-  pid_t wait3(int *status, int options, struct rusage *rusage);  /* TODO(pts): Not a syscall, implement it in libc. */
-  pid_t wait4(pid_t pid, int *status, int options, struct rusage *rusage);
-  typedef enum { P_ALL, P_PID, P_PGID } idtype_t;
-  int waitid(idtype_t idtype, id_t id, struct siginfo *infop, int options);
-#else
-#  ifdef HAVE_SYS_WAIT_H
-#    include <sys/wait.h>
-#  endif
+#ifdef HAVE_SYS_WAIT_H
+#  include <sys/wait.h>
 #endif
 
 #include <ctype.h>
