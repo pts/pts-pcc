@@ -38,11 +38,12 @@ test -d pccbin || mkdir pccbin
 $CC -DGCC_COMPAT $CFLAGS -Dos_linux -Dmach_i386 \
     -DLIBEXECDIR=\"/dev/null/libexec/\" -DINCLUDEDIR=\"/dev/null/h/\" -DPCCINCDIR=\"/dev/null/hh/\" -DPCCLIBDIR=\"/dev/null/lib/\" -DTARGOSVER=0 -DCPPROGNAME=\"pcpp\" \
     -Ih/cc/driver -Ih/cc/ccom -Ih/cc/cpp -Ih/top -Ih/mip -Ih/arch/i386 -Ih/os/linux \
-     src/cc/cc/cc.c src/mip/compat.c src/cc/driver/strlist.c src/cc/driver/xalloc.c \
-     src/cc/ccom/builtins.c src/cc/ccom/cgram_auto.c src/arch/i386/code.c src/mip/common.c src/mip/compat.c src/cc/ccom/external_auto.c src/cc/ccom/gcc_compat.c src/cc/ccom/init.c src/cc/ccom/inline.c src/arch/i386/local.c src/arch/i386/local2.c src/cc/ccom/main.c \
+     src/cc/cc/cc.c src/cc/driver/strlist.c src/cc/driver/xalloc.c \
+     src/cc/ccom/builtins.c src/cc/ccom/cgram_auto.c src/arch/i386/code.c src/mip/common.c src/cc/ccom/external_auto.c src/cc/ccom/gcc_compat.c src/cc/ccom/init.c src/cc/ccom/inline.c src/arch/i386/local.c src/arch/i386/local2.c src/cc/ccom/main.c \
         src/mip/match.c src/cc/ccom/optim.c src/mip/optim2.c src/arch/i386/order.c src/cc/ccom/pftn.c src/mip/reader.c src/mip/regs.c src/cc/ccom/scan_auto.c src/cc/ccom/stabs.c src/cc/ccom/symtabs.c src/arch/i386/table.c src/cc/ccom/trees.c src/mip/unicode.c \
-     src/mip/compat.c src/cc/cpp/cpp.c src/cc/cpp/cpy_auto.c \
+     src/cc/cpp/cpp.c src/cc/cpp/cpy_auto.c \
      src/cc/cpp/token.c src/bsd/strlcpy.c src/bsd/strlcat.c \
+     src/mip/mkstemp.c \
      -o pccbin/pcc
 
 ls -ld pccbin/pcc
