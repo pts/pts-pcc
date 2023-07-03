@@ -28,15 +28,8 @@
 
 #include "config_auto.h"
 
+#ifdef HAVE_UNISTD_H
 #  include <unistd.h>
-  int getopt(int argc, char * const argv[], const char *optstring);
-  extern char *optarg;
-  extern int optind;
-#else
-#  ifdef HAVE_UNISTD_H
-#    include <unistd.h>
-#  endif
-#endif
 #endif
 #include <signal.h>
 #include <string.h>
