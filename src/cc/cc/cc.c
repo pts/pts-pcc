@@ -97,18 +97,7 @@
 #    include <libgen.h>
 #  endif
 #endif
-#ifdef __MINILIBC686__
-#  define SIGINT 2
-#  define SIGTERM 15
-#  define SIG_DFL ((sighandler_t)0L)
-#  define SIG_IGN ((sighandler_t)1L)
-#  define SIG_ERR ((sighandler_t)-1L)
-  typedef int sig_atomic_t;
-  typedef void (*sighandler_t)(int);
-  sighandler_t signal(int signum, sighandler_t handler);  /* !! TODO(pts): Does the reset behavior matter? */
-#else
-#  include <signal.h>
-#endif
+#include <signal.h>
 #include <stdarg.h>
 #include <stdio.h>
 #ifdef __MINILIBC686__

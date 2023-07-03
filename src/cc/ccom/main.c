@@ -28,7 +28,6 @@
 
 #include "config_auto.h"
 
-#ifdef __MINILIBC686__
 #  include <unistd.h>
   int getopt(int argc, char * const argv[], const char *optstring);
   extern char *optarg;
@@ -38,14 +37,8 @@
 #    include <unistd.h>
 #  endif
 #endif
-#ifdef __MINILIBC686__
-#  define SIGBUS 7
-#  define SIGSEGV 11
-  typedef void (*sighandler_t)(int);
-  sighandler_t signal(int signum, sighandler_t handler);  /* !! TODO(pts): Does the reset behavior matter? */
-#else
-#  include <signal.h>
 #endif
+#include <signal.h>
 #include <string.h>
 #include <stdlib.h>
 #include <errno.h>
