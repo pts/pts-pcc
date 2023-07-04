@@ -36,9 +36,6 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <stdio.h>
-#ifdef __MINILIBC686__
-  FILE *freopen(const char *pathname, const char *mode, FILE *stream);
-#endif
 
 #include "pass1.h"
 #include "pass2.h"
