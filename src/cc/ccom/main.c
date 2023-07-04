@@ -38,7 +38,6 @@
 #include <stdio.h>
 #ifdef __MINILIBC686__
   FILE *freopen(const char *pathname, const char *mode, FILE *stream);
-  char *strerror(int errnum);
 #endif
 
 #include "pass1.h"

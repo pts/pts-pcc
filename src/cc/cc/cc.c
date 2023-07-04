@@ -106,12 +106,7 @@
 #else
 #  include <stdlib.h>
 #endif
-#ifdef __MINILIBC686__
-#  include <string.h>
-  char *strerror(int errnum);
-#else
-#  include <string.h>
-#endif
+#include <string.h>
 #ifdef __MINILIBC686__
 #  include <unistd.h>
   int execvp(const char *file, char *const argv[]);
