@@ -890,7 +890,7 @@ static int input (void );
  * is returned in "result".
  */
 #ifndef YY_INPUT
-#ifdef CONFIG_NO_FERROR  /* Typically for __MINILIBC686__. */
+#ifdef CONFIG_NO_FERROR  /* Typically for minilibc686. */
 #define YY_INPUT(buf,result,max_size) \
 	if ( YY_CURRENT_BUFFER_LVALUE->yy_is_interactive ) \
 		{ \

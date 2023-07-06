@@ -86,18 +86,21 @@ int readmac;
 int defining;
 int warnings;
 
-#ifdef __MINILIBC686__
+#ifdef CONFIG_STAT64
 #  define stat stat64
-  typedef unsigned long long dev_t;
-  typedef unsigned long long ino_t;
+  typedef unsigned long long incs_dev_t;
+  typedef unsigned long long incs_ino_t;
+#else
+  typedef dev_t incs_dev_t;
+  typedef ino_t incs_ino_t;
 #endif
 
 /* include dirs */
 struct incs {
 	struct incs *next;
 	usch *dir;
-	dev_t dev;
-	ino_t ino;
+	incs_dev_t dev;
+	incs_ino_t ino;
 } *incdir[2];
 
 static struct symtab *filloc;

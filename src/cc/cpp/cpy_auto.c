@@ -338,7 +338,7 @@ typedef short int yytype_int16;
 #  ifndef YYSTACK_ALLOC_MAXIMUM
 #   define YYSTACK_ALLOC_MAXIMUM YYSIZE_MAXIMUM
 #  endif
-#  if ((defined(__cplusplus) || defined(__MINILIBC686__)) && ! defined EXIT_SUCCESS \
+#  if ((defined(__cplusplus) || defined(CONFIG_MALLOC_FROM_STDLIB_H)) && ! defined EXIT_SUCCESS \
        && ! ((defined YYMALLOC || defined malloc) \
              && (defined YYFREE || defined free)))
 #   include <stdlib.h> /* INFRINGES ON USER NAME SPACE */
@@ -402,7 +402,7 @@ union yyalloc
 
 #endif
 
-#if defined(__MINILIBC686__) && (defined(__TINYC__) || defined(__PCC__))  /* Use mini_memcpy(...). */
+#if defined(__TINYC__) || defined(__PCC__)  /* Proper declaration of memcpy(...) in case __builtin_memcpy(...) uses it. Useful for minilibc686. */
 #  include <string.h>
 #endif
 
