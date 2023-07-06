@@ -274,6 +274,7 @@ twollcomp(NODE *p)
 int
 fldexpand(NODE *p, int cookie, char **cp)
 {
+	(void)p; (void)cookie; (void)cp;
 	comperr("fldexpand");
 	return 0;
 }
@@ -630,6 +631,7 @@ canaddr(NODE *p)
 int
 flshape(NODE *p)
 {
+	(void)p;
 	comperr("flshape");
 	return 0;
 }
@@ -639,6 +641,7 @@ flshape(NODE *p)
 int
 shtemp(NODE *p)
 {
+	(void)p;
 	return 0;
 #if 0
 	int r;
@@ -700,6 +703,7 @@ conput(FILE *fp, NODE *p)
 void
 insput(NODE *p)
 {
+	(void)p;
 	comperr("insput");
 }
 
@@ -828,6 +832,7 @@ cbgen(int o, int lab)
 static void
 fixcalls(NODE *p, void *arg)
 {
+	(void)arg;
 	/* Prepare for struct return by allocating bounce space on stack */
 	switch (p->n_op) {
 	case STCALL:
@@ -993,6 +998,7 @@ static void
 updatereg(NODE *p, void *arg)
 {
 	NODE *q;
+	(void)arg;
 
 	if (p->n_op != STCALL)
 		return;
@@ -1062,6 +1068,7 @@ static void
 pconv2(NODE *p, void *arg)
 {
 	NODE *q;
+	(void)arg;
 
 	if (p->n_op == PLUS) {
 		if (p->n_type == (PTR|SHORT) || p->n_type == (PTR|USHORT)) {
@@ -1090,6 +1097,7 @@ mycanon(NODE *p)
 void
 myoptim(struct interpass *ip)
 {
+	(void)ip;
 }
 
 static char rl[] =
@@ -1283,6 +1291,7 @@ special(NODE *p, int shape)
 void
 mflags(char *str)
 {
+	(void)str;
 }
 
 /*
@@ -1441,6 +1450,7 @@ numconv(void *ip, void *p1, void *q1)
 {
 	NODE *p = p1, *q = q1;
 	int cw = xasmcode(q->n_name);
+	(void)ip;
 
 	switch (XASMVAL(cw)) {
 	case 'a':

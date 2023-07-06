@@ -384,6 +384,7 @@ struct stub nlplist;
 void
 ejobcode(int flag)
 {
+	(void)flag;
 #if defined(MACHOABI)
 	/*
 	 * iterate over the stublist and output the PIC stubs
@@ -591,6 +592,7 @@ funcode(NODE *p)
 void
 fldty(struct symtab *p)
 {
+	(void)p;
 }
 
 /*
@@ -599,6 +601,7 @@ fldty(struct symtab *p)
 int
 mygenswitch(int num, TWORD type, struct swents **p, int n)
 {
+	(void)num; (void)type; (void)p; (void)n;
 	return 0;
 }
 
@@ -607,6 +610,7 @@ builtin_return_address(const struct bitable *bt, NODE *a)
 {	
 	int nframes;
 	NODE *f; 
+	(void)bt;
 	
 	if (a->n_op != ICON)
 		goto bad;
@@ -635,6 +639,7 @@ builtin_frame_address(const struct bitable *bt, NODE *a)
 {
 	int nframes;
 	NODE *f;
+	(void)bt;
 
 	if (a->n_op != ICON)
 		goto bad;
@@ -661,6 +666,7 @@ bad:
 NODE *
 builtin_cfa(const struct bitable *bt, NODE *a)
 {
+	(void)bt; (void)a;
 	uerror("missing builtin_cfa");
 	return bcon(0);
 }

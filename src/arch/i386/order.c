@@ -39,6 +39,7 @@ int canaddr(NODE *);
 int
 notoff(TWORD t, int r, CONSZ off, char *cp)
 {
+	(void)t; (void)r; (void)off; (void)cp;
 	return(0);  /* YES */
 }
 
@@ -50,6 +51,7 @@ void
 offstar(NODE *p, int shape)
 {
 	NODE *r;
+	(void)shape;
 
 	if (x2debug)
 		printf("offstar(%p)\n", (void*)p);
@@ -133,6 +135,7 @@ setbin(NODE *p)
 int
 setasg(NODE *p, int cookie)
 {
+	(void)cookie;
 	if (x2debug)
 		printf("setasg(%p)\n", (void*)p);
 	return(0);
@@ -142,6 +145,7 @@ setasg(NODE *p, int cookie)
 int
 setuni(NODE *p, int cookie)
 {
+	(void)p; (void)cookie;
 	return 0;
 }
 
@@ -282,6 +286,7 @@ nspecial(struct optab *q)
 int
 setorder(NODE *p)
 {
+	(void)p;
 	return 0; /* nothing differs on x86 */
 }
 
@@ -293,6 +298,7 @@ livecall(NODE *p)
 {
 	static int r[] = { EAX, EBX, -1 };
 	int off = 1;
+	(void)p;
 
 #ifdef TLS
 	if (p->n_left->n_op == ICON &&
@@ -309,5 +315,6 @@ livecall(NODE *p)
 int
 acceptable(struct optab *op)
 {
+	(void)op;
 	return 1;
 }

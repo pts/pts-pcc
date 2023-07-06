@@ -43,6 +43,7 @@ static NODE *
 builtin_alloca(const struct bitable *bt, NODE *a)
 {
 	NODE *t, *u;
+	(void)bt;
 
 #ifdef notyet
 	if (xnobuiltins)
@@ -66,6 +67,7 @@ builtin_constant_p(const struct bitable *bt, NODE *a)
 	void putjops(NODE *p, void *arg);
 	NODE *f;
 	int isconst;
+	(void)bt;
 
 	walkf(a, putjops, 0);
 	for (f = a; f->n_op == COMOP; f = f->n_right)
@@ -83,6 +85,7 @@ static NODE *
 builtin_expect(const struct bitable *bt, NODE *a)
 {
 	NODE *f;
+	(void)bt;
 
 	if (a && a->n_op == CM) {
 		tfree(a->n_right);
@@ -103,6 +106,7 @@ builtin_abs(const struct bitable *bt, NODE *a)
 {
 	NODE *p, *q, *r, *t, *t2, *t3;
 	int tmp1, tmp2, shift;
+	(void)bt;
 
 	if (a->n_type != INT)
 		a = cast(a, INT, 0);
@@ -143,6 +147,7 @@ static NODE *
 builtin_bswap16(const struct bitable *bt, NODE *a)
 {
 	NODE *f, *t1, *t2;
+	(void)bt;
 
 	t1 = buildtree(LS, buildtree(AND, ccopy(a), bcon(255)), bcon(8));
 	t2 = buildtree(AND, buildtree(RS, a, bcon(8)), bcon(255));
@@ -154,6 +159,7 @@ static NODE *
 builtin_bswap32(const struct bitable *bt, NODE *a)
 {
 	NODE *f, *t1, *t2, *t3, *t4;
+	(void)bt;
 
 	t1 = buildtree(LS, buildtree(AND, ccopy(a), bcon(255)), bcon(24));
 	t2 = buildtree(LS, buildtree(AND, ccopy(a), bcon(255 << 8)), bcon(8));
@@ -167,6 +173,7 @@ static NODE *
 builtin_bswap64(const struct bitable *bt, NODE *a)
 {
 	NODE *f, *t1, *t2, *t3, *t4, *t5, *t6, *t7, *t8;
+	(void)bt;
 
 #define	X(x) xbcon(x, NULL, ctype(ULONGLONG))
 	t1 = buildtree(LS, buildtree(AND, ccopy(a), X(255)), bcon(56));
@@ -238,36 +245,42 @@ builtin_cxz(NODE *a, TWORD t, int isclz)
 static NODE *
 builtin_clz(const struct bitable *bt, NODE *a)
 {
+	(void)bt;
 	return builtin_cxz(a, INT, 1);
 }
 
 static NODE *
 builtin_clzl(const struct bitable *bt, NODE *a)
 {
+	(void)bt;
 	return builtin_cxz(a, LONG, 1);
 }
 
 static NODE *
 builtin_clzll(const struct bitable *bt, NODE *a)
 {
+	(void)bt;
 	return builtin_cxz(a, LONGLONG, 1);
 }
 
 static NODE *
 builtin_ctz(const struct bitable *bt, NODE *a)
 {
+	(void)bt;
 	return builtin_cxz(a, INT, 0);
 }
 
 static NODE *
 builtin_ctzl(const struct bitable *bt, NODE *a)
 {
+	(void)bt;
 	return builtin_cxz(a, LONG, 0);
 }
 
 static NODE *
 builtin_ctzll(const struct bitable *bt, NODE *a)
 {
+	(void)bt;
 	return builtin_cxz(a, LONGLONG, 0);
 }
 #endif
@@ -276,6 +289,7 @@ builtin_ctzll(const struct bitable *bt, NODE *a)
 static NODE *
 builtin_era(const struct bitable *bt, NODE *a)
 {
+	(void)bt;
 	return a;	/* Just pass through */
 }
 #endif
@@ -334,18 +348,21 @@ builtin_ff(NODE *a, TWORD t)
 static NODE *
 builtin_ffs(const struct bitable *bt, NODE *a)
 {
+	(void)bt;
 	return builtin_ff(a, INT);
 }
 
 static NODE *
 builtin_ffsl(const struct bitable *bt, NODE *a)
 {
+	(void)bt;
 	return builtin_ff(a, LONG);
 }
 
 static NODE *
 builtin_ffsll(const struct bitable *bt, NODE *a)
 {
+	(void)bt;
 	return builtin_ff(a, LONGLONG);
 }
 #endif
@@ -374,6 +391,7 @@ builtin_stdarg_start(const struct bitable *bt, NODE *a)
 {
 	NODE *p, *q;
 	int sz;
+	(void)bt;
 
 	/* must first deal with argument size; use int size */
 	p = a->n_right;
@@ -404,6 +422,7 @@ builtin_va_arg(const struct bitable *bt, NODE *a)
 {
 	NODE *p, *q, *r, *rv;
 	int sz, nodnum;
+	(void)bt;
 
 	/* create a copy to a temp node of current ap */
 	p = ccopy(a->n_left);
@@ -435,6 +454,7 @@ builtin_va_arg(const struct bitable *bt, NODE *a)
 static NODE *
 builtin_va_end(const struct bitable *bt, NODE *a)
 {
+	(void)bt;
 	return a; /* may have side effects */
 }
 
@@ -442,6 +462,7 @@ static NODE *
 builtin_va_copy(const struct bitable *bt, NODE *a)
 {
 	NODE *f;
+	(void)bt;
 
 	f = buildtree(ASSIGN, a->n_left, a->n_right);
 	nfree(a);
@@ -491,6 +512,7 @@ builtin_unimp_f(NODE *f, NODE *a, TWORD rt)
 static NODE *
 builtin_prefetch(const struct bitable *bt, NODE *a)
 {
+	(void)bt;
 	tfree(a);
 	return bcon(0);
 }
@@ -519,6 +541,7 @@ builtin_tc(const struct bitable *bt, NODE *a)
 static void
 putinlbl(NODE *p, void *arg)
 {
+	(void)arg;
 	if (p->n_op == COMOP && p->n_left->n_op == GOTO) {
 		int v = (int)p->n_left->n_left->n_lval;
 		send_passt(IP_DEFLAB, v+1);
@@ -581,6 +604,7 @@ static NODE *
 builtin_isunordered(const struct bitable *bt, NODE *a)
 {
 	NODE *p;
+	(void)bt;
 
 	if (mtcheck(a) == 0)
 		return bcon(0);
@@ -594,6 +618,7 @@ builtin_isany(NODE *a, TWORD rt, int cmpt)
 {
 	NODE *p, *q;
 	TWORD t;
+	(void)rt;
 
 	if ((t = mtcheck(a)) == 0)
 		return bcon(0);
@@ -630,6 +655,7 @@ builtin_islessgreater(const struct bitable *bt, NODE *a)
 {
 	NODE *p, *q, *r;
 	TWORD t;
+	(void)bt;
 
 	if ((t = mtcheck(a)) == 0)
 		return bcon(0);
@@ -690,6 +716,7 @@ static const unsigned char nLDOUBLE[] = { 0x7f, 0xff, 0xc0, 0, 0, 0, 0, 0, 0, 0,
 	typ d;							\
 	int x;							\
 	NODE *f;						\
+	(void)bt; (void)a;					\
 	x = MIN(sizeof__n ## TYP, sizeof(d));			\
 	memcpy(&d, v ## TYP, x);				\
 	f = block(FCON, NIL, NIL, TYP, NULL, 0);	\

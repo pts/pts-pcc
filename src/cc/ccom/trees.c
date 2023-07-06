@@ -705,6 +705,7 @@ findmember(struct symtab *sp, char *s)
 void
 putjops(NODE *p, void *arg)
 {
+	(void)arg;
 	if (p->n_op == COMOP && p->n_left->n_op == GOTO)
 		plabel((int)p->n_left->n_left->n_lval+1);
 }
@@ -781,6 +782,7 @@ NODE *
 ccast(NODE *p, TWORD t, TWORD u, union dimfun *df, struct attr *ap)
 {
 	NODE *q;
+	(void)u;
 
 	/* let buildtree do typechecking (and casting) */ 
 	q = block(NAME, NIL, NIL, t, df, ap);
@@ -2837,6 +2839,8 @@ p2tree(NODE *p)
 static void
 delvoid(NODE *p, void *arg)
 {
+	(void)arg;
+
 	/* Convert "PTR undef" (void *) to "PTR uchar" */
 	if (BTYPE(p->n_type) == VOID)
 		p->n_type = (p->n_type & ~BTMASK) | UCHAR;

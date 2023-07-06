@@ -397,6 +397,7 @@ stabs_newsym(struct symtab *s)
 void
 stabs_chgsym(struct symtab *s)
 {
+	(void)s;
 }
 
 /*
@@ -405,6 +406,7 @@ stabs_chgsym(struct symtab *s)
 void
 stabs_struct(struct symtab *p, struct attr *ap)
 {
+	(void)p; (void)ap;
 }
 
 struct stabsv {

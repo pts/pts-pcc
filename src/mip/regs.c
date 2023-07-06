@@ -1331,6 +1331,7 @@ static void
 xasmconstr(NODE *p, void *arg)
 {
 	int i;
+	(void)arg;
 
 	if (p->n_op == ICON && p->n_type == STRTY)
 		return; /* no constraints */
@@ -2108,6 +2109,7 @@ coalasg(NODE *p, void *arg)
 {
 	NODE *l;
 	REGW *u;
+	(void)arg;
 
 	if (p->n_op != ASSIGN || p->n_regw == NULL)
 		return;
@@ -2131,6 +2133,7 @@ static void
 Coalassign(struct p2env *p2e)
 {
 	struct interpass *ip;
+	(void)p2e;
 
 	DLIST_FOREACH(ip, &p2env.ipole, qelem) {
 		if (ip->type == IP_NODE)
@@ -2276,6 +2279,7 @@ static void
 traclass(NODE *p, void *arg)
 {
 	REGW *nb;
+	(void)arg;
 
 	if (p->n_op != TEMP)
 		return;
@@ -2291,6 +2295,7 @@ paint(NODE *p, void *arg)
 	struct optab *q;
 	REGW *w, *ww;
 	int i;
+	(void)arg;
 
 #ifdef notyet
 	/* XXX - trashes rewrite of trees (short) */
@@ -2455,6 +2460,7 @@ static void
 longtemp(NODE *p, void *arg)
 {
 	REGW *w;
+	(void)arg;
 
 	if (p->n_op != TEMP)
 		return;

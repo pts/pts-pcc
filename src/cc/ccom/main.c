@@ -70,6 +70,7 @@ static void
 segvcatch(int a)
 {
 	char buf[1024];
+	(void)a;
 
 	snprintf(buf, sizeof buf, "%sinternal compiler error: %s, line %d\n",
 	    nerrors ? "" : "major ", ftitle, lineno);

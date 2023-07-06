@@ -1050,6 +1050,7 @@ main(int argc, char *argv[])
 void
 idexit(int arg)
 {
+	(void)arg;
 	dexit(100);
 }
 

@@ -13,14 +13,14 @@
 #
 # It compiles cleanly (without warnings) with GCC 4.1 .. 4.9, GCC 7.5.0, Clang 6.0.0 and OpenWatcom 2023-03-04.
 # It works with GCC `-std=c99 -pedantic' and `-std=gnu99 -pedantic' and `-ansi', but it doesn't work with `-ansi (== -std=c89) -pedantic' or `-std=gnu89 -pedantic', mostly because `long long'.
-# Compile with: ./compile.sh gcc   -s -Os -W -Wall -Wshadow -Wno-unused-parameter -Werror-implicit-function-declaration -std=c99 -pedantic
-# Compile with: ./compile.sh gcc   -s -Os -W -Wall -Wshadow -Wno-unused-parameter -Werror-implicit-function-declaration -ansi
-# Compile with: ./compile.sh clang -s -Os -W -Wall -Wshadow -Wno-unused-parameter -Werror-implicit-function-declaration -ansi
+# Compile with: ./compile.sh gcc   -s -Os -W -Wall -Wshadow -Werror-implicit-function-declaration -std=c99 -pedantic
+# Compile with: ./compile.sh gcc   -s -Os -W -Wall -Wshadow -Werror-implicit-function-declaration -ansi
+# Compile with: ./compile.sh clang -s -Os -W -Wall -Wshadow -Werror-implicit-function-declaration -ansi
 # Compile with: ./compile.sh owcc -blinux -march=i386 -s -O2 -I"$WATCOM"/lh -fsigned-char -fno-stack-protector -W -Wextra -Wno-n303 -std=c99 -fo=.obj && rm -f *.obj  # !! But silently breaks for `long double'. !! Make it work with -std=c89.
-# Compile with: ./compile.sh minicc --gcc --diet -Wno-unused-parameter -ansi
-# Compile with: ./compile.sh minicc --wcc --diet -Wno-unused-parameter -ansi  # !! But silently breaks for `long double'.
-# Compile with: ./compile.sh minicc --tcc --diet -Wno-unused-parameter -ansi
-# Compile with: ./compile.sh minicc --pcc --diet -Wno-unused-parameter -ansi
+# Compile with: ./compile.sh minicc --gcc --diet -Wshadow -ansi
+# Compile with: ./compile.sh minicc --wcc --diet -Wshadow -ansi  # !! But silently breaks for `long double'.  !! It still fails for other reasons.
+# Compile with: ./compile.sh minicc --tcc --diet -Wshadow -ansi
+# Compile with: ./compile.sh minicc --pcc --diet -Wshadow -ansi
 #
 # !! TODO(pts): Disable more debug printfs (but not assertions), even those which are currently unaffected by PCC_DEBUG. Look for %p.
 #
@@ -28,7 +28,7 @@
 set -ex
 
 
-CC='gcc -s -Os -W -Wall -Wshadow -Wno-unused-parameter'
+CC='gcc -s -Os -W -Wall -Wshadow'
 test $# = 0 || CC="$*"
 I386_CCLD="${I386_CCLD:-gcc -m32}"
 # Typical flays in $*: -DCONFIG_NO_FERROR
@@ -60,7 +60,7 @@ examples/hello
 test "$(examples/hello)" = "Hello, World!"
 
 if test -f examples/mininasm_noh.c && test -f examples/mininasm.c; then
-  PATH=/dev/null/nopath pccbin/pcc -O2 -S -W -Wall -Wshadow -Wno-unused-parameter -Werror-implicit-function-declaration -Werror -o examples/mininasm.tmp.s examples/mininasm_noh.c
+  PATH=/dev/null/nopath pccbin/pcc -O2 -S -W -Wall -Wshadow -Werror-implicit-function-declaration -Werror -o examples/mininasm.tmp.s examples/mininasm_noh.c
   $I386_CCLD -s -o examples/mininasm examples/mininasm.tmp.s
   examples/mininasm -O9 -f bin -o examples/minnnasm.com -l examples/minnnasm.lst examples/minnnasm.na
   cmp examples/minnnasm.com.good examples/minnnasm.com

@@ -115,6 +115,7 @@ static void
 cktree(NODE *p, void *arg)
 {
 	int i;
+	(void)arg;
 
 	if (p->n_op > MAXOP)
 		cerror("%p) op %d slipped through", p, p->n_op);
@@ -732,6 +733,7 @@ rewrite(NODE *p, int dorewrite, int cookie)
 {
 	NODE *l, *r;
 	int o;
+	(void)cookie;
 
 	l = getlr(p, 'L');
 	r = getlr(p, 'R');
@@ -1155,6 +1157,7 @@ static void
 setleft(NODE *p, void *arg)
 {        
 	NODE *q;
+	(void)arg;
 
 	/* only additions for now */
 	if (p->n_op != PLUS)
@@ -1269,6 +1272,7 @@ ormake(NODE *p)
 void
 oreg2(NODE *p, void *arg)
 {
+	(void)arg;
 	if (p->n_op != UMUL)
 		return;
 	if (oregok(p, 1))
@@ -1652,6 +1656,7 @@ static int xasnum, xoffnum;
 static void
 xconv(NODE *p, void *arg)
 {
+	(void)arg;
 	if (p->n_op != TEMP || p->n_rval != xasnum)
 		return;
 	storemod(p, xoffnum, FPREG); /* XXX */

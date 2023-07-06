@@ -755,6 +755,7 @@ fixnames(NODE *p, void *arg)
 	NODE *q;
 	char *c;
 	int isu;
+	(void)arg;
 
 	if ((cdope(p->n_op) & CALLFLG) == 0)
 		return;
@@ -869,6 +870,7 @@ myp2tree(NODE *p)
 int
 andable(NODE *p)
 {
+	(void)p;
 	return(1);	/* all names can have & taken on them */
 }
 
@@ -940,6 +942,7 @@ ninval(CONSZ off, int fsz, NODE *p)
 {
 	union { float f; double d; long double l; int i[3]; } u;
 	int i;
+	(void)fsz;
 
 	switch (p->n_type) {
 	case LONGLONG:
@@ -1029,11 +1032,13 @@ ctype(TWORD type)
 void
 calldec(NODE *p, NODE *q) 
 {
+	(void)p; (void)q;
 }
 
 void
 extdec(struct symtab *q)
 {
+	(void)q;
 }
 
 /* make a common declaration for id, if reasonable */
@@ -1313,6 +1318,7 @@ mangle(NODE *p)
 static void
 fixstcall(NODE *p, void *arg)
 {
+	(void)arg;
 	if (p->n_op != STCALL && p->n_op != USTCALL)
 		return;
 	if (p->n_su == 42)

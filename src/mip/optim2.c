@@ -577,6 +577,7 @@ iterate(struct p2env *p2e, struct dlnod *dl)
 	extern int negrel[];
 	extern size_t negrelsize;
 	int i;
+	(void)p2e;
 
 	nchange = 0;
 	for (p = dl->forw; p!=0; p = p->forw) {
@@ -1088,6 +1089,7 @@ searchasg(NODE *p, void *arg)
 	struct pvarinfo *pv;
 	int tempnr;
 	struct varstack *stacke;
+	(void)arg;
     
 	if (p->n_op != ASSIGN)
 		return;

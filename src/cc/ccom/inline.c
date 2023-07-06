@@ -97,6 +97,7 @@ getprol(struct istat *is, int type)
 static void
 tcnt(NODE *p, void *arg)
 {
+	(void)arg;
 	inlnodecnt++;
 	if (nlabs > 1 && (p->n_op == REG || p->n_op == OREG) &&
 	    regno(p) == FPREG)
@@ -405,6 +406,7 @@ mnode(struct ntds *nt, NODE *p)
 static void
 rtmps(NODE *p, void *arg)
 {
+	(void)arg;
 	if (p->n_op == TEMP)
 		regno(p) += toff;
 }

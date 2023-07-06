@@ -3137,6 +3137,7 @@ pragmas_weak(char *str)
 {
 	struct symtab *sp;
 	char *s1, *s2;
+	(void)str;
 
 	if ((s1 = pragtok(NULL)) == NULL)
 		return 1;
@@ -3224,6 +3225,7 @@ pragmas_pack(char *t)
 #define	PACKSTKSZ 10
 	static int packstk[PACKSTKSZ], packptr;
 	char *s;
+	(void)t;
 
 	if (eat('('))
 		return 1;
@@ -3263,6 +3265,7 @@ pragmas_unsupp(char *t)
 static int
 pragmas_stdc(char *t)
 {
+	(void)t;
 	return 0; /* Just ignore */
 }
 

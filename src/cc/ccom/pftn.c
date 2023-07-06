@@ -1510,6 +1510,7 @@ dynalloc(struct symtab *p, int *poff)
 	union dimfun *df;
 	NODE *n, *tn, *pol;
 	TWORD t;
+	(void)poff;
 
 	/*
 	 * The pointer to the array is not necessarily stored in a
@@ -2648,6 +2649,7 @@ fixtype(NODE *p, int class)
 {
 	unsigned int t, type;
 	int mod1, mod2;
+	(void)class;
 	/* fix up the types, and check for legality */
 
 	/* forward declared enums */
