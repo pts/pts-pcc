@@ -91,20 +91,12 @@
 #include <ctype.h>
 #include <errno.h>
 #include <fcntl.h>
-#ifdef __MINILIBC686__
-#else
-#  ifdef HAVE_LIBGEN_H
-#    include <libgen.h>
-#  endif
-#endif
 #include <signal.h>
 #include <stdarg.h>
 #include <stdio.h>
-#ifdef __MINILIBC686__
-#  include <stdlib.h>
-  int mkstemp(char *template);
-#else
-#  include <stdlib.h>
+#include <stdlib.h>
+#ifdef CONFIG_MKSTEMP_COMPAT
+int mkstemp(char *template);
 #endif
 #include <string.h>
 #ifdef HAVE_UNISTD_H
