@@ -402,8 +402,10 @@ union yyalloc
 
 #endif
 
-#if defined(__TINYC__) || defined(__PCC__)  /* Proper declaration of memcpy(...) in case __builtin_memcpy(...) uses it. Useful for minilibc686. */
-#  include <string.h>
+/* Proper declaration of memcpy(...) in case __builtin_memcpy(...) uses it. Useful for minilibc686 with TinyCC, PCC and Clang. GCC doesn't seem to need it. */
+#include <string.h>
+#if defined(__clang__)
+#  define __builtin_memcpy memcpy
 #endif
 
 #if defined YYCOPY_NEEDED && YYCOPY_NEEDED

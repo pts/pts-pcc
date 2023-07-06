@@ -511,6 +511,12 @@ union yyalloc
 
 #endif
 
+/* Proper declaration of memcpy(...) in case __builtin_memcpy(...) uses it. Useful for minilibc686 with TinyCC, PCC and Clang. GCC doesn't seem to need it. */
+#include <string.h>
+#if defined(__clang__)
+#  define __builtin_memcpy memcpy
+#endif
+
 #if defined YYCOPY_NEEDED && YYCOPY_NEEDED
 /* Copy COUNT objects from SRC to DST.  The source and destination do
    not overlap.  */
