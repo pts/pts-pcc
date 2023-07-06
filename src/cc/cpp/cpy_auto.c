@@ -402,13 +402,17 @@ union yyalloc
 
 #endif
 
+#ifdef __TINYC__  /* Use mini_memcpy(...). */
+#  include <string.h>
+#endif
+
 #if defined YYCOPY_NEEDED && YYCOPY_NEEDED
 /* Copy COUNT objects from SRC to DST.  The source and destination do
    not overlap.  */
 # ifndef YYCOPY
-#  if defined __GNUC__ && 1 < __GNUC__
-#   define YYCOPY(Dst, Src, Count) \
-      __builtin_memcpy (Dst, Src, (Count) * sizeof (*(Src)))
+#  if defined __GNUC__ && 1 < __GNUC__ && !defined(__PCC__)
+#    /* With __PCC__, __builtin_memcpy(...) won't use mini_memcpy(...). */
+#    define YYCOPY(Dst, Src, Count) __builtin_memcpy(Dst, Src, (Count) * sizeof (*(Src)))
 #  else
 #   define YYCOPY(Dst, Src, Count)              \
       do                                        \
