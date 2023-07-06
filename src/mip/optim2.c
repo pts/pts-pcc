@@ -1361,7 +1361,7 @@ enum pred_type {
     pred_unknown    = 0,
     pred_goto       = 1,
     pred_cond       = 2,
-    pred_falltrough = 3,
+    pred_falltrough = 3
 } ;
 
 void
