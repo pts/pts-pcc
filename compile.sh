@@ -16,10 +16,10 @@
 # Compile with: ./compile.sh gcc   -s -Os -W -Wall -Wshadow -Wno-unused-parameter -Werror-implicit-function-declaration -std=c99 -pedantic
 # Compile with: ./compile.sh clang -s -Os -W -Wall -Wshadow -Wno-unused-parameter -Werror-implicit-function-declaration -std=c99 -pedantic
 # Compile with: ./compile.sh owcc -blinux -march=i386 -s -O2 -I"$WATCOM"/lh -fsigned-char -fno-stack-protector -W -Wextra -Wno-n303 -std=c99 -fo=.obj && -f *.obj  # But silently breaks for `long long'.
-# Compile with: ./compile.sh minicc --gcc --diet -Wno-unused-parameter -std=c99 -pedantic
-# Compile with: ./compile.sh minicc --wcc --diet -Wno-unused-parameter -std=c99 -pedantic  # But silently breaks for `long long'.
-# Compile with: ./compile.sh minicc --tcc --diet -Wno-unused-parameter -std=c99 -pedantic
-# Compile with: ./compile.sh minicc --pcc --diet -Wno-unused-parameter -std=c99 -pedantic
+# Compile with: ./compile.sh minicc --gcc --diet -Wno-unused-parameter -ansi    -pedantic
+# Compile with: ./compile.sh minicc --wcc --diet -Wno-unused-parameter -std=c99 -pedantic
+# Compile with: ./compile.sh minicc --tcc --diet -Wno-unused-parameter -ansi    -pedantic
+# Compile with: ./compile.sh minicc --pcc --diet -Wno-unused-parameter -ansi    -pedantic
 #
 # !! TODO(pts): Disable more debug printfs (but not assertions), even those which are currently unaffected by PCC_DEBUG. Look for %p.
 #
