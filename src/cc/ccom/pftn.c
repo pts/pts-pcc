@@ -2994,7 +2994,7 @@ attr_new(int type, int nelem)
 	struct attr *ap;
 	int sz;
 
-	sz = sizeof(struct attr) + nelem * sizeof(union aarg);
+	sz = SIZEOF_ATTR_N(nelem);
 
 	ap = memset(blkalloc(sz), 0, sz);
 	ap->atype = type;
@@ -3037,7 +3037,7 @@ attr_find(struct attr *ap, int type)
 struct attr *
 attr_copy(struct attr *aps, struct attr *apd, int n)
 {
-	int sz = sizeof(struct attr) + n * sizeof(union aarg);
+	int sz = SIZEOF_ATTR_N(n);
 	return memcpy(apd, aps, sz);
 }
 
@@ -3047,7 +3047,7 @@ attr_copy(struct attr *aps, struct attr *apd, int n)
 struct attr *
 attr_dup(struct attr *ap, int n)
 {
-	int sz = sizeof(struct attr) + n * sizeof(union aarg);
+	int sz = SIZEOF_ATTR_N(n);
 	ap = memcpy(blkalloc(sz), ap, sz);
 	ap->next = NULL;
 	return ap;

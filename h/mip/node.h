@@ -42,8 +42,9 @@ union aarg {
 struct attr {
 	struct attr *next;
 	int atype;
-	union aarg aa[];
+	union aarg aa[1];  /* Flexible arrsys (`[0]' or `[]') don't work with OpenWatcom C89 mode (`wcc386 -za'), so we avoid them. */
 };
+#define SIZEOF_ATTR_N(n) (sizeof(struct attr) - sizeof(union aarg) + (n) * sizeof(union aarg))
 
 /*
  * The node structure is the basic element in the compiler.
