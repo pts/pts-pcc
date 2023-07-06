@@ -21,9 +21,13 @@
 #include <errno.h>
 #include <stdlib.h>
 
+#include "ld96.h"
+
 #ifdef __STRICT_ANSI__  /* For __GNUC__. */
-extern int snprintf(char *str, size_t size, const char *format, ...);
-long double strtold(const char *nptr, char **endptr);
+  extern int snprintf(char *str, size_t size, const char *format, ...);
+#  ifndef CONFIG_LD96
+    ld96_t strtold(const char *nptr, char **endptr);
+#  endif
 #endif
 
 /* end standard C headers. */
@@ -2711,8 +2715,8 @@ resw(TWORD t, int rv)
 
 #ifndef SOFTFLOAT
 
-static long double
-typround(long double dc, char *e, TWORD *tw)
+static ld96_t
+typround(ld96_t dc, char *e, TWORD *tw)
 {
 	int im = 0;
 
@@ -2722,7 +2726,7 @@ typround(long double dc, char *e, TWORD *tw)
 		case 'f':
 		case 'F':
 			*tw = FLOAT;
-			dc = (float)dc;
+			dc = ld96_from_f32(ld96_to_f32(dc));
 			break;
 		case 'l':
 		case 'L':
@@ -2735,7 +2739,7 @@ typround(long double dc, char *e, TWORD *tw)
 		}
 	}
 	if (*tw == DOUBLE)
-		dc = (double)dc;
+		dc = ld96_from_f64(ld96_to_f64(dc));
 #ifndef NO_COMPLEX
 	if (im)
 		*tw += (FIMAG-FLOAT);
@@ -2752,13 +2756,17 @@ f2(char *str)
 {
 	TWORD tw;
 	NODE *p;
-	long double dc;
+	ld96_t dc;
 	char *eptr;
 
-#ifdef HAVE_STRTOLD
-	dc = strtold(str, &eptr); /* XXX - avoid strtod() */
+#ifdef CONFIG_LD96
+	dc = ld96_strtold(str, &eptr);
 #else
+#  ifdef HAVE_STRTOLD
+	dc = strtold(str, &eptr); /* XXX - avoid strtod() */
+#  else
 	dc = strtod(str, &eptr); /* XXX - avoid strtod() */
+#  endif
 #endif
 	dc = typround(dc, eptr, &tw);
 	p = block(FCON, NIL, NIL, tw, 0, 0);
@@ -2814,14 +2822,14 @@ fhexcon(char *c)
 {
 	TWORD tw;
 	char *ep;
-	long double d;
+	ld96_t d;
 	int i, ed;
 	NODE *p;
 
-	d = 0.0;
+	d = ld96_from_f32(0.0f);
 	ed = 0;
 	c+= 2; /* skip 0x */
-#define FSET(n) { d *= 2; if (i & n) d += 1.0; }
+#define FSET(n) { d = ld96_add(d, d); if (i & n) d = ld96_add(d, ld96_from_f32(1.0f)); }
 	for (; *c != '.' && *c != 'p' && *c != 'P'; c++) {
 		i = h2n(*c);
 		FSET(8); FSET(4); FSET(2); FSET(1);
@@ -2846,9 +2854,9 @@ fhexcon(char *c)
 	if (ed < -32769) ed = -32769;
 
 	while (ed > 0)
-		d *= 2, ed--;
+		d = ld96_add(d, d), ed--;
 	while (ed < 0)
-		d /= 2, ed++;
+		d = ld96_mul(d, ld96_from_f64(0.5)), ed++;
 	d = typround(d, ep, &tw);
 	p = block(FCON, NIL, NIL, tw, 0, 0);
 	p->n_dcon = d;

@@ -132,7 +132,7 @@ typedef unsigned int bittype; /* XXX - for basicblock */
 #define TSTRUCT		020000	/* structure or union */
 #define	TLONGLONG	040000	/* long long */
 #define	TULONGLONG	0100000	/* unsigned long long */
-#define	TLDOUBLE	0200000	/* long double; exceeds 16 bit */
+#define	TLDOUBLE	0200000	/* long-double (ld96_t); exceeds 16 bit */
 #define	TFTN		0400000	/* function pointer; exceeds 16 bit */
 
 /* reclamation cookies */

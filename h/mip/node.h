@@ -113,7 +113,7 @@ typedef struct node {
 #error missing softfloat structure definition
 #endif
 #else
-		long double	_dcon;
+		ld96_t	_dcon;
 #endif
 	} n_f;
 } NODE;

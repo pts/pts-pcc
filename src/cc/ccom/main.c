@@ -153,6 +153,8 @@ ccom_main(int argc, char *argv[])
 	(void)gettimeofday(&t1, NULL);
 #endif
 
+	ld96_set_ld_precision();  /* Needed by the OpenWatcom libc. */
+
 	prgname = argv[0];
 
 	while ((ch = getopt(argc, argv, "OT:VW:X:Z:f:gkm:psvwx:")) != -1) {

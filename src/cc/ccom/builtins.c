@@ -712,24 +712,28 @@ static const unsigned char nLDOUBLE[] = { 0x7f, 0xff, 0xc0, 0, 0, 0, 0, 0, 0, 0,
 #endif
 #endif
 
-#define VALX(typ,TYP) {						\
+#define VALX(typ, TYP, CONV) {					\
 	typ d;							\
 	int x;							\
 	NODE *f;						\
 	(void)bt; (void)a;					\
 	x = MIN(sizeof__n ## TYP, sizeof(d));			\
 	memcpy(&d, v ## TYP, x);				\
-	f = block(FCON, NIL, NIL, TYP, NULL, 0);	\
-	f->n_dcon = d;						\
+	f = block(FCON, NIL, NIL, TYP, NULL, 0);		\
+	f->n_dcon = CONV(d);					\
 	return f;						\
 }
 
-static NODE *
-builtin_huge_valf(const struct bitable *bt, NODE *a) VALX(float,FLOAT)
-static NODE *
-builtin_huge_val(const struct bitable *bt, NODE *a) VALX(double,DOUBLE)
-static NODE *
-builtin_huge_vall(const struct bitable *bt, NODE *a) VALX(long double,LDOUBLE)
+
+#ifdef CONFIG_LD96
+  static NODE *builtin_huge_valf(const struct bitable *bt, NODE *a) VALX(float,FLOAT, ld96_from_f32)
+  static NODE *builtin_huge_val(const struct bitable *bt, NODE *a) VALX(double,DOUBLE, ld96_from_f64)
+  static NODE *builtin_huge_vall(const struct bitable *bt, NODE *a) VALX(ld96_t,LDOUBLE, ld96_id)
+#else
+  static NODE *builtin_huge_valf(const struct bitable *bt, NODE *a) VALX(float,FLOAT, ld96_id)
+  static NODE *builtin_huge_val(const struct bitable *bt, NODE *a) VALX(double,DOUBLE, ld96_id)
+  static NODE *builtin_huge_vall(const struct bitable *bt, NODE *a) VALX(ld96_t,LDOUBLE, ld96_id)
+#endif
 
 #define	builtin_inff	builtin_huge_valf
 #define	builtin_inf	builtin_huge_val

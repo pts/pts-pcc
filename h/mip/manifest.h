@@ -40,6 +40,7 @@
 #include <string.h>
 #include "config_auto.h"
 #include "macdefs.h"
+#include "ld96.h"
 #include "node.h"
 #include "compat.h"
 

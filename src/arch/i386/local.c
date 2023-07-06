@@ -940,7 +940,7 @@ spalloc(NODE *t, NODE *p, OFFSZ off)
 int
 ninval(CONSZ off, int fsz, NODE *p)
 {
-	union { float f; double d; long double l; int i[3]; } u;
+	union { float f; double d; ld96_t l; int i[3]; } u;
 	int i;
 	(void)fsz;
 
@@ -956,7 +956,7 @@ ninval(CONSZ off, int fsz, NODE *p)
 		break;
 	case LDOUBLE:
 		u.i[2] = 0;
-		u.l = (long double)p->n_dcon;
+		u.l = p->n_dcon;
 #if defined(HOST_BIG_ENDIAN)
 		/* XXX probably broken on most hosts */
 		printf("\t.long\t0x%x,0x%x,0x%x\n", u.i[2], u.i[1], u.i[0]);
@@ -965,7 +965,7 @@ ninval(CONSZ off, int fsz, NODE *p)
 #endif
 		break;
 	case DOUBLE:
-		u.d = (double)p->n_dcon;
+		u.d = ld96_to_f64(p->n_dcon);
 #if defined(HOST_BIG_ENDIAN)
 		printf("\t.long\t0x%x,0x%x\n", u.i[1], u.i[0]);
 #else
@@ -973,7 +973,7 @@ ninval(CONSZ off, int fsz, NODE *p)
 #endif
 		break;
 	case FLOAT:
-		u.f = (float)p->n_dcon;
+		u.f = ld96_to_f32(p->n_dcon);
 		printf("\t.long\t%d\n", u.i[0]);
 		break;
 	default:

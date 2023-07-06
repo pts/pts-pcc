@@ -340,7 +340,7 @@ int COLORMAP(int c, int *r);
 	int ipp_argstacksize;
 
 #define	HAVE_WEAKREF
-#define	TARGET_FLT_EVAL_METHOD	2	/* all as long double */
+#define	TARGET_FLT_EVAL_METHOD	2	/* all as ld96_t (long-double) */
 
 /*
  * Extended assembler macros.

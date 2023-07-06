@@ -277,8 +277,8 @@ resw(TWORD t, int rv)
 
 #ifndef SOFTFLOAT
 
-static long double
-typround(long double dc, char *e, TWORD *tw)
+static ld96_t
+typround(ld96_t dc, char *e, TWORD *tw)
 {
 	int im = 0;
 
@@ -318,7 +318,7 @@ f2(char *str)
 {
 	TWORD tw;
 	NODE *p;
-	long double dc;
+	ld96_t dc;
 	char *eptr;
 
 #ifdef HAVE_STRTOLD
@@ -380,7 +380,7 @@ fhexcon(char *c)
 {
 	TWORD tw;
 	char *ep;
-	long double d;
+	ld96_t d;
 	int i, ed;
 	NODE *p;
 

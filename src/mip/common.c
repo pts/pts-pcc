@@ -647,7 +647,7 @@ struct balloc {
 	char a1;
 	union {
 		long long l;
-		long double d;
+		ld96_t d;
 	} a2;
 };
 

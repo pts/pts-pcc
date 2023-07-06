@@ -85,7 +85,7 @@ struct optab table[] = {
 		0,	RLEFT,
 		"", },
 
-/* convert between float/double/long double. */
+/* convert between float/double/long-double. */
 { SCONV,	INFL,
 	SHFL,	TLDOUBLE|TDOUBLE|TFLOAT,
 	SHFL,	TLDOUBLE|TDOUBLE|TFLOAT,

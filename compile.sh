@@ -16,12 +16,12 @@
 # Compile with: ./compile.sh gcc   -s -Os -W -Wall -Wshadow -Werror-implicit-function-declaration -std=c99 -pedantic
 # Compile with: ./compile.sh gcc   -s -Os -W -Wall -Wshadow -Werror-implicit-function-declaration -ansi
 # Compile with: ./compile.sh clang -s -Os -W -Wall -Wshadow -Werror-implicit-function-declaration -ansi
-# Compile with: ./compile.sh owcc -blinux -march=i386 -s -O2 -I"$WATCOM"/lh -fsigned-char -fno-stack-protector -W -Wextra -Wno-n303 -std=c99 -fo=.obj && rm -f *.obj  # !! But silently breaks for `long double'. !! Make it work with -std=c89.
-# Compile with: ./compile.sh minicc --gcc --diet -Wshadow -ansi
-# Compile with: ./compile.sh minicc --wcc --diet -Wshadow -ansi  # !! But silently breaks for `long double'.  !! It still fails for other reasons.
-# Compile with: ./compile.sh minicc --tcc --diet -Wshadow -ansi
-# Compile with: ./compile.sh minicc --pcc --diet -Wshadow -ansi
-# Compile with: ./compile.sh minicc --gcc -Wshadow -ansi -DCONFIG_NO_FERROR -DCONFIG_SIGNAL_BSD -DCONFIG_STAT64 -DCONFIG_MALLOC_FROM_STDLIB_H  # minilibc686.
+# Compile with: ./compile.sh owcc -blinux -march=i386 -s -O2 -I"$WATCOM"/lh -DCONFIG_LD96 -fsigned-char -fno-stack-check -W -Wextra -Wno-n303 -std=c99 -fo=.obj && rm -f *.obj  # !! Make it work with -std=c89.
+# Compile with: ./compile.sh minicc --gcc --diet -Wadd=shadow -ansi
+# Compile with: ./compile.sh minicc --wcc --diet -Wadd=shadow -ansi -DCONFIG_LD96
+# Compile with: ./compile.sh minicc --tcc --diet -Wadd=shadow -ansi
+# Compile with: ./compile.sh minicc --pcc --diet -Wadd=shadow -ansi
+# Compile with: ./compile.sh minicc --gcc -Wadd=shadow -ansi -DCONFIG_NO_FERROR -DCONFIG_SIGNAL_BSD -DCONFIG_STAT64 -DCONFIG_MALLOC_FROM_STDLIB_H  # minilibc686.
 #
 # !! TODO(pts): Disable more debug printfs (but not assertions), even those which are currently unaffected by PCC_DEBUG. Look for %p.
 #
@@ -45,7 +45,7 @@ $CC -DGCC_COMPAT $CFLAGS -Dos_linux -Dmach_i386 \
         src/mip/match.c src/cc/ccom/optim.c src/mip/optim2.c src/arch/i386/order.c src/cc/ccom/pftn.c src/mip/reader.c src/mip/regs.c src/cc/ccom/scan_auto.c src/cc/ccom/stabs.c src/cc/ccom/symtabs.c src/arch/i386/table.c src/cc/ccom/trees.c src/mip/unicode.c \
      src/cc/cpp/cpp.c src/cc/cpp/cpy_auto.c \
      src/cc/cpp/token.c src/bsd/strlcpy.c src/bsd/strlcat.c \
-     src/mip/mkstemp.c \
+     src/mip/mkstemp.c src/mip/ld96.c \
      -o pccbin/pcc
 
 ls -ld pccbin/pcc

@@ -839,16 +839,16 @@ concast(NODE *p, TWORD t)
 	} else { /* p->n_op == FCON */
 		if (t == BOOL) {
 			p->n_op = ICON;
-			p->n_lval = FLOAT_NE(p->n_dcon,0.0);
+			p->n_lval = !FLOAT_ISZERO(p->n_dcon);
 			p->n_sp = NULL;
 		} else if (t <= ULONGLONG) {
 			p->n_op = ICON;
 			p->n_lval = ISUNSIGNED(t) ? /* XXX FIXME */
-			    ((U_CONSZ)p->n_dcon) : p->n_dcon;
+			    (CONSZ)ld96_to_ull(p->n_dcon) : ld96_to_ll(p->n_dcon);
 			p->n_sp = NULL;
 		} else {
-			p->n_dcon = t == FLOAT ? (float)p->n_dcon :
-			    t == DOUBLE ? (double)p->n_dcon : p->n_dcon;
+			p->n_dcon = t == FLOAT ? ld96_from_f32(ld96_to_f32(p->n_dcon)) :
+			    t == DOUBLE ? ld96_from_f64(ld96_to_f64(p->n_dcon)) : p->n_dcon;
 		}
 	}
 	p->n_type = t;

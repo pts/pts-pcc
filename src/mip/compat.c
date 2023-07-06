@@ -349,7 +349,7 @@ fmtint(char *buffer, size_t *currlen, size_t maxlen, long value, int base,
     int min, int max, int flags);
 
 static void 
-fmtfp(char *buffer, size_t *currlen, size_t maxlen, long double fvalue, 
+fmtfp(char *buffer, size_t *currlen, size_t maxlen, ld96_t fvalue, 
     int min, int max, int flags);
 
 static void
@@ -393,7 +393,7 @@ dopr(char *buffer, size_t maxlen, const char *format, va_list args)
 {
 	char *strvalue, ch;
 	long value;
-	long double fvalue;
+	ld96_t fvalue;
 	int min = 0, max = -1, state = DP_S_DEFAULT, flags = 0, cflags = 0;
 	size_t currlen = 0;
   
@@ -550,7 +550,7 @@ dopr(char *buffer, size_t maxlen, const char *format, va_list args)
 				break;
 			case 'f':
 				if (cflags == DP_C_LDOUBLE)
-					fvalue = va_arg(args, long double);
+					fvalue = va_arg(args, ld96_t);
 				else
 					fvalue = va_arg(args, double);
 				/* um, floating point? */
@@ -560,7 +560,7 @@ dopr(char *buffer, size_t maxlen, const char *format, va_list args)
 				flags |= DP_F_UP;
 			case 'e':
 				if (cflags == DP_C_LDOUBLE)
-					fvalue = va_arg(args, long double);
+					fvalue = va_arg(args, ld96_t);
 				else
 					fvalue = va_arg(args, double);
 				break;
@@ -568,7 +568,7 @@ dopr(char *buffer, size_t maxlen, const char *format, va_list args)
 				flags |= DP_F_UP;
 			case 'g':
 				if (cflags == DP_C_LDOUBLE)
-					fvalue = va_arg(args, long double);
+					fvalue = va_arg(args, ld96_t);
 				else
 					fvalue = va_arg(args, double);
 				break;
@@ -745,10 +745,10 @@ fmtint(char *buffer, size_t *currlen, size_t maxlen,
 	}
 }
 
-static long double 
+static ld96_t
 ldpow10(int exp)
 {
-	long double result = 1;
+	ld96_t result = 1;
 
 	while (exp) {
 		result *= 10;
@@ -759,7 +759,7 @@ ldpow10(int exp)
 }
 
 static long 
-lroundl(long double value)
+lroundl(ld96_t value)
 {
 	long intpart = value;
 
@@ -771,7 +771,7 @@ lroundl(long double value)
 }
 
 static void 
-fmtfp(char *buffer, size_t *currlen, size_t maxlen, long double fvalue, 
+fmtfp(char *buffer, size_t *currlen, size_t maxlen, ld96_t fvalue, 
       int min, int max, int flags)
 {
 	char iconvert[20], fconvert[20];
@@ -779,7 +779,7 @@ fmtfp(char *buffer, size_t *currlen, size_t maxlen, long double fvalue,
 	int padlen = 0; /* amount to pad */
 	int zpadlen = 0, caps = 0;
 	long intpart, fracpart;
-	long double ufvalue;
+	ld96_t ufvalue;
   
 	/* 
 	 * AIX manpage says the default is 0, but Solaris says the default
