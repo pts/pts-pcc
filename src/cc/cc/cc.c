@@ -107,14 +107,9 @@
 #  include <stdlib.h>
 #endif
 #include <string.h>
-#ifdef __MINILIBC686__
+#ifdef HAVE_UNISTD_H
 #  include <unistd.h>
-  int execvp(const char *file, char *const argv[]);
-#else
 #endif
-#  ifdef HAVE_UNISTD_H
-#    include <unistd.h>
-#  endif
 
 #ifdef os_win32
 #include <windows.h>
