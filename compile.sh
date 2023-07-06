@@ -21,6 +21,7 @@
 # Compile with: ./compile.sh minicc --wcc --diet -Wshadow -ansi  # !! But silently breaks for `long double'.  !! It still fails for other reasons.
 # Compile with: ./compile.sh minicc --tcc --diet -Wshadow -ansi
 # Compile with: ./compile.sh minicc --pcc --diet -Wshadow -ansi
+# Compile with: ./compile.sh minicc --gcc -Wshadow -ansi -DCONFIG_NO_FERROR -DCONFIG_SIGNAL_BSD -DCONFIG_STAT64 -DCONFIG_MALLOC_FROM_STDLIB_H -DCONFIG_MKSTEMP_COMPAT  # minilibc686.
 #
 # !! TODO(pts): Disable more debug printfs (but not assertions), even those which are currently unaffected by PCC_DEBUG. Look for %p.
 #
