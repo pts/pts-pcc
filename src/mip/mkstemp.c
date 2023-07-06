@@ -91,7 +91,7 @@
 
 #include "config_auto.h"
 
-#if (!defined(HAVE_MKSTEMP) || CONFIG_MKSTEMP_COMPAT) && !defined(os_win32)
+#if (!defined(HAVE_MKSTEMP) || defined(CONFIG_MKSTEMP_COMPAT)) && !defined(os_win32)
 #include <fcntl.h>	/* open() */
 #include <unistd.h>	/* getpid() */
 
@@ -141,4 +141,6 @@ mkstemp(char *path)
 
 	return open(path, O_CREAT | O_EXCL | O_RDWR, 0600);
 }
+#elif defined(__WATCOMC__) && defined(_NO_EXT_KEYS)
+  char mkstemp_dummy;  /* Pacify OpenWatcom `wcc386 -za': Error! E1123: File must contain at least one external definition. */
 #endif
