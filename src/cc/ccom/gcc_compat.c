@@ -311,8 +311,8 @@ gcc_keyword(char *str, NODE **n)
 #define	A2_STR	0x200
 #define	A3_STR	0x400
 
-#ifdef __MSC__
-#define	CS(x)
+#if 1 /*defined(__MSC__) || (defined(__WATCOMC__) && defined(_NO_EXT_KEYS)) */
+#define	CS(x)  /* consistency: The atax[...] array below must be in enum order (i.e. ATTR_NONE ==0, then increasing. */
 #else
 #define CS(x) [x] =
 #endif
@@ -325,8 +325,8 @@ struct atax {
 	CS(ATTR_COMPLEX)	{ 0, NULL },
 	CS(xxxATTR_BASETYP)	{ 0, NULL },
 	CS(ATTR_QUALTYP)	{ 0, NULL },
-	CS(ATTR_STRUCT)		{ 0, NULL },
 	CS(ATTR_ALIGNED)	{ A_0ARG|A_1ARG, "aligned" },
+	CS(ATTR_STRUCT)		{ 0, NULL },
 	CS(GCC_ATYP_PACKED)	{ A_0ARG|A_1ARG, "packed" },
 	CS(GCC_ATYP_SECTION)	{ A_1ARG|A1_STR, "section" },
 	CS(GCC_ATYP_TRANSP_UNION) { A_0ARG, "transparent_union" },
