@@ -1,9 +1,13 @@
 /*
  * ld96.c: 96-bit long double emulation, useful for OpenWatcom
  * by pts@fazekas.hu at Thu Jul  6 16:46:03 CEST 2023
+ *
+ * See ld96_gcc.s for an alternative implementation.
  */
 
-#ifdef CONFIG_LD96
+#if defined(CONFIG_LD96_S)
+  char ld96_dummy;  /* Pacify OpenWatcom `wcc386 -za': Error! E1123: File must contain at least one external definition. */
+#elif defined(CONFIG_LD96)
 
 #  ifdef __WATCOMC__
 _Packed  /* This is needed in case `wcc386 -zp4' wasn't specified. The default is `-zp8'. */
