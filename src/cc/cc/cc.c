@@ -399,6 +399,9 @@ main(int argc, char *argv[])
 	struct string *s;
 	char *t, *u, *argp;
 	char *msuffix;
+#if defined(mach_i386) || defined(mach_amd64)
+	const char *arch_define_flag = NULL;
+#endif
 	int ninput, j;
 
 	lav = argv;
@@ -611,18 +614,31 @@ main(int argc, char *argv[])
 			break;
 
 		case 'm': /* target-dependent options */
+			t = (argp[2] == 0) ? nxtopt(0) : argp;
 #ifdef mach_amd64
 			/* need to call i386 ccom for this */
-			if (strcmp(argp, "-melf_i386") == 0) {
+			if (strcmp(t, "-melf_i386") == 0) {
 				errorx(99, "32-bit compilation on ams64 not supported");
 				/* pass0 = LIBEXECDIR "/ccom_i386"; */
 				/* amd64_i386 = 1; */
 				break;
 			}
 #endif
-			strlist_append(&middle_linker_flags, argp);
-			if (argp[2] == 0) {
-				t = nxtopt(0);
+			if (strncmp(t, "-march=", 7) == 0) {
+				strlist_append(&compiler_flags, t);
+#if defined(mach_i386) || defined(mach_amd64)
+				t += 7;
+				if (strcasecmp(t, "i386") == 0) {
+					arch_define_flag = NULL;
+				} else if (strcasecmp(t, "i486") == 0) {
+					arch_define_flag = "-D__i486__";
+				} else if (strcasecmp(t, "i586") == 0) {
+					arch_define_flag = "-D__i586__";
+				} else if (strcasecmp(t, "i686") == 0) {
+					arch_define_flag = "-D__i686__";
+				}
+#endif
+			} else {
 				strlist_append(&middle_linker_flags, t);
 			}
 			break;
@@ -845,6 +861,9 @@ main(int argc, char *argv[])
 		continue;
 
 	}
+#if defined(mach_i386) || defined(mach_amd64)
+	if (arch_define_flag) strlist_append(&preprocessor_flags, arch_define_flag);
+#endif
 
 	/* Sanity checking */
 	if (cppflag) {

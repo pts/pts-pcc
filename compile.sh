@@ -3,8 +3,8 @@
 # compile.sh: build script for PCC 1.1.0 on Linux, targeting Linux i386
 # by pts@fazekas.hu at Sat Jun 10 12:46:04 CEST 2023
 #
-# minicc with the `--gcc=4.8' flag creates shorter output (272876 bytes)
-# than with `--wcc' or `--tcc' or GCC 7.5.0 or Clang 6.0.0.
+# minicc with the `--gcc=4.8 -march=i686' flag creates shorter output
+# (265384 bytes) than with `--wcc' or `--tcc' or GCC 7.5.0 or Clang 6.0.0.
 #
 # There is also libpcc with divdi3 in a separate download:
 # http://pcc.ludd.ltu.se/ftp/pub/pcc-releases/pcc-libs-1.1.0.tgz , but it is

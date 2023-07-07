@@ -30,6 +30,8 @@
  * Machine-dependent defines for both passes.
  */
 
+#define FEATURE_FUCOMI 1
+
 /*
  * Convert (multi-)character constant to integer.
  */

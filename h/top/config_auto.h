@@ -161,7 +161,7 @@
 /* #undef TLS */
 
 /* Version string */
-#define VERSSTR "pts-pcc 1.1.0 20141014 + 20230610 for i386-pc-linux-gnu"
+#define VERSSTR "pts-pcc 1.1.0 20141014 + 20230707 for i386-pc-linux-gnu"
 
 /* Size of wide-character type in chars */
 #define WCHAR_SIZE 4

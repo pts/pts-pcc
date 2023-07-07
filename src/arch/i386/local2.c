@@ -29,6 +29,7 @@
 # include "pass2.h"
 # include <ctype.h>
 # include <string.h>
+# include <stdlib.h>
 
 #if defined(PECOFFABI) || defined(MACHOABI) || defined(AOUTABI)
 #define EXPREFIX	"_"
@@ -36,6 +37,8 @@
 #define EXPREFIX	""
 #endif
 
+
+static unsigned char fset = -1;  /* Enable all CPU features by default. */
 
 static int stkpos;
 
@@ -303,10 +306,19 @@ fcomp(NODE *p)
 {
 	static char *fpcb[] = { "jz", "jnz", "jbe", "jc", "jnc", "ja" };
 
-	if ((p->n_su & DORIGHT) == 0)
+	if ((p->n_su & DORIGHT) == 0) {
 		expand(p, 0, "\tfxch\n");
-	expand(p, 0, "\tfucomip %st(1),%st\n");	/* emit compare insn  */
-	expand(p, 0, "\tfstp %st(0)\n");	/* pop fromstack */
+	}
+	if (fset & FEATURE_FUCOMI) {
+		expand(p, 0, "\tfucomip %st(1),%st\n");	 /* emit compare insn  */
+	} else {
+		expand(p, 0, "\tpush %eax\n");  /* TODO(pts): Does it work without `push %eax'? How do we make sure that it is not in use? */
+		expand(p, 0, "\tfucomp %st(1)\n");
+		expand(p, 0, "\tfnstsw %ax\n");
+		expand(p, 0, "\tsahf\n");
+		expand(p, 0, "\tpop %eax\n");
+	}
+	expand(p, 0, "\tfstp %st(0)\n");  /* pop fromstack */
 
 	if (p->n_op == NE || p->n_op == GT || p->n_op == GE)
 		expand(p, 0, "\tjp LC\n");
@@ -1291,7 +1303,20 @@ special(NODE *p, int shape)
 void
 mflags(char *str)
 {
-	(void)str;
+	const char *p;
+	if (memcmp(str, "arch=", 5) == 0 && (str[5] | 32) == 'i') {  /* -march=i386 ... -march=i686. */
+		p = str + 6;
+		if (p[0] + (0U - '3') <= '6' - '3' + 0U && p[1] == '8' && p[2] == '6' && p[3] == '\0') {
+			if (p[0] == '6') {
+				fset |= FEATURE_FUCOMI;
+			} else {
+				fset &= ~FEATURE_FUCOMI;
+			}
+			return;
+		}
+	}
+	fprintf(stderr, "unknown m option '%s'\n", str);
+	exit(1);
 }
 
 /*
