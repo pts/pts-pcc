@@ -16,9 +16,9 @@
 # Compile with: ./compile.sh gcc   -s -Os -W -Wall -Wshadow -Werror-implicit-function-declaration -std=c99 -pedantic
 # Compile with: ./compile.sh gcc   -s -Os -W -Wall -Wshadow -Werror-implicit-function-declaration -ansi
 # Compile with: ./compile.sh clang -s -Os -W -Wall -Wshadow -Werror-implicit-function-declaration -ansi
-# Compile with: ./compile.sh owcc -blinux -march=i386 -s -O2 -I"$WATCOM"/lh -DCONFIG_LD96 -fsigned-char -fno-stack-check -W -Wextra -Wno-n303 -std=c99 -fo=.obj && rm -f *.obj  # !! Make it work with -std=c89.
+# Compile with: ./compile.sh owcc -blinux -march=i386 -s -O2 -I"$WATCOM"/lh -DCONFIG_LD96 -fsigned-char -fno-stack-check -W -Wextra -Wno-n303 -std=c99 -fo=.obj && rm -f *.obj
 # Compile with: ./compile.sh minicc --gcc --diet -Wadd=shadow -ansi
-# Compile with: ./compile.sh minicc --wcc --diet -Wadd=shadow -ansi -DCONFIG_LD96
+# Compile with: ./compile.sh minicc --wcc --diet -Wadd=shadow -ansi -DCONFIG_LD96 -DCONFIG_STAT64
 # Compile with: ./compile.sh minicc --tcc --diet -Wadd=shadow -ansi
 # Compile with: ./compile.sh minicc --pcc --diet -Wadd=shadow -ansi
 # Compile with: ./compile.sh minicc --gcc -Wadd=shadow -ansi -DCONFIG_NO_FERROR -DCONFIG_SIGNAL_BSD -DCONFIG_STAT64 -DCONFIG_MALLOC_FROM_STDLIB_H  # minilibc686.

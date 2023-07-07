@@ -42,7 +42,8 @@
 #include <stdarg.h>
 #include <string.h>
 
-#ifdef __STRICT_ANSI__  /* For __GNUC__. */
+/* __STRICT_ANSI__ is by `gcc -ansi', _NO_EXT_KEYS is by OpenWatcom `wcc386 -za'. */
+#if defined(__STRICT_ANSI__) || defined(_NO_EXT_KEYS)
 extern int snprintf(char *str, size_t size, const char *format, ...);
 extern int vsnprintf(char *str, size_t size, const char *format, va_list ap);
 #endif

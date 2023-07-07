@@ -31,6 +31,10 @@
  * from V7 cpp, and at last ansi/c99 support.
  */
 
+#if defined(__WATCOMC__) && defined(_NO_EXT_KEYS) && !defined(_POSIX_SOURCE)
+#  define _POSIX_SOURCE 1  /* For stat(2). */
+#endif
+
 #include "config_auto.h"
 
 #include <sys/stat.h>

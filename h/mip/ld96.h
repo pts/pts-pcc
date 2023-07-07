@@ -47,6 +47,10 @@
    */
   typedef char assert_ld96_size[sizeof(ld96_t) == 12 || sizeof(ld96_t) == 16 ? 1 : -1];
 #  include <stdlib.h>  /* For strtold(3). */
+  /* __STRICT_ANSI__ is by `gcc -ansi', _NO_EXT_KEYS is by OpenWatcom `wcc386 -za'. */
+#  if defined(__STRICT_ANSI__) || defined(_NO_EXT_KEYS)
+    ld96_t strtold(const char *nptr, char **endptr);
+#  endif
 #  define ld96_set_ld_precision()
 #  define ld96_from_ll(v) ((ld96_t)(long long)(v))
 #  define ld96_from_ull(u) ((ld96_t)(unsigned long long)(u))

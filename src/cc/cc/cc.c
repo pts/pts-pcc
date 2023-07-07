@@ -95,7 +95,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef CONFIG_MKSTEMP_COMPAT
+#if defined(CONFIG_MKSTEMP_COMPAT) || defined(_NO_EXT_KEYS)
 int mkstemp(char *template);
 #endif
 #include <string.h>
@@ -1371,7 +1371,8 @@ strlist_exec(struct strlist *l)
 
 #endif
 
-#ifdef __STRICT_ANSI__  /* For __GNUC__. */
+/* __STRICT_ANSI__ is by `gcc -ansi', _NO_EXT_KEYS is by OpenWatcom `wcc386 -za'. */
+#if defined(__STRICT_ANSI__) || defined(_NO_EXT_KEYS)
 extern int snprintf(char *str, size_t size, const char *format, ...);
 #endif
 

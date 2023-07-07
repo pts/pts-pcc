@@ -23,11 +23,9 @@
 
 #include "ld96.h"
 
-#ifdef __STRICT_ANSI__  /* For __GNUC__. */
-  extern int snprintf(char *str, size_t size, const char *format, ...);
-#  ifndef CONFIG_LD96
-    ld96_t strtold(const char *nptr, char **endptr);
-#  endif
+/* __STRICT_ANSI__ is by `gcc -ansi', _NO_EXT_KEYS is by OpenWatcom `wcc386 -za'. */
+#if defined(__STRICT_ANSI__) || defined(_NO_EXT_KEYS)
+extern int snprintf(char *str, size_t size, const char *format, ...);
 #endif
 
 /* end standard C headers. */
