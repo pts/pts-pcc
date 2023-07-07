@@ -141,6 +141,6 @@ mkstemp(char *path)
 
 	return open(path, O_CREAT | O_EXCL | O_RDWR, 0600);
 }
-#elif defined(__WATCOMC__) && defined(_NO_EXT_KEYS)
-  char mkstemp_dummy;  /* Pacify OpenWatcom `wcc386 -za': Error! E1123: File must contain at least one external definition. */
+#elif defined(__STRICT_ANSI__) || defined(_NO_EXT_KEYS)
+  char mkstemp_dummy;  /* Pacify `gcc -std=c99 -pedantic' and OpenWatcom `wcc386 -za': Error! E1123: File must contain at least one external definition. */
 #endif

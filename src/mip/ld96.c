@@ -6,7 +6,9 @@
  */
 
 #if defined(CONFIG_LD96_S)
-  char ld96_dummy;  /* Pacify OpenWatcom `wcc386 -za': Error! E1123: File must contain at least one external definition. */
+#  if defined(__STRICT_ANSI__) || defined(_NO_EXT_KEYS)
+    char ld96_dummy;  /* Pacify OpenWatcom `wcc386 -za': Error! E1123: File must contain at least one external definition. */
+#  endif
 #elif defined(CONFIG_LD96)
 
 #  ifdef __WATCOMC__
