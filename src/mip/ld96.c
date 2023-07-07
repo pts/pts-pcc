@@ -5,19 +5,16 @@
  * See ld96_gcc.s for an alternative implementation.
  */
 
-#if defined(CONFIG_LD96_S)
-#  if defined(__STRICT_ANSI__) || defined(_NO_EXT_KEYS)
-    char ld96_dummy;  /* Pacify OpenWatcom `wcc386 -za': Error! E1123: File must contain at least one external definition. */
-#  endif
-#elif defined(CONFIG_LD96)
-
+#ifdef CONFIG_LD96
 #  ifdef __WATCOMC__
 _Packed  /* This is needed in case `wcc386 -zp4' wasn't specified. The default is `-zp8'. */
 #  endif
 /*#pragma pack(__push, 4) */
   typedef union ld96u {
     struct { unsigned a, b, c; } s;
-    long double ld;  /* This doesn't matter with __WATCOMC__. */
+#  if !defined(__WATCOMC__) && !defined(CONFIG_LD96_S)
+    long double ld;
+#  endif
   } ld96u_t;
 /*#pragma pack(__pop)*/
   typedef char assert_unsigned_size[sizeof(unsigned) == 4 ? 1 : -1];
@@ -25,31 +22,49 @@ _Packed  /* This is needed in case `wcc386 -zp4' wasn't specified. The default i
   typedef char assert_ld96_size[sizeof(ld96u_t) == 12 || sizeof(ld96u_t) == 16 ? 1 : -1];
 
 #  ifndef __WATCOMC__  /* __GNUC__ or __TINYC__. */
-#    include <stdlib.h>
-#    ifdef __STRICT_ANSI__
-      long double strtold(const char *nptr, char **endptr);
-#    endif
-    typedef char assert_long_double_size[sizeof(long double) == 12 || sizeof(long double) == 16 ? 1 : -1];
-    ld96u_t ld96_from_ull(unsigned long long u) { ld96u_t r; r.ld = u; return r; }
-    ld96u_t ld96_from_ll(long long v) { ld96u_t r; r.ld = v; return r; }
-    ld96u_t ld96_from_f32(float f) { ld96u_t r; r.ld = f; return r; }
-    ld96u_t ld96_from_f64(double d) { ld96u_t r; r.ld = d; return r; }
-    long long ld96_to_ll(ld96u_t ld) { return ld.ld; }
-    unsigned long long ld96_to_ull(ld96u_t ld) { return ld.ld > 0 ? (unsigned long long)ld.ld : 0ULL; }  /* GCC 7.5.0 returns junk for negative input by default. TODO(pts): What does it return? !! Why isn't non-CONFIG_LD96 broken? Probably because of inlining. */
-    float   ld96_to_f32(ld96u_t ld) { return ld.ld; }
-    double  ld96_to_f64(ld96u_t ld) { return ld.ld; }
-    ld96u_t ld96_strtold(const char *nptr, char **endptr) { ld96u_t r; r.ld = strtold(nptr, endptr); return r; }
-    int     ld96_iszero(ld96u_t ld) { return ld.ld == 0.0; }
-    ld96u_t ld96_neg(ld96u_t ld) { ld96u_t r; r.ld = -ld.ld; return r; }
-    ld96u_t ld96_add(ld96u_t a, ld96u_t b) { ld96u_t r; r.ld = a.ld + b.ld; return r; }
-    ld96u_t ld96_sub(ld96u_t a, ld96u_t b) { ld96u_t r; r.ld = a.ld - b.ld; return r; }
-    ld96u_t ld96_mul(ld96u_t a, ld96u_t b) { ld96u_t r; r.ld = a.ld * b.ld; return r; }
-    ld96u_t ld96_div(ld96u_t a, ld96u_t b) { ld96u_t r; r.ld = a.ld / b.ld; return r; }
-    int     ld96_eq(ld96u_t a, ld96u_t b) { return a.ld == b.ld; }
-    int     ld96_lt(ld96u_t a, ld96u_t b) { return a.ld < b.ld; }
-#  else
+#    ifdef CONFIG_LD96_S
+#      if defined(__STRICT_ANSI__) || defined(_NO_EXT_KEYS)
+        char ld96_dummy;  /* Pacify OpenWatcom `wcc386 -za': Error! E1123: File must contain at least one external definition. */
+#      endif
+#      ifndef __i386__
+#        error GCC assembly implementation of ld96 supports 32-bit i386 only (not even amd64).
+#      endif
+#    else  /* else CONFIG_LD96_S */
+#      include <stdlib.h>
+#      ifdef __STRICT_ANSI__
+        long double strtold(const char *nptr, char **endptr);
+#      endif
+#      if !defined(__WATCOMC__) && !defined(CONFIG_LD96_S) && __SIZEOF_LONG_DOUBLE__ > 12  /* GCC >=4.2 has __SIZEOF_LONG_DOUBLE__, and it's 16 for __amd64__. */
+        /* We add a `long double' member just for the alignment. */
+        typedef union ld96 { struct { unsigned a, b, c; } s; long double ld; } ld96_t;  /* Matches "ld96.h". */
+#      else
+        typedef struct ld96 { unsigned a, b, c; } ld96_t;  /* Matches "ld96.h". */
+#      endif
+      /* Everything must match "ld96.h" here. */
+      typedef char assert_ld96u_size_strict[sizeof(ld96_t) == sizeof(ld96u_t) ? 1 : -1];  /* Needed by 2-argument functions such as ld96_add. */
+      typedef char assert_long_double_size[sizeof(long double) == 10 || sizeof(long double) == 12 || sizeof(long double) == 16 ? 1 : -1];  /* Sanity check, just to avoid sizeof(long double) <= 8. */
+      typedef char assert_long_double_size_le[sizeof(long double) <= sizeof(ld96_t) ? 1 : -1];  /* If this fails, specify `gcc -m96bit-long-double'. The switch doesn't exist for Clang. It shouldn't be needed anyway for GCC >=4.2, because `union ld96' contains `long double'. */
+      ld96u_t ld96_from_ull(unsigned long long u) { ld96u_t r; r.ld = u; return r; }
+      ld96u_t ld96_from_ll(long long v) { ld96u_t r; r.ld = v; return r; }
+      ld96u_t ld96_from_f32(float f) { ld96u_t r; r.ld = f; return r; }
+      ld96u_t ld96_from_f64(double d) { ld96u_t r; r.ld = d; return r; }
+      long long ld96_to_ll(ld96u_t ld) { return ld.ld; }
+      unsigned long long ld96_to_ull(ld96u_t ld) { return ld.ld > 0 ? (unsigned long long)ld.ld : 0ULL; }  /* GCC 7.5.0 returns junk for negative input by default. TODO(pts): What does it return? !! Why isn't non-CONFIG_LD96 broken? Probably because of inlining. */
+      float   ld96_to_f32(ld96u_t ld) { return ld.ld; }
+      double  ld96_to_f64(ld96u_t ld) { return ld.ld; }
+      ld96u_t ld96_strtold(const char *nptr, char **endptr) { ld96u_t r; r.ld = strtold(nptr, endptr); return r; }
+      int     ld96_iszero(ld96u_t ld) { return ld.ld == 0.0; }
+      ld96u_t ld96_neg(ld96u_t ld) { ld96u_t r; r.ld = -ld.ld; return r; }
+      ld96u_t ld96_add(ld96u_t a, ld96u_t b) { ld96u_t r; r.ld = a.ld + b.ld; return r; }
+      ld96u_t ld96_sub(ld96u_t a, ld96u_t b) { ld96u_t r; r.ld = a.ld - b.ld; return r; }
+      ld96u_t ld96_mul(ld96u_t a, ld96u_t b) { ld96u_t r; r.ld = a.ld * b.ld; return r; }
+      ld96u_t ld96_div(ld96u_t a, ld96u_t b) { ld96u_t r; r.ld = a.ld / b.ld; return r; }
+      int     ld96_eq(ld96u_t a, ld96u_t b) { return a.ld == b.ld; }
+      int     ld96_lt(ld96u_t a, ld96u_t b) { return a.ld < b.ld; }
+#    endif  /* else CONFIG_LD96_S */
+#  else  /* else ifndef __WATCOMC__ */
 #    if !(defined(__386__) || defined(_M_I386))
-#      error Watcom C is supported for i386 only.
+#      error Watcom C assembly implementation of ld96 supports 32-bit i386 only (not even amd64).
 #    elif _M_IX86 >= 600  /* i686 (P6) or later. */
 #      define FUCOMIP_01 fucomip st, st(1)
 #    else  /* i386 or later. */

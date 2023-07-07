@@ -15,8 +15,13 @@
 #  ifdef __WATCOMC__
   _Packed  /* This is needed in case `wcc386 -zp4' wasn't specified. The default is `-zp8'. */
 #  endif
-  typedef struct ld96 { unsigned a, b, c; } ld96_t;
-  typedef char assert_ld96_size[sizeof(ld96_t) == 12 ? 1 : -1];
+#  if !defined(__WATCOMC__) && !defined(CONFIG_LD96_S) && __SIZEOF_LONG_DOUBLE__ > 12  /* GCC >=4.2 has __SIZEOF_LONG_DOUBLE__, and it's 16 for __amd64__. */
+    /* We add a `long double' member just for the alignment. */
+    typedef union ld96 { struct { unsigned a, b, c; } s; long double ld; } ld96_t;
+#  else
+    typedef struct ld96 { unsigned a, b, c; } ld96_t;
+#  endif
+  typedef char assert_ld96_size[sizeof(ld96_t) >= 12 ? 1 : -1];
 #  ifdef __WATCOMC__
     void __watcall ld96_set_ld_precision(void);
 #  else
@@ -45,7 +50,7 @@
    * sizeof(long_double) == 8. The solution: specify -DCONFIG_LD96, which
    * enables the `long double' emulation.
    */
-  typedef char assert_ld96_size[sizeof(ld96_t) == 12 || sizeof(ld96_t) == 16 ? 1 : -1];
+  typedef char assert_ld96_size[sizeof(ld96_t) == 10 || sizeof(ld96_t) == 12 || sizeof(ld96_t) == 16 ? 1 : -1];
 #  include <stdlib.h>  /* For strtold(3). */
   /* __STRICT_ANSI__ is by `gcc -ansi', _NO_EXT_KEYS is by OpenWatcom `wcc386 -za'. */
 #  if defined(__STRICT_ANSI__) || defined(_NO_EXT_KEYS)
