@@ -2,7 +2,13 @@
  * ld96_wcc_for_gcc.c: compile with OpenWatcom, to be used by GCC
  * by pts@fazekas.hu at Thu Jul  6 16:46:03 CEST 2023
  *
- * The file ld96_gcc.s was generated from this file.
+ * This file is unmaintained.
+ *
+ * The __asm__("...") parts of file ld96_gcc.s was generated from this file.
+ * It contains the assembly instructions in OpenWatcom syntax (rather than
+ * AT&T). However, this code only works if called from C code compiled by
+ * GCC (or pts-tcc or pts-pcc), because the ABI differences between
+ * OpenWatcom and GCC of calling functions which return a struct.
  */
 
 #if !defined(__WATCOMC__) || !defined(__386__)
