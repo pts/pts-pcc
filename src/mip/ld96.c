@@ -3,6 +3,8 @@
  * by pts@fazekas.hu at Thu Jul  6 16:46:03 CEST 2023
  *
  * See ld96_gcc.s for an alternative implementation.
+ * TODO(pts): Make sure the compiler (with CONFIG_LD96) doesn't even use `float' or `double' in any other file.
+ * TODO(pts): As an architecture-independent alternative, add Berkeley SoftFloat (http://www.jhauser.us/arithmetic/SoftFloat.html) extFloat80_t .
  */
 
 #ifdef CONFIG_LD96
