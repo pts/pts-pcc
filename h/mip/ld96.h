@@ -75,6 +75,7 @@
 #  define ld96_eq(a, b) ((ld96_t)(a) == (ld96_t)(b))
 #  define ld96_lt(a, b) ((ld96_t)(a) < (ld96_t)(b))
 #endif
+/* !! TODO(pts): Make this work if a and b are NaN. */
 #define ld96_ne(a, b) (!ld96_eq((a), (b)))
 #define ld96_ge(a, b) (!ld96_lt((a), (b)))
 #define ld96_le(a, b) (!ld96_lt((b), (a)))
