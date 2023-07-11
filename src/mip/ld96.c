@@ -393,6 +393,24 @@ _Packed  /* This is needed in case `wcc386 -zp4' wasn't specified. The default i
 		movzbl %al, %eax;\
 		ret;\
       ");
+     ld96u_t ld96_from_nan(void);
+      __asm__(".global ld96_from_nan;; ld96_from_nan: ;\
+		mov 4(%esp), %eax;\
+		xor %edx, %edx;\
+		mov %edx, (%eax);\
+		movl $0xc0000000, 4(%eax);\
+		movw $0x7fff, 8(%eax);\
+		ret $4; "  /* Callee cleans up the struct return pointer. */"\
+      ");
+     ld96u_t ld96_from_infinity(void);
+      __asm__(".global ld96_from_infinity;; ld96_from_infinity: ;\
+		mov 4(%esp), %eax;\
+		xor %edx, %edx;\
+		mov %edx, (%eax);\
+		movl $0x80000000, 4(%eax);\
+		movw $0x7fff, 8(%eax);\
+		ret $4; "  /* Callee cleans up the struct return pointer. */"\
+      ");
 #    else  /* else CONFIG_LD96_S */
 #      include <stdlib.h>
 #      ifdef __STRICT_ANSI__
@@ -426,6 +444,38 @@ _Packed  /* This is needed in case `wcc386 -zp4' wasn't specified. The default i
       int     ld96_eq(ld96u_t a, ld96u_t b) { return a.ld == b.ld; }
       int     ld96_le(ld96u_t a, ld96u_t b) { return a.ld <= b.ld; }
       int     ld96_lt(ld96u_t a, ld96u_t b) { return a.ld <  b.ld; }
+#    ifdef __GNUC__  /* Also __PCC__, but not __TINYC__ or __WATCOMC__. */
+#      define NAN __builtin_nanl("")
+#      define INFINITY __builtin_infl()
+#    else
+#      include <float.h>
+#      include <math.h>  /* For INFINITY and NAN. */
+#    endif
+     ld96u_t ld96_from_nan(void) {
+       ld96u_t r;
+#       ifdef NAN  /* C99. */
+         r.ld = NAN;
+#       else  /* C89. */
+         r.ld = log(-1.0);
+#       endif
+       return r;
+     }
+#     ifndef INFINITY  /* Not C99. */
+       typedef char assert_float_size[sizeof(float) == 4 ? 1 : -1];
+#     endif
+     ld96u_t ld96_from_infinity(void) {
+       ld96u_t r;
+#       ifdef INFINITY  /* C99. */
+         r.ld = INFINITY;
+#       else  /* C89. */
+         float f = 1L << 31;
+         f *= f;  /* 2 ** 62. */
+         f *= f;  /* 2 ** 124. */
+         f *= f;  /* 2 ** 248, overflows f32, becomes INFINITY. */
+         r.ld = f;
+#       endif
+       return r;
+     }
 #    endif  /* else CONFIG_LD96_S */
 #  else  /* else ifndef __WATCOMC__ */
 #    if !(defined(__386__) || defined(_M_I386))
@@ -801,7 +851,45 @@ _Packed  /* This is needed in case `wcc386 -zp4' wasn't specified. The default i
 		movzx eax, al
 		ret 2*0xc  /* Callee pops. */
     } }
+    __declspec(naked) ld96u_t __watcall ld96_from_nan(void) { __asm {
+		mov eax, esi  /* ESI is the result pointer. The caller expects this in EAX upon return. */
+		mov dword ptr [eax], 0
+		mov dword ptr [eax+4], 0xc0000000
+		mov word ptr [eax+8], 0x7fff
+		ret
+    } }
+    __declspec(naked) ld96u_t __watcall ld96_from_infinity(void) { __asm {
+		mov eax, esi  /* ESI is the result pointer. The caller expects this in EAX upon return. */
+		mov dword ptr [eax], 0
+		mov dword ptr [eax+4], 0x80000000
+		mov word ptr [eax+8], 0x7fff
+		ret
+    } }
 #  endif
 #else
+#  ifndef __GNUC__  /* Also __PCC__, but not __TINYC__ or __WATCOMC__. See definition in "ld96.h". */
+    long double ld96_from_infinity();
+    long double ld96_from_nan() {
+#      ifdef NAN  /* C99. */
+        return NAN;
+#      else  /* C89. */
+         return ld96_from_infinity() * 0.0;  /* Returns positive NaN on x87 (8087). */
+#      endif
+    }
+#    ifndef INFINITY  /* Not C99. */
+      typedef char assert_float_size[sizeof(float) == 4 ? 1 : -1];
+#    endif
+    long double ld96_from_infinity() {
+#      ifdef INFINITY  /* C99. */
+        return INFINITY;
+#      else  /* C89. */
+        float f = 1L << 31;
+        f *= f;  /* 2 ** 62. */
+        f *= f;  /* 2 ** 124. */
+        f *= f;  /* 2 ** 248, overflows f32, becomes INFINITY. */
+        return f;
+#      endif
+  }
+#  endif
   unsigned long long ld96_to_ull(long double d) { return d > 0.0 ? (unsigned long long)d : 0LL; }  /* Make sure that it returns 0 for negative input. */
 #endif  /* CONFIG_LD96 */

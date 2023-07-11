@@ -676,43 +676,44 @@ builtin_islessgreater(const struct bitable *bt, NODE *a)
  * Math-specific builtins that expands to constants.
  * Versions here are for IEEE FP, vax needs its own versions.
  */
-#if TARGET_ENDIAN == TARGET_LE
-static const unsigned char vFLOAT[] = { 0, 0, 0x80, 0x7f };
-static const unsigned char vDOUBLE[] = { 0, 0, 0, 0, 0, 0, 0xf0, 0x7f };
 #ifdef LDBL_128
-static const unsigned char vLDOUBLE[] = { 0,0,0,0,0,0,0, 0, 0, 0, 0, 0, 0, 0x80, 0xff, 0x7f };
-#else /* LDBL_80 */
-static const unsigned char vLDOUBLE[] = { 0, 0, 0, 0, 0, 0, 0, 0x80, 0xff, 0x7f,0,0,0,0,0,0 };
-#endif
-#define sizeof__nFLOAT 4
-/*static const unsigned char nFLOAT[] = { 0, 0, 0xc0, 0x7f };*/
-#define sizeof__nDOUBLE 8
-/*static const unsigned char nDOUBLE[] = { 0, 0, 0, 0, 0, 0, 0xf8, 0x7f };*/
-#ifdef LDBL_128
-#define sizeof__nLDOUBLE 16
-/*static const unsigned char nLDOUBLE[] = { 0,0,0,0,0,0,0,0, 0, 0, 0, 0, 0, 0xc0, 0xff, 0x7f };*/
-#else /* LDBL_80 */
-#define sizeof__nLDOUBLE 16  /* Ditto, it's indeed also 16 bytes. */
-static const unsigned char nLDOUBLE[] = { 0, 0, 0, 0, 0, 0, 0, 0xc0, 0xff, 0x7f,0,0,0,0,0,0 };
-#endif
-#else
-static const unsigned char vFLOAT[] = { 0x7f, 0x80, 0, 0 };
-static const unsigned char vDOUBLE[] = { 0x7f, 0xf0, 0, 0, 0, 0, 0, 0 };
-#ifdef LDBL_128
-static const unsigned char vLDOUBLE[] = { 0x7f, 0xff, 0x80, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0,0 };
-#else /* LDBL_80 */
-static const unsigned char vLDOUBLE[] = { 0x7f, 0xff, 0x80, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0,0 };
-#endif
-static const unsigned char nFLOAT[] = { 0x7f, 0xc0, 0, 0 };
-static const unsigned char nDOUBLE[] = { 0x7f, 0xf8, 0, 0, 0, 0, 0, 0 };
-#ifdef LDBL_128
-static const unsigned char nLDOUBLE[] = { 0x7f, 0xff, 0xc0, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0,0 };
-#else /* LDBL_80 */
-static const unsigned char nLDOUBLE[] = { 0x7f, 0xff, 0xc0, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0,0 };
-#endif
+#  error float128_t not supported.
+#  if TARGET_ENDIAN == TARGET_LE
+    static const unsigned char vLDOUBLE[] = { 0,0,0,0,0,0,0, 0, 0, 0, 0, 0, 0, 0x80, 0xff, 0x7f };
+    static const unsigned char nLDOUBLE[] = { 0,0,0,0,0,0,0,0, 0, 0, 0, 0, 0, 0xc0, 0xff, 0x7f };
+#  else
+    static const unsigned char vLDOUBLE[] = { 0x7f, 0xff, 0x80, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0,0 };
+    static const unsigned char nLDOUBLE[] = { 0x7f, 0xff, 0xc0, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0,0 };
+#  endif
 #endif
 
-#define VALX(typ, TYP, CONV) {					\
+#if 1
+#  define VALX(TYP) {						\
+	NODE *f;						\
+	(void)bt; (void)a;					\
+	f = block(FCON, NIL, NIL, TYP, NULL, 0);		\
+	f->n_dcon = ld96_from_infinity();			\
+	return f;						\
+	}
+  static NODE *builtin_huge_valf(const struct bitable *bt, NODE *a) VALX(FLOAT)
+  static NODE *builtin_huge_val(const struct bitable *bt, NODE *a) VALX(DOUBLE)
+  static NODE *builtin_huge_vall(const struct bitable *bt, NODE *a) VALX(LDOUBLE)
+#else
+#  define sizeof__nFLOAT 4
+#  define sizeof__nDOUBLE 8
+#  define sizeof__nLDOUBLE 16  /* Ditto, it's indeed also 16 bytes. */
+#  if TARGET_ENDIAN == TARGET_LE
+    static const unsigned char vFLOAT[] = { 0, 0, 0x80, 0x7f };
+    static const unsigned char vDOUBLE[] = { 0, 0, 0, 0, 0, 0, 0xf0, 0x7f };
+    static const unsigned char vLDOUBLE[] = { 0,0,0,0, 0,0,0,0x80, 0xff,0x7f,0,0, 0,0,0,0 };
+    static const unsigned char nLDOUBLE[] = { 0,0,0,0, 0,0,0,0xc0, 0xff,0x7f,0,0, 0,0,0,0 };
+#  else
+    static const unsigned char vFLOAT[] = { 0x7f, 0x80, 0, 0 };
+    static const unsigned char vDOUBLE[] = { 0x7f, 0xf0, 0, 0, 0, 0, 0, 0 };
+    static const unsigned char vLDOUBLE[] = { 0x7f, 0xff, 0x80, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0,0 };
+    static const unsigned char nLDOUBLE[] = { 0x7f, 0xff, 0xc0, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0,0 };
+#  endif
+#  define VALX(typ, TYP, CONV) {				\
 	typ d;							\
 	int x;							\
 	NODE *f;						\
@@ -722,19 +723,11 @@ static const unsigned char nLDOUBLE[] = { 0x7f, 0xff, 0xc0, 0, 0, 0, 0, 0, 0, 0,
 	f = block(FCON, NIL, NIL, TYP, NULL, 0);		\
 	f->n_dcon = CONV(d);					\
 	return f;						\
-}
-
-
-#ifdef CONFIG_LD96
-  static NODE *builtin_huge_valf(const struct bitable *bt, NODE *a) VALX(float,FLOAT, ld96_from_f32)
-  static NODE *builtin_huge_val(const struct bitable *bt, NODE *a) VALX(double,DOUBLE, ld96_from_f64)
-  static NODE *builtin_huge_vall(const struct bitable *bt, NODE *a) VALX(ld96_t,LDOUBLE, ld96_id)
-#else
+	}
   static NODE *builtin_huge_valf(const struct bitable *bt, NODE *a) VALX(float,FLOAT, ld96_id)
   static NODE *builtin_huge_val(const struct bitable *bt, NODE *a) VALX(double,DOUBLE, ld96_id)
   static NODE *builtin_huge_vall(const struct bitable *bt, NODE *a) VALX(ld96_t,LDOUBLE, ld96_id)
 #endif
-
 #define	builtin_inff	builtin_huge_valf
 #define	builtin_inf	builtin_huge_val
 #define	builtin_infl	builtin_huge_vall
@@ -752,8 +745,12 @@ builtin_nanx(const struct bitable *bt, NODE *a)
 	} else if (a->n_op == STRING && *a->n_name == '\0') {
 		a->n_op = FCON;
 		a->n_type = bt->rt;
+#if 1
+		a->n_dcon = ld96_from_nan();
+#else
 		(void)(sizeof(nLDOUBLE) < sizeof(a->n_dcon) ? (cerror("nLDOUBLE too small"), 0) : 0);  /* Using `?:' instead of `if' to pacify __WATCOMC__ warning W021 (unreachable code). */
 		memcpy(&a->n_dcon, nLDOUBLE, sizeof(a->n_dcon));
+#endif
 	} else
 		a = binhelp(eve(a), bt->rt, &bt->name[10]);
 	return a;

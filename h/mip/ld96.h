@@ -45,6 +45,8 @@
   int    ld96_watcall ld96_eq (ld96_t a, ld96_t b);
   int    ld96_watcall ld96_le (ld96_t a, ld96_t b);
   int    ld96_watcall ld96_lt (ld96_t a, ld96_t b);
+  ld96_t ld96_watcall ld96_from_nan(void);
+  ld96_t ld96_watcall ld96_from_infinity(void);
 #else
   typedef long double ld96_t;
   /* This fails for OpenWatcom, because it has sizeof(double) ==
@@ -76,6 +78,13 @@
 #  define ld96_eq(a, b) ((ld96_t)(a) == (ld96_t)(b))
 #  define ld96_le(a, b) ((ld96_t)(a) <= (ld96_t)(b))  /* We can't use !ld96_lt(b, a), because a and/or b may be NAN. */
 #  define ld96_lt(a, b) ((ld96_t)(a) <  (ld96_t)(b))
+#  ifdef __GNUC__  /* Also __PCC__, but not __TINYC__ or __WATCOMC__. */
+#    define ld96_from_nan() ((ld96_t)__builtin_nanl(""))
+#    define ld96_from_infinity() ((ld96_t)__builtin_infl())
+#  else
+    ld96_t ld96_watcall ld96_from_nan(void);
+    ld96_t ld96_watcall ld96_from_infinity(void);
+#  endif
 #endif
 #define ld96_ne(a, b) (!ld96_eq((a), (b)))  /* Also correct if a or b is NAN. */
 #define ld96_ge(a, b) (ld96_le((b), (a)))
