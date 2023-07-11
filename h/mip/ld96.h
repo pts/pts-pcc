@@ -43,6 +43,7 @@
   ld96_t ld96_watcall ld96_mul(ld96_t a, ld96_t b);
   ld96_t ld96_watcall ld96_div(ld96_t a, ld96_t b);
   int    ld96_watcall ld96_eq (ld96_t a, ld96_t b);
+  int    ld96_watcall ld96_le (ld96_t a, ld96_t b);
   int    ld96_watcall ld96_lt (ld96_t a, ld96_t b);
 #else
   typedef long double ld96_t;
@@ -73,12 +74,11 @@
 #  define ld96_mul(a, b) ((ld96_t)(a) * (ld96_t)(b))
 #  define ld96_div(a, b) ((ld96_t)(a) / (ld96_t)(b))
 #  define ld96_eq(a, b) ((ld96_t)(a) == (ld96_t)(b))
-#  define ld96_lt(a, b) ((ld96_t)(a) < (ld96_t)(b))
+#  define ld96_le(a, b) ((ld96_t)(a) <= (ld96_t)(b))  /* We can't use !ld96_lt(b, a), because a and/or b may be NAN. */
+#  define ld96_lt(a, b) ((ld96_t)(a) <  (ld96_t)(b))
 #endif
-/* !! TODO(pts): Make this work if a and b are NaN. */
-#define ld96_ne(a, b) (!ld96_eq((a), (b)))
-#define ld96_ge(a, b) (!ld96_lt((a), (b)))
-#define ld96_le(a, b) (!ld96_lt((b), (a)))
+#define ld96_ne(a, b) (!ld96_eq((a), (b)))  /* Also correct if a or b is NAN. */
+#define ld96_ge(a, b) (ld96_le((b), (a)))
 #define ld96_gt(a, b) (ld96_lt((b), (a)))
 
 #endif  /* _MIP_LD96_H */

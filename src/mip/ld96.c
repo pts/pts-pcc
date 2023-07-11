@@ -373,13 +373,23 @@ _Packed  /* This is needed in case `wcc386 -zp4' wasn't specified. The default i
 		and %ecx, %eax;\
 		ret;\
       ");
+      int     ld96_le(ld96u_t a, ld96u_t b);  /* { return a.ld <= b.ld; } */
+      __asm__(".global ld96_le;; ld96_le: ;\
+		fldt 4(%esp);\
+		fldt 0x10(%esp);\
+		"FUCOMIP_01_R_AX" ;\
+		fstp %st(0);\
+		setnb %al;"  /* AL := (CF == 0). */"\
+		movzbl %al, %eax;\
+		ret;\
+      ");
       int     ld96_lt(ld96u_t a, ld96u_t b);  /* { return a.ld < b.ld; } */
       __asm__(".global ld96_lt;; ld96_lt: ;\
 		fldt 4(%esp);\
 		fldt 0x10(%esp);\
 		"FUCOMIP_01_R_AX" ;\
 		fstp %st(0);\
-		seta %al;\
+		seta %al;"  /* AL := (CF == 0 && ZF == 0). */"\
 		movzbl %al, %eax;\
 		ret;\
       ");
@@ -414,7 +424,8 @@ _Packed  /* This is needed in case `wcc386 -zp4' wasn't specified. The default i
       ld96u_t ld96_mul(ld96u_t a, ld96u_t b) { ld96u_t r; r.ld = a.ld * b.ld; return r; }
       ld96u_t ld96_div(ld96u_t a, ld96u_t b) { ld96u_t r; r.ld = a.ld / b.ld; return r; }
       int     ld96_eq(ld96u_t a, ld96u_t b) { return a.ld == b.ld; }
-      int     ld96_lt(ld96u_t a, ld96u_t b) { return a.ld < b.ld; }
+      int     ld96_le(ld96u_t a, ld96u_t b) { return a.ld <= b.ld; }
+      int     ld96_lt(ld96u_t a, ld96u_t b) { return a.ld <  b.ld; }
 #    endif  /* else CONFIG_LD96_S */
 #  else  /* else ifndef __WATCOMC__ */
 #    if !(defined(__386__) || defined(_M_I386))
@@ -772,12 +783,21 @@ _Packed  /* This is needed in case `wcc386 -zp4' wasn't specified. The default i
 		pop ecx  /* Restore. */
 		ret 2*0xc  /* Callee pops. */
     } }
+    __declspec(naked) int     __watcall ld96_le(ld96u_t a, ld96u_t b) { (void)a; (void)b; __asm {  /* return a.ld < b.ld; */
+		fld tbyte ptr [esp+4]
+		fld tbyte ptr [esp+0x10]
+		FUCOMIP_01_R_AX
+		fstp st
+		setnb al  /* AL := (CF == 0). */
+		movzx eax, al
+		ret 2*0xc  /* Callee pops. */
+    } }
     __declspec(naked) int     __watcall ld96_lt(ld96u_t a, ld96u_t b) { (void)a; (void)b; __asm {  /* return a.ld < b.ld; */
 		fld tbyte ptr [esp+4]
 		fld tbyte ptr [esp+0x10]
 		FUCOMIP_01_R_AX
 		fstp st
-		seta al
+		seta al  /* AL := (CF == 0 && ZF == 0). */
 		movzx eax, al
 		ret 2*0xc  /* Callee pops. */
     } }
