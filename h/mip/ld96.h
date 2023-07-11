@@ -33,8 +33,10 @@
   ld96_t ld96_watcall ld96_from_f64(double d);
   long long ld96_watcall ld96_to_ll(ld96_t ld);
   unsigned long long ld96_watcall ld96_to_ull(ld96_t ld);
-  float  ld96_watcall ld96_to_f32(ld96_t ld);
-  double ld96_watcall ld96_to_f64(ld96_t ld);
+#  if 1
+    float  ld96_watcall ld96_to_f32(ld96_t ld);
+    double ld96_watcall ld96_to_f64(ld96_t ld);
+#  endif
   ld96_t ld96_watcall ld96_strtold(const char *nptr, char **endptr);
   int    ld96_watcall ld96_iszero(ld96_t ld);
   ld96_t ld96_watcall ld96_neg(ld96_t ld);
@@ -47,6 +49,10 @@
   int    ld96_watcall ld96_lt (ld96_t a, ld96_t b);
   ld96_t ld96_watcall ld96_from_nan(void);
   ld96_t ld96_watcall ld96_from_infinity(void);
+  void   ld96_watcall ld96_dump_f32(char buf[4], ld96_t ld);
+  void   ld96_watcall ld96_dump_f64(char buf[8], ld96_t ld);
+  ld96_t ld96_watcall ld96_round_f32(ld96_t ld);
+  ld96_t ld96_watcall ld96_round_f64(ld96_t ld);
 #else
   typedef long double ld96_t;
   /* This fails for OpenWatcom, because it has sizeof(double) ==
@@ -64,8 +70,10 @@
 #  define ld96_from_ull(u) ((ld96_t)(unsigned long long)(u))
 #  define ld96_from_f32(f) ((ld96_t)(float)(f))
 #  define ld96_from_f64(d) ((ld96_t)(double)(d))
-#  define ld96_to_f32(ld) ((float) (ld))
-#  define ld96_to_f64(ld) ((double)(ld))
+#  if 1
+#    define ld96_to_f32(ld) ((float) (ld))
+#    define ld96_to_f64(ld) ((double)(ld))
+#  endif
 #  define ld96_to_ll(ld)  ((long long)(ld))
   unsigned long long ld96_to_ull(ld96_t d);  /* Make sure that it returns 0 for negative input. */
 #  define ld96_strtold(nptr, endptr) strtold(nptr, endptr)
@@ -85,7 +93,16 @@
     ld96_t ld96_watcall ld96_from_nan(void);
     ld96_t ld96_watcall ld96_from_infinity(void);
 #  endif
+#  if 0  /* Causes warnings with GCC 4.8 -fstrict-aliasing. */
+#    define ld96_dump_f32(buf, ld) (*(float *)(buf) = (ld))
+#    define ld96_dump_f64(buf, ld) (*(double*)(buf) = (ld))
+#  endif
+#  define ld96_round_f32(ld) ((ld96_t)(float) (ld))
+#  define ld96_round_f64(ld) ((ld96_t)(double)(ld))
 #endif
+void   ld96_watcall ld96_dump_f32(char buf[4], ld96_t ld);
+void   ld96_watcall ld96_dump_f64(char buf[8], ld96_t ld);
+void ld96_watcall ld96_dump_f80_96(char buf[12], ld96_t ld);
 #define ld96_ne(a, b) (!ld96_eq((a), (b)))  /* Also correct if a or b is NAN. */
 #define ld96_ge(a, b) (ld96_le((b), (a)))
 #define ld96_gt(a, b) (ld96_lt((b), (a)))

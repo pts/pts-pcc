@@ -222,6 +222,9 @@ inval(CONSZ off, int fsz, NODE *p)
 	CONSZ val;
 	TWORD t;
 
+#if (defined(HOST_BIG_ENDIAN) && (TARGET_ENDIAN != TARGET_BE)) || (defined(HOST_LITTLE_ENDIAN) && (TARGET_ENDIAN != TARGET_LE))
+#  error Host and target endian mismatch.
+#endif
 #ifndef NO_COMPLEX
 	if (ANYCX(p) && p->n_left->n_right->n_right->n_op == FCON &&
 	    p->n_left->n_left->n_right->n_op == FCON) {

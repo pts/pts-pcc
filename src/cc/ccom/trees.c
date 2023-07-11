@@ -848,8 +848,8 @@ concast(NODE *p, TWORD t)
 			    (CONSZ)ld96_to_ull(p->n_dcon) : ld96_to_ll(p->n_dcon);
 			p->n_sp = NULL;
 		} else {
-			p->n_dcon = t == FLOAT ? ld96_from_f32(ld96_to_f32(p->n_dcon)) :
-			    t == DOUBLE ? ld96_from_f64(ld96_to_f64(p->n_dcon)) : p->n_dcon;
+			p->n_dcon = t == FLOAT ? ld96_round_f32(p->n_dcon) :
+			    t == DOUBLE ? ld96_round_f64(p->n_dcon) : p->n_dcon;
 		}
 	}
 	p->n_type = t;

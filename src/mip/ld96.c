@@ -8,6 +8,10 @@
  */
 
 #ifdef CONFIG_LD96
+#if !(defined(__i386__) || defined(__i386) || defined(__386__) || defined(__386) || defined(__x86_64__) || defined(__amd64__) || defined(_M_I386) || defined(_M_IX86) || defined(_M_X64) || defined(_M_AMD64) || defined(__x86_64__) || defined(__amd64__) || defined(_M_X64) || defined(__X86_64__) || defined(_M_I86) || defined(_M_X64) || defined(__X86__) || defined(__I86__) || defined(_M_I86) || defined(_M_I8086) || defined(_M_I286))
+  /* This also ensures that the host is little-endian. */
+#  error ld96 is implemented only for x86.  /* Not even __ia64__ has the 80-bit extended f80 type. */
+#endif
 #  ifdef __WATCOMC__
 _Packed  /* This is needed in case `wcc386 -zp4' wasn't specified. The default is `-zp8'. */
 #  endif
@@ -39,6 +43,7 @@ _Packed  /* This is needed in case `wcc386 -zp4' wasn't specified. The default i
 #    else  /* i386 or later. It ruins AX as a side effect. */
 #      define FUCOMIP_01_R_AX "fucomp %st(1); fnstsw %ax; sahf"
 #    endif
+      /* TODO(pts): Drop the . from .L to make it work with __TINYC__ (or fix pts-tcc). */
       ld96u_t ld96_from_ull(unsigned long long u);  /* { ld96u_t r; r.ld = u; return r; } */
       __asm__(".global ld96_from_ull; ld96_from_ull: ;\
 		fildll 8(%esp);\
@@ -103,20 +108,67 @@ _Packed  /* This is needed in case `wcc386 -zp4' wasn't specified. The default i
 		fstpt (%eax);\
 		ret $4; "  /* Callee cleans up the struct return pointer. */"\
       ");
-      float   ld96_to_f32(ld96u_t ld);  /* { return ld.ld; } */
-      __asm__(".global ld96_to_f32;; ld96_to_f32: ;\
+#      if 1
+        float   ld96_to_f32(ld96u_t ld);  /* { return ld.ld; } */
+        __asm__(".global ld96_to_f32;; ld96_to_f32: ;\
 		lea 4(%esp), %edx;\
 		fldt (%edx);\
 		fstps (%edx);\
 		flds (%edx);\
 		ret;\
-      ");
-      double  ld96_to_f64(ld96u_t ld);  /* { return ld.ld; } */
-      __asm__(".global ld96_to_f64;; ld96_to_f64: ;\
+        ");
+        double  ld96_to_f64(ld96u_t ld);  /* { return ld.ld; } */
+        __asm__(".global ld96_to_f64;; ld96_to_f64: ;\
 		lea 4(%esp), %edx;\
 		fldt (%edx);\
 		fstpl (%edx);\
 		fldl (%edx);\
+		ret;\
+        ");
+#      endif
+      ld96u_t ld96_round_f32(ld96u_t ld);  /* d96u_t r; r.ld = (float) ld.ld; return r; */
+      __asm__(".global ld96_round_f32;; ld96_round_f32: ;\
+		lea 8(%esp), %eax;\
+		fldt (%eax);\
+		mov 4(%esp), %eax;\
+		fstps (%eax);\
+		flds (%eax);\
+		fstpt (%eax);\
+		ret $4; "  /* Callee cleans up the struct return pointer. */"\
+      ");
+      ld96u_t ld96_round_f64(ld96u_t ld);  /* ld96u_t r; r.ld = (double)ld.ld; return r; */
+      __asm__(".global ld96_round_f64;; ld96_round_f64: ;\
+		lea 8(%esp), %eax;\
+		fldt (%eax);\
+		mov 4(%esp), %eax;\
+		fstpl (%eax);\
+		fldl (%eax);\
+		fstpt (%eax);\
+		ret $4; "  /* Callee cleans up the struct return pointer. */"\
+      ");
+      void    ld96_dump_f32(char buf[4], ld96u_t ld);
+      __asm__(".global ld96_dump_f32;; ld96_dump_f32: ;\
+		lea 8(%esp), %edx;\
+		fldt (%edx);\
+		mov 4(%esp), %edx;\
+		fstps (%edx);\
+		ret;\
+      ");
+      void    ld96_dump_f64(char buf[8], ld96u_t ld);
+      __asm__(".global ld96_dump_f64;; ld96_dump_f64: ;\
+		lea 8(%esp), %edx;\
+		fldt (%edx);\
+		mov 4(%esp), %edx;\
+		fstpl (%edx);\
+		ret;\
+      ");
+      void    ld96_dump_f80_96(char buf[12], ld96u_t ld);
+      __asm__(".global ld96_dump_f80_96;; ld96_dump_f80_96: ;\
+		lea 8(%esp), %edx;\
+		fldt (%edx);\
+		mov 4(%esp), %edx;\
+		fstpt (%edx);\
+		movw $0, 10(%edx);\
 		ret;\
       ");
       const char nan_inf_str[] = "\005nan\0\010infinity\0\5inf\0";  /* This mustn't be static, GCC would optimize it away, and the inline assembly code in ld96_strtold(...) wouldn't see it. */
@@ -432,8 +484,10 @@ _Packed  /* This is needed in case `wcc386 -zp4' wasn't specified. The default i
       ld96u_t ld96_from_f64(double d) { ld96u_t r; r.ld = d; return r; }
       long long ld96_to_ll(ld96u_t ld) { return ld.ld; }
       unsigned long long ld96_to_ull(ld96u_t ld) { return ld.ld > 0 ? (unsigned long long)ld.ld : 0ULL; }  /* GCC 7.5.0 returns junk for negative input by default. TODO(pts): What does it return? !! Why isn't non-CONFIG_LD96 broken? Probably because of inlining. */
+#    if 1
       float   ld96_to_f32(ld96u_t ld) { return ld.ld; }
       double  ld96_to_f64(ld96u_t ld) { return ld.ld; }
+#    endif
       ld96u_t ld96_strtold(const char *nptr, char **endptr) { ld96u_t r; r.ld = strtold(nptr, endptr); return r; }
       int     ld96_iszero(ld96u_t ld) { return ld.ld == 0.0; }
       ld96u_t ld96_neg(ld96u_t ld) { ld96u_t r; r.ld = -ld.ld; return r; }
@@ -444,6 +498,22 @@ _Packed  /* This is needed in case `wcc386 -zp4' wasn't specified. The default i
       int     ld96_eq(ld96u_t a, ld96u_t b) { return a.ld == b.ld; }
       int     ld96_le(ld96u_t a, ld96u_t b) { return a.ld <= b.ld; }
       int     ld96_lt(ld96u_t a, ld96u_t b) { return a.ld <  b.ld; }
+      void    ld96_dump_f32(char *buf, ld96u_t ld) { *(float*)buf = ld.ld; }
+      void    ld96_dump_f64(char *buf, ld96u_t ld) { *(double*)buf = ld.ld; }
+      void    ld96_dump_f80_96(char *buf, ld96u_t ld) {
+        char tmp[sizeof(ld96u_t)], *buf2;
+        if (sizeof(ld96u_t) > 12) {  /* __amd64__ */
+          buf2 = tmp;
+          *(long double*)buf2 = ld.ld;
+          *(double*)buf = *(double*)buf2;
+          ((int*)buf)[2] = ((int*)buf2)[2];
+        } else {
+          *(long double*)buf = ld.ld;
+        }
+        buf[10] = buf[11] = 0;
+      }
+      ld96u_t ld96_round_f32(ld96u_t ld) { ld96u_t r; r.ld = (float )ld.ld; return r; }
+      ld96u_t ld96_round_f64(ld96u_t ld) { ld96u_t r; r.ld = (double)ld.ld; return r; }
 #    ifdef __GNUC__  /* Also __PCC__, but not __TINYC__ or __WATCOMC__. */
 #      define NAN __builtin_nanl("")
 #      define INFINITY __builtin_infl()
@@ -565,18 +635,57 @@ _Packed  /* This is needed in case `wcc386 -zp4' wasn't specified. The default i
 		fstp tbyte ptr [eax]
 		ret 8  /* Callee pops. */
     } }
-    __declspec(naked) float   __watcall ld96_to_f32(ld96u_t ld) { (void)ld; __asm {  /* return ld.ld; */
+#    if 1
+      __declspec(naked) float   __watcall ld96_to_f32(ld96u_t ld) { (void)ld; __asm {  /* return ld.ld; */
 		lea eax, [esp+4]
 		fld tbyte ptr [eax]
 		fstp dword ptr [eax]
 		fld dword ptr [eax]
 		ret 0xc  /* Callee pops. */
-    } }
-    __declspec(naked) double  __watcall ld96_to_f64(ld96u_t ld) { (void)ld; __asm {  /* return ld.ld; */
+      } }
+      __declspec(naked) double  __watcall ld96_to_f64(ld96u_t ld) { (void)ld; __asm {  /* return ld.ld; */
 		lea eax, [esp+4]
 		fld tbyte ptr [eax]
 		fstp qword ptr [eax]
 		fld qword ptr [eax]
+		ret 0xc  /* Callee pops. */
+      } }
+#    endif
+    __declspec(naked) ld96u_t __watcall ld96_round_f32(ld96u_t ld) { (void)ld; __asm {  /* ld96u_t r; r.ld = (float) ld.ld; return r; */
+		lea eax, [esp+4]
+		fld tbyte ptr [eax]
+		mov eax, esi  /* ESI is the result pointer. The caller expects this in EAX upon return. */
+		fstp dword ptr [eax]
+		fld dword ptr [eax]
+		fstp tbyte ptr [eax]
+		ret 0xc  /* Callee pops. */
+    } }
+    __declspec(naked) ld96u_t __watcall ld96_round_f64(ld96u_t ld) { (void)ld; __asm {  /* ld96u_t r; r.ld = (double)ld.ld; return r; */
+		lea eax, [esp+4]
+		fld tbyte ptr [eax]
+		mov eax, esi  /* ESI is the result pointer. The caller expects this in EAX upon return. */
+		fstp qword ptr [eax]
+		fld qword ptr [eax]
+		fstp tbyte ptr [eax]
+		ret 0xc  /* Callee pops. */
+    } }
+    __declspec(naked) void    __watcall ld96_dump_f32(char buf[4], ld96u_t ld) { (void)buf; (void)ld; __asm {
+		lea edx, [esp+4]
+		fld tbyte ptr [edx]
+		fstp dword ptr [eax]
+		ret 0xc  /* Callee pops. */
+    } }
+    __declspec(naked) void    __watcall ld96_dump_f64(char buf[8], ld96u_t ld) { (void)buf; (void)ld; __asm {
+		lea edx, [esp+4]
+		fld tbyte ptr [edx]
+		fstp qword ptr [eax]
+		ret 0xc  /* Callee pops. */
+    } }
+    __declspec(naked) void    __watcall ld96_dump_f80_96(char buf[12], ld96u_t ld) { (void)buf; (void)ld; __asm {
+		lea edx, [esp+4]
+		fld tbyte ptr [edx]
+		fstp tbyte ptr [eax]
+		mov word ptr [eax+10], 0
 		ret 0xc  /* Callee pops. */
     } }
     static const char nan_inf_str[] = "\005nan\0\010infinity\0\5inf\0";
@@ -867,6 +976,7 @@ _Packed  /* This is needed in case `wcc386 -zp4' wasn't specified. The default i
     } }
 #  endif
 #else
+  typedef char assert_long_double_size[sizeof(long double) == 10 || sizeof(long double) == 12 || sizeof(long double) == 16 ? 1 : -1];  /* Sanity check, just to avoid sizeof(long double) <= 8. */
 #  ifndef __GNUC__  /* Also __PCC__, but not __TINYC__ or __WATCOMC__. See definition in "ld96.h". */
     long double ld96_from_infinity();
     long double ld96_from_nan() {
@@ -892,4 +1002,22 @@ _Packed  /* This is needed in case `wcc386 -zp4' wasn't specified. The default i
   }
 #  endif
   unsigned long long ld96_to_ull(long double d) { return d > 0.0 ? (unsigned long long)d : 0LL; }  /* Make sure that it returns 0 for negative input. */
+  void ld96_dump_f32(char *buf, long double ld) {
+    *(float*)buf = ld;
+  }
+  void ld96_dump_f64(char *buf, long double ld) {
+    *(double*)buf = ld;
+  }
+  void ld96_dump_f80_96(char *buf, long double ld) {
+    char tmp[sizeof(long double)], *buf2;
+    if (sizeof(long double) > 12) {  /* __amd64__ */
+      buf2 = tmp;
+      *(long double*)buf2 = ld;
+      *(double*)buf = *(double*)buf2;
+      ((int*)buf)[2] = ((int*)buf2)[2];
+b    } else {
+      *(long double*)buf = ld;
+    }
+    buf[10] = buf[11] = 0;
+  }
 #endif  /* CONFIG_LD96 */

@@ -941,7 +941,7 @@ spalloc(NODE *t, NODE *p, OFFSZ off)
 int
 ninval(CONSZ off, int fsz, NODE *p)
 {
-	union { float f; double d; ld96_t l; int i[3]; } u;
+	int ib[3];
 	int i;
 	(void)fsz;
 
@@ -956,26 +956,28 @@ ninval(CONSZ off, int fsz, NODE *p)
 		inval(off+32, 32, p);
 		break;
 	case LDOUBLE:
-		u.i[2] = 0;
-		u.l = p->n_dcon;
+		ld96_dump_f80_96((char*)ib, p->n_dcon);
 #if defined(HOST_BIG_ENDIAN)
-		/* XXX probably broken on most hosts */
-		printf("\t.long\t0x%x,0x%x,0x%x\n", u.i[2], u.i[1], u.i[0]);
+		/* XXX probably broken on most big-endian hosts; however,
+		 * ld96.c also fails with a compile error on big-endian
+		 * hosts, so we don't have to fail here.
+		 */
+		printf("\t.long\t0x%x,0x%x,0x%x\n", ib[2], ib[1], ib[0]);
 #else
-		printf("\t.long\t%d,%d,%d\n", u.i[0], u.i[1], u.i[2] & 0177777);
+		printf("\t.long\t%d,%d,%d\n", ib[0], ib[1], ib[2]);
 #endif
 		break;
 	case DOUBLE:
-		u.d = ld96_to_f64(p->n_dcon);
+		ld96_dump_f64((char*)ib, p->n_dcon);
 #if defined(HOST_BIG_ENDIAN)
-		printf("\t.long\t0x%x,0x%x\n", u.i[1], u.i[0]);
+		printf("\t.long\t0x%x,0x%x\n", ib[1], ib[0]);
 #else
-		printf("\t.long\t%d,%d\n", u.i[0], u.i[1]);
+		printf("\t.long\t%d,%d\n", ib[0], ib[1]);
 #endif
 		break;
 	case FLOAT:
-		u.f = ld96_to_f32(p->n_dcon);
-		printf("\t.long\t%d\n", u.i[0]);
+		ld96_dump_f32((char*)ib, p->n_dcon);
+		printf("\t.long\t%d\n", ib[0]);
 		break;
 	default:
 		return 0;

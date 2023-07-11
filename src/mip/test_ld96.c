@@ -4,6 +4,8 @@
  */
 
 #include <stdio.h>
+#include <string.h>
+#include <unistd.h>
 
 #include "ld96.h"
 
@@ -14,8 +16,10 @@ int main(int argc, char **argv) {
   const ld96_t lda = ld96_from_ll(a);  /* To work around PCC 1.1.0 bug in `return 24'. */
   const ld96_t ldb = ld96_from_ll(b);  /* To work around PCC 1.1.0 bug in `return 24'. */
   const ld96_t ld60 = ld96_from_ll(1LL << 60);  /* To work around PCC 1.1.0 bug in `return 24'. */
+  ld96_t ldr;
   const float f = 12345.6f;
   const double d = 12345678.9;
+  char buf[12];
   (void)argc; (void)argv;
   ld96_set_ld_precision();  /* Needed by the OpenWatcom libc. */
   if (!ld96_iszero(ld96_from_ull(0))) return 1;
@@ -39,6 +43,16 @@ int main(int argc, char **argv) {
   if (ld96_to_f64(ld96_from_f64(d)) != d) return 19;
   if (ld96_to_f32(ld96_from_f32(-f)) != -f) return 20;
   if (ld96_to_f64(ld96_from_f64(-d)) != -d) return 21;
+  ldr = ld96_round_f32(ld96_from_f32(f));  /* Using a separate variable to work around PCC 1.1.0 bug. */
+  if (!ld96_eq(ldr, ld96_from_f32(f))) return 56;
+  ldr = ld96_round_f64(ld96_from_f64(d));  /* Using a separate variable to work around PCC 1.1.0 bug. */
+  if (!ld96_eq(ldr, ld96_from_f64(d))) return 57;
+  ldr = ld96_round_f32(ld96_from_f32(-f));  /* Using a separate variable to work around PCC 1.1.0 bug. */
+  if (!ld96_eq(ldr, ld96_from_f32(-f))) return 58;
+  ldr = ld96_round_f64(ld96_from_f64(-d));  /* Using a separate variable to work around PCC 1.1.0 bug. */
+  if (!ld96_eq(ldr, ld96_from_f64(-d))) return 59;
+  ldr = ld96_round_f32(ld96_from_f64(d));  /* Using a separate variable to work around PCC 1.1.0 bug. */
+  if (ld96_eq(ldr, ld96_from_f64(d))) return 60;
   if (ld96_to_ll(ld96_strtold("-1234567890987654325.9", 0)) != b - 4) return 22;
   if (ld96_to_ll(ld96_neg(ld96_from_ll(b))) != a) return 23;
   if (ld96_to_ll(ld96_add(lda, ld96_from_ll(b))) != 0) return 24;
@@ -70,5 +84,14 @@ int main(int argc, char **argv) {
   if (!ld96_ge(ld96_from_ll(b), ld96_from_ll(b))) return 50;
   if (ld96_gt(ld96_from_ll(b), ld96_from_ll(b))) return 51;
   if (ld96_gt(ld96_from_ll(b), lda)) return 52;
+  memset(buf, 5, sizeof(buf));
+  ld96_dump_f32(buf, ld96_from_f32(f));
+  if (memcmp(buf, "\x66\xe6\x40\x46\5\5\5\5\5\5\5\5", 12) != 0) return 53;
+  memset(buf, 5, sizeof(buf));
+  ld96_dump_f64(buf, ld96_from_f64(d));
+  if (memcmp(buf, "\xcd\xcc\xcc\xdc\x29\x8c\x67\x41\5\5\5\5", 12) != 0) return 54;
+  memset(buf, 5, sizeof(buf));
+  ld96_dump_f80_96(buf, ldb);
+  if (memcmp(buf, "\x88\xe5\x60\x8b\xa5\x87\x10\x89\x3b\xc0", 11) != 0 || buf[11] != '\0') return 55;
   return 0;
 }

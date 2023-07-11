@@ -2724,7 +2724,7 @@ typround(ld96_t dc, char *e, TWORD *tw)
 		case 'f':
 		case 'F':
 			*tw = FLOAT;
-			dc = ld96_from_f32(ld96_to_f32(dc));
+			dc = ld96_round_f32(dc);
 			break;
 		case 'l':
 		case 'L':
@@ -2737,7 +2737,7 @@ typround(ld96_t dc, char *e, TWORD *tw)
 		}
 	}
 	if (*tw == DOUBLE)
-		dc = ld96_from_f64(ld96_to_f64(dc));
+		dc = ld96_round_f64(dc);
 #ifndef NO_COMPLEX
 	if (im)
 		*tw += (FIMAG-FLOAT);
