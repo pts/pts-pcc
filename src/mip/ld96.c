@@ -519,7 +519,7 @@ _Packed  /* This is needed in case `wcc386 -zp4' wasn't specified. The default i
         }
         buf[10] = buf[11] = 0;
       }
-#    ifdef __TINYC__  /* Work around TCC 0.9.26 bug: A conversion of `long double' to (float) or (double) is a no-op. */
+#    ifdef __TINYC__  /* Work around TCC 0.9.26 bug: A conversion of `long double' to (float) or (double) is a no-op. TODO(pts): Fix it in gen_cvt_ftof(...) in tcc-0.9.26/i386-gen.c. */
       ld96u_t ld96_round_f32(ld96u_t ld) { ld96u_t r; r.ld = +(float) +ld.ld; return r; }
       ld96u_t ld96_round_f64(ld96u_t ld) { ld96u_t r; r.ld = +(double)+ld.ld; return r; }
 #    else
