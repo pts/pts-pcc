@@ -43,16 +43,21 @@ _Packed  /* This is needed in case `wcc386 -zp4' wasn't specified. The default i
 #    else  /* i386 or later. It ruins AX as a side effect. */
 #      define FUCOMIP_01_R_AX "fucomp %st(1); fnstsw %ax; sahf"
 #    endif
-      /* TODO(pts): Drop the . from .L to make it work with __TINYC__ (or fix pts-tcc). */
+#    undef E
+#    ifdef __TINYC__
+#      define E "L"  /* The inline assembler of TCC 0.9.26 doesn't support labels starting with `.'. TODO(pts): Fix pts-tcc, add support. */
+#    else
+#      define E ".L"  /* GNU as(1) supports labels starting with `.', and it won't put them to the .o file. */
+#    endif
       ld96u_t ld96_from_ull(unsigned long long u);  /* { ld96u_t r; r.ld = u; return r; } */
       __asm__(".global ld96_from_ull; ld96_from_ull: ;\
 		fildll 8(%esp);\
 		cmpb $0x0, 0xf(%esp);\
-		jns .L35;\
+		jns "E"35;\
 		push $0x5f800000; "  /* (f32) of 1 << 64. */"\
 		fadds (%esp);\
 		pop %edx; "  /* EDX := junk. */"\
-        .L35:	mov 4(%esp), %eax;\
+        "E"35:	mov 4(%esp), %eax;\
 		fstpt (%eax);\
 		ret $4; "  /* Callee cleans up the struct return pointer. */"\
       ");
@@ -182,127 +187,127 @@ _Packed  /* This is needed in case `wcc386 -zp4' wasn't specified. The default i
 		push $0x41200000;\
 		push %ebp;\
 		mov 0x20(%esp), %ebx;\
-        .L1:	mov (%ebx), %al;\
+        "E"1:	mov (%ebx), %al;\
 		cmp $0x20, %al;\
-		je .L2;\
+		je "E"2;\
 		mov %al, %ah;\
 		sub $9, %ah;\
 		cmp $4, %ah;\
-		ja .L3;\
-        .L2:	inc %ebx;\
-		jmp .L1;\
-        .L3:	xor %ebp, %ebp;\
+		ja "E"3;\
+        "E"2:	inc %ebx;\
+		jmp "E"1;\
+        "E"3:	xor %ebp, %ebp;\
 		cmp $0x2d, %al;\
-		je .L4;\
+		je "E"4;\
 		cmp $0x2b, %al;\
-		je .L5;\
-		jmp .L6;\
-        .L4:	inc %ebp;\
-        .L5:	inc %ebx;\
-        .L6:	or $0xffffffff, %eax;\
+		je "E"5;\
+		jmp "E"6;\
+        "E"4:	inc %ebp;\
+        "E"5:	inc %ebx;\
+        "E"6:	or $0xffffffff, %eax;\
 		xor %edi, %edi;\
 		xor %esi, %esi;\
 		fldz ;\
 		xor %edx, %edx;\
-        .Lloop7:;\
+        "E"loop7:;\
 		mov (%ebx), %dl;\
 		sub $0x30, %dl;\
 		cmp $9, %dl;\
-		ja .Lafter_loop7;\
+		ja "E"after_loop7;\
 		test %eax, %eax;\
-		jge .L8;\
+		jge "E"8;\
 		inc %eax;\
-        .L8:	test %eax, %eax;\
-		jne .L9;\
+        "E"8:	test %eax, %eax;\
+		jne "E"9;\
 		test %dl, %dl;\
-		je .L10;\
-        .L9:	inc %eax;\
+		je "E"10;\
+        "E"9:	inc %eax;\
 		cmp $0x15, %eax;\
-		jg .L10;\
+		jg "E"10;\
 		mov %edx, (%esp);\
 		fmuls 4(%esp);\
 		fiaddl (%esp);\
-        .L10:	inc %ebx;\
-		jmp .Lloop7;\
-        .Lafter_loop7:;\
+        "E"10:	inc %ebx;\
+		jmp "E"loop7;\
+        "E"after_loop7:;\
 		cmp $0xfe, %dl;\
-		jne .Ldone_loop7;\
+		jne "E"done_loop7;\
 		test %esi, %esi;\
-		jne .Ldone_loop7;\
+		jne "E"done_loop7;\
 		inc %ebx;\
 		mov %ebx, %esi;\
-		jmp .Lloop7;\
-        .Ldone_loop7:;\
+		jmp "E"loop7;\
+        "E"done_loop7:;\
 		test %eax, %eax;\
-		jge .L18;\
+		jge "E"18;\
 		test %esi, %esi;\
-		jne .L17;\
+		jne "E"17;\
 		xor %ecx, %ecx;\
 		mov %esi, (%esp);\
 		mov $nan_inf_str, %esi;\
-        .Lloop13:;\
+        "E"loop13:;\
 		mov %ebx, %edx;\
 		mov %esi, %eax;\
 		lea 0x1(%esi), %eax;\
-        .L14:	mov (%edx), %cl;\
+        "E"14:	mov (%edx), %cl;\
 		or $0x20, %cl;\
 		cmp (%eax), %cl;\
-		jne .L16;\
+		jne "E"16;\
 		inc %edx;\
 		inc %eax;\
 		cmp %ch, (%eax);\
-		jne .L14;\
+		jne "E"14;\
 		fstp %st(0);\
 		fildl (%esp);\
 		fldz ;\
 		fdivrp %st, %st(1);\
 		test %ebp, %ebp;\
-		je .L15;\
+		je "E"15;\
 		fchs ;\
-        .L15:	mov (%esi), %cl;\
+        "E"15:	mov (%esi), %cl;\
 		add %ecx, %ebx;\
 		dec %ebx;\
 		dec %ebx;\
-		jmp .Lstore_done;\
-        .L16:	mov (%esi), %cl;\
+		jmp "E"store_done;\
+        "E"16:	mov (%esi), %cl;\
 		add %ecx, %esi;\
 		incb (%esp);\
 		cmp %ch, %cl;\
-		jne .Lloop13;\
-        .L17:	mov 0x20(%esp), %ebx;\
-		jmp .Lstore_done;\
-        .L18:	cmp $0x15, %eax;\
-		jle .L19;\
+		jne "E"loop13;\
+        "E"17:	mov 0x20(%esp), %ebx;\
+		jmp "E"store_done;\
+        "E"18:	cmp $0x15, %eax;\
+		jle "E"19;\
 		sub $0x15, %eax;\
 		add %eax, %edi;\
-        .L19:	test %esi, %esi;\
-		je .L20;\
+        "E"19:	test %esi, %esi;\
+		je "E"20;\
 		mov %esi, %eax;\
 		sub %ebx, %eax;\
 		add %eax, %edi;\
-        .L20:	test %ebp, %ebp;\
-		je .L21;\
+        "E"20:	test %ebp, %ebp;\
+		je "E"21;\
 		fchs ;\
-        .L21:	mov (%ebx), %al;\
+        "E"21:	mov (%ebx), %al;\
 		or $0x20, %al;\
 		cmp $0x65, %al;\
-		jne .L29;\
+		jne "E"29;\
 		mov %ebx, (%esp);\
 		xor %esi, %esi;\
 		inc %esi;\
 		inc %ebx;\
 		mov (%ebx), %al;\
 		cmp $0x2d, %al;\
-		je .L22;\
+		je "E"22;\
 		cmp $0x2b, %al;\
-		je .L23;\
-		jmp .L24;\
-        .Lstore_done:;\
+		je "E"23;\
+		jmp "E"24;\
+        "E"store_done:;\
 		mov 0x24(%esp), %eax;\
 		test %eax, %eax;\
-		je .L36;\
+		je "E"36;\
 		mov %ebx, (%eax);\
-        .L36:	mov 0x1c(%esp), %eax;\
+        "E"36:	mov 0x1c(%esp), %eax;\
 		fstpt (%eax);\
 		pop %ebp;\
 		pop %ebp;\
@@ -311,50 +316,50 @@ _Packed  /* This is needed in case `wcc386 -zp4' wasn't specified. The default i
 		pop %esi;\
 		pop %ebx;\
 		ret $4; "  /* Callee cleans up the struct return pointer. */"\
-        .L22:	neg %esi;\
-        .L23:	inc %ebx;\
-        .L24:	mov %ebx, %ebp;\
+        "E"22:	neg %esi;\
+        "E"23:	inc %ebx;\
+        "E"24:	mov %ebx, %ebp;\
 		xor %eax, %eax;\
 		xor %edx, %edx;\
-        .Lloop25:;\
+        "E"loop25:;\
 		mov (%ebx), %dl;\
 		sub $0x30, %dl;\
 		cmp $9, %dl;\
-		ja .L27;\
+		ja "E"27;\
 		cmp $0x136d, %eax;\
-		jge .L26;\
+		jge "E"26;\
 		imul $0xa, %eax, %eax;\
 		add %edx, %eax;\
-        .L26:	inc %ebx;\
-		jmp .Lloop25;\
-        .L27:	cmp %ebp, %ebx;\
-		jne .L28;\
+        "E"26:	inc %ebx;\
+		jmp "E"loop25;\
+        "E"27:	cmp %ebp, %ebx;\
+		jne "E"28;\
 		mov (%esp), %ebx;\
-        .L28:	imul %esi, %eax;\
+        "E"28:	imul %esi, %eax;\
 		add %eax, %edi;\
-        .L29:	fldz ;\
+        "E"29:	fldz ;\
 		"FUCOMIP_01_R_AX" ;\
-		je .Lstore_done;\
+		je "E"store_done;\
 		mov %edi, %eax;\
 		test %eax, %eax;\
-		je .Lstore_done;\
-		jge .Lskip_neg;\
+		je "E"store_done;\
+		jge "E"skip_neg;\
 		neg %eax;\
-        .Lskip_neg:;\
+        "E"skip_neg:;\
 		flds 4(%esp);\
-        .Lloop31:;\
+        "E"loop31:;\
 		test $1, %al;\
-		je .L34;\
+		je "E"34;\
 		test %edi, %edi;\
-		jge .L32;\
+		jge "E"32;\
 		fdivr %st, %st(1);\
-		jmp .L34;\
-        .L32:	fmul %st, %st(1);\
-        .L34:	fmul %st, %st(0);\
+		jmp "E"34;\
+        "E"32:	fmul %st, %st(1);\
+        "E"34:	fmul %st, %st(0);\
 		shr %eax;\
-		jne .Lloop31;\
+		jne "E"loop31;\
 		fstp %st(0);\
-		jmp .Lstore_done;\
+		jmp "E"store_done;\
       ");
       int     ld96_iszero(ld96u_t ld);  /* { return ld.ld == 0.0; } */
       __asm__(".global ld96_iszero;; ld96_iszero: ;\
@@ -465,6 +470,9 @@ _Packed  /* This is needed in case `wcc386 -zp4' wasn't specified. The default i
       ");
 #    else  /* else CONFIG_LD96_S */
 #      include <stdlib.h>
+#      ifdef __TINYC__
+#        include <string.h>  /* For compiler-generated memcpy(3). */
+#      endif
 #      ifdef __STRICT_ANSI__
         long double strtold(const char *nptr, char **endptr);
 #      endif
@@ -475,6 +483,7 @@ _Packed  /* This is needed in case `wcc386 -zp4' wasn't specified. The default i
         typedef struct ld96 { unsigned a, b, c; } ld96_t;  /* Matches "ld96.h". */
 #      endif
       /* Everything must match "ld96.h" here. */
+      /* !! TODO(pts): This produces incorrect `.long' values with TCC 0.9.26, even though src/mip/test_ld96.c succeeds, and CONFIG_LD96_S also succeeds.  */
       typedef char assert_ld96u_size_strict[sizeof(ld96_t) == sizeof(ld96u_t) ? 1 : -1];  /* Needed by 2-argument functions such as ld96_add. */
       typedef char assert_long_double_size[sizeof(long double) == 10 || sizeof(long double) == 12 || sizeof(long double) == 16 ? 1 : -1];  /* Sanity check, just to avoid sizeof(long double) <= 8. */
       typedef char assert_long_double_size_le[sizeof(long double) <= sizeof(ld96_t) ? 1 : -1];  /* If this fails, specify `gcc -m96bit-long-double'. The switch doesn't exist for Clang. It shouldn't be needed anyway for GCC >=4.2, because `union ld96' contains `long double'. */
