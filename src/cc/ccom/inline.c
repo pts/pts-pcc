@@ -62,7 +62,7 @@ static struct istat {
 	struct interpass shead;
 } *cifun;
 
-static SLIST_HEAD(, istat) ipole = { NULL, &ipole.q_forw };
+static SLIST_HEAD1(istat) ipole = { NULL, &ipole.q_forw };
 static int nlabs, svclass;
 
 #define	IP_REF	(MAXIP+1)

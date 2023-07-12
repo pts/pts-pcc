@@ -1238,7 +1238,7 @@ struct notspill {
 	SLIST_ENTRY(notspill) link;
 	int spnum;
 };
-SLIST_HEAD(, notspill) nothead;
+SLIST_HEAD1(notspill) nothead;
 
 static int
 innotspill(int n)

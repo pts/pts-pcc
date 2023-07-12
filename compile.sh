@@ -13,6 +13,7 @@
 #
 # It compiles cleanly (without warnings) with GCC 4.1 .. 4.9, GCC 7.5.0, Clang 6.0.0 and OpenWatcom 2023-03-04.
 # It works with GCC `-std=c99 -pedantic' and `-std=gnu99 -pedantic' and `-ansi', but it doesn't work with `-ansi (== -std=c89) -pedantic' or `-std=gnu89 -pedantic', mostly because `long long'.
+# Compile with: ./compile.sh gcc   -s -Os -W -Wall -Wshadow -Werror-implicit-function-declaration -ansi -pedantic -Wno-long-long -Wno-format
 # Compile with: ./compile.sh gcc   -s -Os -W -Wall -Wshadow -Werror-implicit-function-declaration -std=c99 -pedantic
 # Compile with: ./compile.sh gcc   -s -Os -W -Wall -Wshadow -Werror-implicit-function-declaration -ansi
 # Compile with: ./compile.sh clang -s -Os -W -Wall -Wshadow -Werror-implicit-function-declaration -ansi

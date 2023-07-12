@@ -446,8 +446,8 @@ void optimize(struct p2env *);
 
 struct basicblock {
 	DLIST_ENTRY(basicblock) bbelem;
-	SLIST_HEAD(, cfgnode) parents;	/* CFG - parents to this node */
-	SLIST_HEAD(, cfgnode) child;	/* Children, usually max 2 of them */
+	SLIST_HEAD1(cfgnode) parents;	/* CFG - parents to this node */
+	SLIST_HEAD1(cfgnode) child;	/* Children, usually max 2 of them */
 	int bbnum;	/* this basic block number */
 	unsigned int dfnum; /* DFS-number */
 	unsigned int dfparent; /* Parent in DFS */
@@ -460,7 +460,7 @@ struct basicblock {
 	bittype *dfchildren;
 	bittype *Aorig;
 	bittype *Aphi;
-	SLIST_HEAD(, phiinfo) phi;
+	SLIST_HEAD1(phiinfo) phi;
 
 	bittype *gen, *killed, *in, *out;	/* Liveness analysis */
 
@@ -481,7 +481,7 @@ struct bblockinfo {
 
 struct varinfo {
 	struct pvarinfo **arr;
-	SLIST_HEAD(, varstack) *stack;
+	SLIST_HEAD1(varstack) *stack;
 	int size;
 	int low;
 };

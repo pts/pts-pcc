@@ -414,7 +414,7 @@ struct stabsv {
 	SLIST_ENTRY(stabsv) next;
 	char *str;
 } ;
-static SLIST_HEAD(, stabsv) stpole = { NULL, &stpole.q_forw };
+static SLIST_HEAD1(stabsv) stpole = { NULL, &stpole.q_forw };
 
 /*
  * Global variable debug info is printed out directly.

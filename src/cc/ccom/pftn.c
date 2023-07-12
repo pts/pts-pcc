@@ -1676,7 +1676,7 @@ struct lcd {
 	struct symtab *sp;
 };
 
-static SLIST_HEAD(, lcd) lhead = { NULL, &lhead.q_forw};
+static SLIST_HEAD1(lcd) lhead = { NULL, &lhead.q_forw};
 
 /*
  * Add a local common statement to the printout list.

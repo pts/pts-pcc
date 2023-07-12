@@ -219,6 +219,7 @@ void yyaccpt(void);
 #define	SLIST_SETUP(h) { NULL, &(h)->q_forw }
 #define	SLIST_ENTRY(t)	struct { struct t *q_forw; }
 #define	SLIST_HEAD(n,t) struct n { struct t *q_forw, **q_last; }
+#define	SLIST_HEAD1(t) struct { struct t *q_forw, **q_last; }
 #define	SLIST_ISEMPTY(h) ((h)->q_last == &(h)->q_forw)
 #define	SLIST_FIRST(h)	((h)->q_forw)
 #define	SLIST_FOREACH(v,h,f) \

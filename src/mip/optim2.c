@@ -1150,7 +1150,7 @@ placePhiFunctions(struct p2env *p2e)
 	maxtmp = ((struct interpass_prolog *)bb->first)->ip_tmpnum;
 	defsites.size = maxtmp - defsites.low + 1;
 	defsites.arr = tmpcalloc(defsites.size*sizeof(struct pvarinfo *));
-	defsites.stack = tmpcalloc(defsites.size*sizeof(SLIST_HEAD(, varstack)));
+	defsites.stack = tmpcalloc(defsites.size*sizeof(SLIST_HEAD1(varstack)));
 	
 	for (i=0;i<defsites.size;i++)
 		SLIST_INIT(&defsites.stack[i]);	
@@ -1247,7 +1247,7 @@ placePhiFunctions(struct p2env *p2e)
 static void
 renamevarhelper(struct p2env *p2e,NODE *t,void *poplistarg)
 {	
-	SLIST_HEAD(, varstack) *poplist=poplistarg;
+	SLIST_HEAD1(varstack) *poplist=poplistarg;
 	int opty;
 	int tempnr;
 	int newtempnr;
@@ -1294,7 +1294,7 @@ renamevar(struct p2env *p2e,struct basicblock *bb)
 {
     	struct interpass *ip;
 	int h,j;
-	SLIST_HEAD(, varstack) poplist;
+	SLIST_HEAD1(varstack) poplist;
 	struct varstack *stacke;
 	struct cfgnode *cfgn2, *cn;
 	int tmpregno,newtmpregno;
