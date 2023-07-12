@@ -2,7 +2,6 @@
  * ld96.c: 96-bit long double emulation, useful for OpenWatcom
  * by pts@fazekas.hu at Thu Jul  6 16:46:03 CEST 2023
  *
- * !! TODO(pts): The test fails with `return 24` (also 40 and 41) with --pcc CONFIG_LD96_S.
  * TODO(pts): Make sure the compiler (with CONFIG_LD96) doesn't even use `float' or `double' in any other file.
  * TODO(pts): As an architecture-independent alternative, add Berkeley SoftFloat (http://www.jhauser.us/arithmetic/SoftFloat.html) extFloat80_t .
  */
@@ -483,7 +482,6 @@ _Packed  /* This is needed in case `wcc386 -zp4' wasn't specified. The default i
         typedef struct ld96 { unsigned a, b, c; } ld96_t;  /* Matches "ld96.h". */
 #      endif
       /* Everything must match "ld96.h" here. */
-      /* !! TODO(pts): This produces incorrect `.long' values with TCC 0.9.26, even though src/mip/test_ld96.c succeeds, and CONFIG_LD96_S also succeeds.  */
       typedef char assert_ld96u_size_strict[sizeof(ld96_t) == sizeof(ld96u_t) ? 1 : -1];  /* Needed by 2-argument functions such as ld96_add. */
       typedef char assert_long_double_size[sizeof(long double) == 10 || sizeof(long double) == 12 || sizeof(long double) == 16 ? 1 : -1];  /* Sanity check, just to avoid sizeof(long double) <= 8. */
       typedef char assert_long_double_size_le[sizeof(long double) <= sizeof(ld96_t) ? 1 : -1];  /* If this fails, specify `gcc -m96bit-long-double'. The switch doesn't exist for Clang. It shouldn't be needed anyway for GCC >=4.2, because `union ld96' contains `long double'. */
@@ -521,8 +519,13 @@ _Packed  /* This is needed in case `wcc386 -zp4' wasn't specified. The default i
         }
         buf[10] = buf[11] = 0;
       }
-      ld96u_t ld96_round_f32(ld96u_t ld) { ld96u_t r; r.ld = (float )ld.ld; return r; }
+#    ifdef __TINYC__  /* Work around TCC 0.9.26 bug: A conversion of `long double' to (float) or (double) is a no-op. */
+      ld96u_t ld96_round_f32(ld96u_t ld) { ld96u_t r; r.ld = +(float) +ld.ld; return r; }
+      ld96u_t ld96_round_f64(ld96u_t ld) { ld96u_t r; r.ld = +(double)+ld.ld; return r; }
+#    else
+      ld96u_t ld96_round_f32(ld96u_t ld) { ld96u_t r; r.ld = (float) ld.ld; return r; }
       ld96u_t ld96_round_f64(ld96u_t ld) { ld96u_t r; r.ld = (double)ld.ld; return r; }
+#    endif
 #    ifdef __GNUC__  /* Also __PCC__, but not __TINYC__ or __WATCOMC__. */
 #      define NAN __builtin_nanl("")
 #      define INFINITY __builtin_infl()
@@ -987,28 +990,18 @@ _Packed  /* This is needed in case `wcc386 -zp4' wasn't specified. The default i
 #else
   typedef char assert_long_double_size[sizeof(long double) == 10 || sizeof(long double) == 12 || sizeof(long double) == 16 ? 1 : -1];  /* Sanity check, just to avoid sizeof(long double) <= 8. */
 #  ifndef __GNUC__  /* Also __PCC__, but not __TINYC__ or __WATCOMC__. See definition in "ld96.h". */
-    long double ld96_from_infinity();
-    long double ld96_from_nan() {
-#      ifdef NAN  /* C99. */
-        return NAN;
-#      else  /* C89. */
-         return ld96_from_infinity() * 0.0;  /* Returns positive NaN on x87 (8087). */
-#      endif
+    /* See also https://stackoverflow.com/questions/76674097/how-to-generate-an-x87-positive-nan-value-from-c89-code */
+    typedef char assert_int_size[sizeof(int) == 4 ? 1 : - 1];
+    long double ld96_from_nan(void) {
+      union { float f; int i; } fi;
+      fi.i = 0x7fc00000;
+      return fi.f;
     }
-#    ifndef INFINITY  /* Not C99. */
-      typedef char assert_float_size[sizeof(float) == 4 ? 1 : -1];
-#    endif
-    long double ld96_from_infinity() {
-#      ifdef INFINITY  /* C99. */
-        return INFINITY;
-#      else  /* C89. */
-        float f = 1L << 31;
-        f *= f;  /* 2 ** 62. */
-        f *= f;  /* 2 ** 124. */
-        f *= f;  /* 2 ** 248, overflows f32, becomes INFINITY. */
-        return f;
-#      endif
-  }
+    long double ld96_from_infinity(void) {
+      union { float f; int i; } fi;
+      fi.i = 0x7f800000;
+      return fi.f;
+    }
 #  endif
   unsigned long long ld96_to_ull(long double d) { return d > 0.0 ? (unsigned long long)d : 0LL; }  /* Make sure that it returns 0 for negative input. */
   void ld96_dump_f32(char *buf, long double ld) {

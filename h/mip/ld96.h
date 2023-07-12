@@ -99,15 +99,20 @@
     ld96_t ld96_watcall ld96_from_infinity(void);
 #  endif
 #  if 0  /* Causes warnings with GCC 4.8 -fstrict-aliasing. */
-#    define ld96_dump_f32(buf, ld) (*(float *)(buf) = (ld))
+#    define ld96_dump_f32(buf, ld) (*(float* )(buf) = (ld))
 #    define ld96_dump_f64(buf, ld) (*(double*)(buf) = (ld))
 #  endif
-#  define ld96_round_f32(ld) ((ld96_t)(float) (ld))
-#  define ld96_round_f64(ld) ((ld96_t)(double)(ld))
+#  ifdef __TINYC__  /* Work around TCC 0.9.26 bug: A conversion of `long double' to (float) or (double) is a no-op. */
+#    define ld96_round_f32(ld) ((ld96_t)+(float) +(ld))
+#    define ld96_round_f64(ld) ((ld96_t)+(double)+(ld))
+#  else
+#    define ld96_round_f32(ld) ((ld96_t)(float) (ld))
+#    define ld96_round_f64(ld) ((ld96_t)(double)(ld))
+#  endif
 #  define ld96_from_half() ((ld96_t)0.5)
 #endif
-void   ld96_watcall ld96_dump_f32(char buf[4], ld96_t ld);
-void   ld96_watcall ld96_dump_f64(char buf[8], ld96_t ld);
+void ld96_watcall ld96_dump_f32(char buf[4], ld96_t ld);
+void ld96_watcall ld96_dump_f64(char buf[8], ld96_t ld);
 void ld96_watcall ld96_dump_f80_96(char buf[12], ld96_t ld);
 #define ld96_ne(a, b) (!ld96_eq((a), (b)))  /* Also correct if a or b is NAN. */
 #define ld96_ge(a, b) (ld96_le((b), (a)))
