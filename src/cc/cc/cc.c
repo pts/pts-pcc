@@ -627,15 +627,17 @@ main(int argc, char *argv[])
 			if (strncmp(t, "-march=", 7) == 0) {
 				strlist_append(&compiler_flags, t);
 #if defined(mach_i386) || defined(mach_amd64)
-				t += 7;
-				if (strcasecmp(t, "i386") == 0) {
-					arch_define_flag = NULL;
-				} else if (strcasecmp(t, "i486") == 0) {
-					arch_define_flag = "-D__i486__";
-				} else if (strcasecmp(t, "i586") == 0) {
-					arch_define_flag = "-D__i586__";
-				} else if (strcasecmp(t, "i686") == 0) {
-					arch_define_flag = "-D__i686__";
+				t += 8;
+				if ((t[-1] | 32) == 'i' && t[0] + (0U - '3') <= '6' - '3' + 0U && t[1] == '8' && t[2] == '6' && t[3] == '\0') {
+					if (t[0] == '3') {
+						arch_define_flag = NULL;
+					} else if (t[0] == '4') {
+						arch_define_flag = "-D__i486__";
+					} else if (t[0] == '5') {
+						arch_define_flag = "-D__i586__";
+					} else if (t[0] == '6') {
+						arch_define_flag = "-D__i686__";
+					}
 				}
 #endif
 			} else {
