@@ -39,10 +39,6 @@ int main(int argc, char **argv) {
   if (ld96_to_ll(ld96_from_f64(d)) != 12345678) return 15;
   if (ld96_to_ll(ld96_from_f32(-f)) != -12345) return 16;
   if (ld96_to_ll(ld96_from_f64(-d)) != -12345678) return 17;
-  if (ld96_to_f32(ld96_from_f32(f)) != f) return 18;
-  if (ld96_to_f64(ld96_from_f64(d)) != d) return 19;
-  if (ld96_to_f32(ld96_from_f32(-f)) != -f) return 20;
-  if (ld96_to_f64(ld96_from_f64(-d)) != -d) return 21;
   ldr = ld96_round_f32(ld96_from_f32(f));  /* Using a separate variable to work around PCC 1.1.0 bug. */
   if (!ld96_eq(ldr, ld96_from_f32(f))) return 56;
   ldr = ld96_round_f64(ld96_from_f64(d));  /* Using a separate variable to work around PCC 1.1.0 bug. */

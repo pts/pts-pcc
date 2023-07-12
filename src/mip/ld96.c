@@ -108,7 +108,7 @@ _Packed  /* This is needed in case `wcc386 -zp4' wasn't specified. The default i
 		fstpt (%eax);\
 		ret $4; "  /* Callee cleans up the struct return pointer. */"\
       ");
-#      if 1
+#      if 0
         float   ld96_to_f32(ld96u_t ld);  /* { return ld.ld; } */
         __asm__(".global ld96_to_f32;; ld96_to_f32: ;\
 		lea 4(%esp), %edx;\
@@ -484,7 +484,7 @@ _Packed  /* This is needed in case `wcc386 -zp4' wasn't specified. The default i
       ld96u_t ld96_from_f64(double d) { ld96u_t r; r.ld = d; return r; }
       long long ld96_to_ll(ld96u_t ld) { return ld.ld; }
       unsigned long long ld96_to_ull(ld96u_t ld) { return ld.ld > 0 ? (unsigned long long)ld.ld : 0ULL; }  /* GCC 7.5.0 returns junk for negative input by default. TODO(pts): What does it return? !! Why isn't non-CONFIG_LD96 broken? Probably because of inlining. */
-#    if 1
+#    if 0
       float   ld96_to_f32(ld96u_t ld) { return ld.ld; }
       double  ld96_to_f64(ld96u_t ld) { return ld.ld; }
 #    endif
@@ -635,7 +635,7 @@ _Packed  /* This is needed in case `wcc386 -zp4' wasn't specified. The default i
 		fstp tbyte ptr [eax]
 		ret 8  /* Callee pops. */
     } }
-#    if 1
+#    if 0
       __declspec(naked) float   __watcall ld96_to_f32(ld96u_t ld) { (void)ld; __asm {  /* return ld.ld; */
 		lea eax, [esp+4]
 		fld tbyte ptr [eax]

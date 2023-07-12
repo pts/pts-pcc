@@ -33,7 +33,7 @@
   ld96_t ld96_watcall ld96_from_f64(double d);
   long long ld96_watcall ld96_to_ll(ld96_t ld);
   unsigned long long ld96_watcall ld96_to_ull(ld96_t ld);
-#  if 1
+#  if 0  /* Commenting it out to ensure that the ld96 implementation doesn't use the `float' or `double' types, so all floating point operations are covered by ld96_*. */
     float  ld96_watcall ld96_to_f32(ld96_t ld);
     double ld96_watcall ld96_to_f64(ld96_t ld);
 #  endif
@@ -70,7 +70,7 @@
 #  define ld96_from_ull(u) ((ld96_t)(unsigned long long)(u))
 #  define ld96_from_f32(f) ((ld96_t)(float)(f))
 #  define ld96_from_f64(d) ((ld96_t)(double)(d))
-#  if 1
+#  if 0
 #    define ld96_to_f32(ld) ((float) (ld))
 #    define ld96_to_f64(ld) ((double)(ld))
 #  endif
