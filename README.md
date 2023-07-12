@@ -23,7 +23,7 @@ pts-pcc is based on PCC 1.1.0 (released on 2014-12-10). Important changes:
   shell script, rebuilding th project in one C compiler run.
 
 * It has been ported to many compilers in addition to GCC and Clang: TinyCC
-  and OpenWatcom.
+  and OpenWatcom. (Of course PCC is still able to compile itself.)
 
 * Lots of GCC and OpenWatcom compilation warnings have been pacified (i.e.
   fixed, eliminated). Now it compiles cleanly, without warning. See
@@ -36,6 +36,11 @@ pts-pcc is based on PCC 1.1.0 (released on 2014-12-10). Important changes:
 * Implementation of BSD-specific functions (strlcpy(3) and strlcat(3)) were
   added.
 
+* Floating point calculations were rewritten in assembly language (this is
+  optional), so C compilers without `long double` support (e.g. OpenWatcom)
+  targeting i386 can compile PCC, and the thus compiled PCC will have `long
+  double` support with correct constant folding.
+
 To compile it, run these commands without the leading `$`:
 
 ```
@@ -45,6 +50,6 @@ $ ./compile.sh
 ...
 $ ./pts-pcc
 $ pccbin/pcc -v
-pts-pcc 1.1.0 20141014 + 20230610 for i386-pc-linux-gnu
+pts-pcc 1.1.0 20141014 + 20230707 for i386-pc-linux-gnu
 error: no input files
 ```
