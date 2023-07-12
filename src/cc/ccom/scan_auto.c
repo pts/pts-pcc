@@ -2823,11 +2823,12 @@ fhexcon(char *c)
 	ld96_t d;
 	int i, ed;
 	NODE *p;
+	const ld96_t half = ld96_from_half();
 
-	d = ld96_from_f32(0.0f);
+	d = ld96_from_ll(0);
 	ed = 0;
 	c+= 2; /* skip 0x */
-#define FSET(n) { d = ld96_add(d, d); if (i & n) d = ld96_add(d, ld96_from_f32(1.0f)); }
+#define FSET(n) { d = ld96_add(d, d); if (i & n) d = ld96_add(d, ld96_from_ll(1)); }
 	for (; *c != '.' && *c != 'p' && *c != 'P'; c++) {
 		i = h2n(*c);
 		FSET(8); FSET(4); FSET(2); FSET(1);
@@ -2854,7 +2855,7 @@ fhexcon(char *c)
 	while (ed > 0)
 		d = ld96_add(d, d), ed--;
 	while (ed < 0)
-		d = ld96_mul(d, ld96_from_f64(0.5)), ed++;
+		d = ld96_mul(d, half), ed++;
 	d = typround(d, ep, &tw);
 	p = block(FCON, NIL, NIL, tw, 0, 0);
 	p->n_dcon = d;

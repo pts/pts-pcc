@@ -29,11 +29,11 @@
 #  endif
   ld96_t ld96_watcall ld96_from_ull(unsigned long long u);
   ld96_t ld96_watcall ld96_from_ll(long long v);
-  ld96_t ld96_watcall ld96_from_f32(float f);
-  ld96_t ld96_watcall ld96_from_f64(double d);
   long long ld96_watcall ld96_to_ll(ld96_t ld);
   unsigned long long ld96_watcall ld96_to_ull(ld96_t ld);
 #  if 0  /* Commenting it out to ensure that the ld96 implementation doesn't use the `float' or `double' types, so all floating point operations are covered by ld96_*. */
+    ld96_t ld96_watcall ld96_from_f32(float f);
+    ld96_t ld96_watcall ld96_from_f64(double d);
     float  ld96_watcall ld96_to_f32(ld96_t ld);
     double ld96_watcall ld96_to_f64(ld96_t ld);
 #  endif
@@ -53,6 +53,11 @@
   void   ld96_watcall ld96_dump_f64(char buf[8], ld96_t ld);
   ld96_t ld96_watcall ld96_round_f32(ld96_t ld);
   ld96_t ld96_watcall ld96_round_f64(ld96_t ld);
+#  ifdef __PCC__
+#    define ld96_from_half() ({ ld96_t __ld2 = ld96_from_ll(2); ld96_div(ld96_from_ll(1), __ld2); })  /* Work around the struct passing bug in PCC 1.1.0. */
+#  else
+#    define ld96_from_half() ld96_div(ld96_from_ll(1), ld96_from_ll(2))
+#  endif
 #else
   typedef long double ld96_t;
   /* This fails for OpenWatcom, because it has sizeof(double) ==
@@ -68,9 +73,9 @@
 #  define ld96_set_ld_precision()
 #  define ld96_from_ll(v) ((ld96_t)(long long)(v))
 #  define ld96_from_ull(u) ((ld96_t)(unsigned long long)(u))
-#  define ld96_from_f32(f) ((ld96_t)(float)(f))
-#  define ld96_from_f64(d) ((ld96_t)(double)(d))
 #  if 0
+#    define ld96_from_f32(f) ((ld96_t)(float)(f))
+#    define ld96_from_f64(d) ((ld96_t)(double)(d))
 #    define ld96_to_f32(ld) ((float) (ld))
 #    define ld96_to_f64(ld) ((double)(ld))
 #  endif
@@ -99,6 +104,7 @@
 #  endif
 #  define ld96_round_f32(ld) ((ld96_t)(float) (ld))
 #  define ld96_round_f64(ld) ((ld96_t)(double)(ld))
+#  define ld96_from_half() ((ld96_t)0.5)
 #endif
 void   ld96_watcall ld96_dump_f32(char buf[4], ld96_t ld);
 void   ld96_watcall ld96_dump_f64(char buf[8], ld96_t ld);

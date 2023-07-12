@@ -17,8 +17,8 @@ int main(int argc, char **argv) {
   const ld96_t ldb = ld96_from_ll(b);  /* To work around PCC 1.1.0 bug in `return 24'. */
   const ld96_t ld60 = ld96_from_ll(1LL << 60);  /* To work around PCC 1.1.0 bug in `return 24'. */
   ld96_t ldr;
-  const float f = 12345.6f;
-  const double d = 12345678.9;
+  const ld96_t ldf = ld96_round_f32(ld96_strtold("12345.6", 0));
+  const ld96_t ldd = ld96_round_f64(ld96_strtold("12345678.9", 0));
   char buf[12];
   (void)argc; (void)argv;
   ld96_set_ld_precision();  /* Needed by the OpenWatcom libc. */
@@ -35,20 +35,22 @@ int main(int argc, char **argv) {
   if (ld96_le(ld96_from_ull(b), ld0)) return 11;
   if (ld96_le(ld96_from_ll(a), ld0)) return 12;
   if (ld96_ge(ld96_from_ll(b), ld0)) return 13;
-  if (ld96_to_ll(ld96_from_f32(f)) != 12345) return 14;
-  if (ld96_to_ll(ld96_from_f64(d)) != 12345678) return 15;
-  if (ld96_to_ll(ld96_from_f32(-f)) != -12345) return 16;
-  if (ld96_to_ll(ld96_from_f64(-d)) != -12345678) return 17;
-  ldr = ld96_round_f32(ld96_from_f32(f));  /* Using a separate variable to work around PCC 1.1.0 bug. */
-  if (!ld96_eq(ldr, ld96_from_f32(f))) return 56;
-  ldr = ld96_round_f64(ld96_from_f64(d));  /* Using a separate variable to work around PCC 1.1.0 bug. */
-  if (!ld96_eq(ldr, ld96_from_f64(d))) return 57;
-  ldr = ld96_round_f32(ld96_from_f32(-f));  /* Using a separate variable to work around PCC 1.1.0 bug. */
-  if (!ld96_eq(ldr, ld96_from_f32(-f))) return 58;
-  ldr = ld96_round_f64(ld96_from_f64(-d));  /* Using a separate variable to work around PCC 1.1.0 bug. */
-  if (!ld96_eq(ldr, ld96_from_f64(-d))) return 59;
-  ldr = ld96_round_f32(ld96_from_f64(d));  /* Using a separate variable to work around PCC 1.1.0 bug. */
-  if (ld96_eq(ldr, ld96_from_f64(d))) return 60;
+  if (ld96_to_ll(ldf) != 12345) return 14;
+  if (ld96_to_ll(ldd) != 12345678) return 15;
+  if (ld96_to_ll(ld96_neg(ldf)) != -12345) return 16;
+  if (ld96_to_ll(ld96_neg(ldd)) != -12345678) return 17;
+  ldr = ld96_round_f32(ldf);  /* Using a separate variable to work around PCC 1.1.0 bug. */
+  if (!ld96_eq(ldr, ldf)) return 56;
+  ldr = ld96_round_f64(ldd);  /* Using a separate variable to work around PCC 1.1.0 bug. */
+  if (!ld96_eq(ldr, ldd)) return 57;
+  ldr = ld96_round_f32(ld96_neg(ldf));  /* Using a separate variable to work around PCC 1.1.0 bug. */
+  if (!ld96_eq(ldr, ld96_neg(ldf))) return 58;
+  ldr = ld96_round_f64(ld96_neg(ldd));  /* Using a separate variable to work around PCC 1.1.0 bug. */
+  if (!ld96_eq(ldr, ld96_neg(ldd))) return 59;
+  ldr = ld96_round_f32(ldd);  /* Using a separate variable to work around PCC 1.1.0 bug. */
+  if (ld96_eq(ldr, ldd)) return 60;
+  ldr = ld96_from_half();  /* Using a separate variable to work around PCC 1.1.0 bug. */
+  if (ld96_to_ll(ld96_mul(ldr, ld96_from_ll(42))) != 21) return 61;
   if (ld96_to_ll(ld96_strtold("-1234567890987654325.9", 0)) != b - 4) return 22;
   if (ld96_to_ll(ld96_neg(ld96_from_ll(b))) != a) return 23;
   if (ld96_to_ll(ld96_add(lda, ld96_from_ll(b))) != 0) return 24;
@@ -81,10 +83,10 @@ int main(int argc, char **argv) {
   if (ld96_gt(ld96_from_ll(b), ld96_from_ll(b))) return 51;
   if (ld96_gt(ld96_from_ll(b), lda)) return 52;
   memset(buf, 5, sizeof(buf));
-  ld96_dump_f32(buf, ld96_from_f32(f));
+  ld96_dump_f32(buf, ldf);
   if (memcmp(buf, "\x66\xe6\x40\x46\5\5\5\5\5\5\5\5", 12) != 0) return 53;
   memset(buf, 5, sizeof(buf));
-  ld96_dump_f64(buf, ld96_from_f64(d));
+  ld96_dump_f64(buf, ldd);
   if (memcmp(buf, "\xcd\xcc\xcc\xdc\x29\x8c\x67\x41\5\5\5\5", 12) != 0) return 54;
   memset(buf, 5, sizeof(buf));
   ld96_dump_f80_96(buf, ldb);

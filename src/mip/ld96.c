@@ -94,21 +94,21 @@ _Packed  /* This is needed in case `wcc386 -zp4' wasn't specified. The default i
 		mov 4(%edx), %edx;\
 		ret;\
       ");
-      ld96u_t ld96_from_f32(float f);  /* { ld96u_t r; r.ld = f; return r; } */
-      __asm__(".global ld96_from_f32;; ld96_from_f32: ;\
+#      if 0
+        ld96u_t ld96_from_f32(float f);  /* { ld96u_t r; r.ld = f; return r; } */
+        __asm__(".global ld96_from_f32;; ld96_from_f32: ;\
 		mov 4(%esp), %eax;\
 		flds 8(%esp);\
 		fstpt (%eax);\
 		ret $4; "  /* Callee cleans up the struct return pointer. */"\
-      ");
-      ld96u_t ld96_from_f64(double d);  /* { ld96u_t r; r.ld = d; return r; } */
-      __asm__(".global ld96_from_f64;; ld96_from_f64: ;\
+        ");
+        ld96u_t ld96_from_f64(double d);  /* { ld96u_t r; r.ld = d; return r; } */
+        __asm__(".global ld96_from_f64;; ld96_from_f64: ;\
 		mov 4(%esp), %eax;\
 		fldl 8(%esp);\
 		fstpt (%eax);\
 		ret $4; "  /* Callee cleans up the struct return pointer. */"\
-      ");
-#      if 0
+        ");
         float   ld96_to_f32(ld96u_t ld);  /* { return ld.ld; } */
         __asm__(".global ld96_to_f32;; ld96_to_f32: ;\
 		lea 4(%esp), %edx;\
@@ -480,14 +480,14 @@ _Packed  /* This is needed in case `wcc386 -zp4' wasn't specified. The default i
       typedef char assert_long_double_size_le[sizeof(long double) <= sizeof(ld96_t) ? 1 : -1];  /* If this fails, specify `gcc -m96bit-long-double'. The switch doesn't exist for Clang. It shouldn't be needed anyway for GCC >=4.2, because `union ld96' contains `long double'. */
       ld96u_t ld96_from_ull(unsigned long long u) { ld96u_t r; r.ld = u; return r; }
       ld96u_t ld96_from_ll(long long v) { ld96u_t r; r.ld = v; return r; }
-      ld96u_t ld96_from_f32(float f) { ld96u_t r; r.ld = f; return r; }
-      ld96u_t ld96_from_f64(double d) { ld96u_t r; r.ld = d; return r; }
       long long ld96_to_ll(ld96u_t ld) { return ld.ld; }
       unsigned long long ld96_to_ull(ld96u_t ld) { return ld.ld > 0 ? (unsigned long long)ld.ld : 0ULL; }  /* GCC 7.5.0 returns junk for negative input by default. TODO(pts): What does it return? !! Why isn't non-CONFIG_LD96 broken? Probably because of inlining. */
-#    if 0
-      float   ld96_to_f32(ld96u_t ld) { return ld.ld; }
-      double  ld96_to_f64(ld96u_t ld) { return ld.ld; }
-#    endif
+#      if 0
+        ld96u_t ld96_from_f32(float f) { ld96u_t r; r.ld = f; return r; }
+        ld96u_t ld96_from_f64(double d) { ld96u_t r; r.ld = d; return r; }
+        float   ld96_to_f32(ld96u_t ld) { return ld.ld; }
+        double  ld96_to_f64(ld96u_t ld) { return ld.ld; }
+#      endif
       ld96u_t ld96_strtold(const char *nptr, char **endptr) { ld96u_t r; r.ld = strtold(nptr, endptr); return r; }
       int     ld96_iszero(ld96u_t ld) { return ld.ld == 0.0; }
       ld96u_t ld96_neg(ld96u_t ld) { ld96u_t r; r.ld = -ld.ld; return r; }
@@ -623,19 +623,19 @@ _Packed  /* This is needed in case `wcc386 -zp4' wasn't specified. The default i
 		mov edx, [edx+0+4]
 		ret 0xc  /* Callee pops. */
     } }
-    __declspec(naked) ld96u_t __watcall ld96_from_f32(float f) { (void)f; __asm {  /* ld96u_t r; r.ld = f; return r; */
+#    if 0
+      __declspec(naked) ld96u_t __watcall ld96_from_f32(float f) { (void)f; __asm {  /* ld96u_t r; r.ld = f; return r; */
 		fld dword ptr [esp+4]
 		mov eax, esi  /* ESI is the result pointer. The caller expects this in EAX upon return. */
 		fstp tbyte ptr [eax]
 		ret 4  /* Callee pops. */
-    } }
-    __declspec(naked) ld96u_t __watcall ld96_from_f64(double d) { (void)d; __asm {  /* ld96u_t r; r.ld = d; return r; */
+      } }
+      __declspec(naked) ld96u_t __watcall ld96_from_f64(double d) { (void)d; __asm {  /* ld96u_t r; r.ld = d; return r; */
 		fld qword ptr [esp+4]
 		mov eax, esi  /* ESI is the result pointer. The caller expects this in EAX upon return. */
 		fstp tbyte ptr [eax]
 		ret 8  /* Callee pops. */
-    } }
-#    if 0
+      } }
       __declspec(naked) float   __watcall ld96_to_f32(ld96u_t ld) { (void)ld; __asm {  /* return ld.ld; */
 		lea eax, [esp+4]
 		fld tbyte ptr [eax]
@@ -1015,7 +1015,7 @@ _Packed  /* This is needed in case `wcc386 -zp4' wasn't specified. The default i
       *(long double*)buf2 = ld;
       *(double*)buf = *(double*)buf2;
       ((int*)buf)[2] = ((int*)buf2)[2];
-b    } else {
+    } else {
       *(long double*)buf = ld;
     }
     buf[10] = buf[11] = 0;
