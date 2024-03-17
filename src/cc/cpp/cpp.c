@@ -34,6 +34,9 @@
 #if defined(__WATCOMC__) && defined(_NO_EXT_KEYS) && !defined(_POSIX_SOURCE)
 #  define _POSIX_SOURCE 1  /* For stat(2). */
 #endif
+#ifdef CONFIG_STAT64
+#  define _LARGEFILE64_SOURCE 1  /* stat64(2) and struct stat64 in glibc. */
+#endif
 
 #include "config_auto.h"
 
