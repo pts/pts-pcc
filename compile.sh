@@ -29,6 +29,7 @@
 
 set -ex
 
+test "${0%/*}" = "$0" || cd "${0%/*}"
 
 CC='gcc -s -Os -W -Wall -Wshadow'
 test $# = 0 || CC="$*"
