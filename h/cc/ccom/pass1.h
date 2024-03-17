@@ -426,6 +426,7 @@ CONSZ soft_val(SF);
 #else
 #ifdef CONFIG_LD96
 #    define FLOAT_CAST(p,v)	(ISUNSIGNED(v) ? ld96_from_ull((U_CONSZ)(p)) : ld96_from_ll((CONSZ)(p)))
+#    define FLOAT_NARROW(p,v)	((v) == FLOAT ? ld96_round_f32(p) : (v) == DOUBLE ? ld96_round_f64(p) : (p))
 #    define FLOAT_NEG(p)	ld96_neg(p)
 #    define FLOAT_PLUS(x1,x2)	ld96_add((x1), (x2))
 #    define FLOAT_MINUS(x1,x2)	ld96_sub((x1), (x2))
@@ -441,6 +442,7 @@ CONSZ soft_val(SF);
 #    define FLOAT_LT(x1,x2)	ld96_lt((x1), (x2))
 #  else
 #    define FLOAT_CAST(p,v)	(ISUNSIGNED(v) ? (ld96_t)(U_CONSZ)(p) : (ld96_t)(CONSZ)(p))
+#    define FLOAT_NARROW(p,v)	((v) == FLOAT ? (ld96_t)(float)(p) : (v) == DOUBLE ? (ld96_t)(double)(p) : (ld96_t)(p))
 #    define FLOAT_NEG(p)	-(p)
 #    define FLOAT_PLUS(x1,x2)	(x1) + (x2)
 #    define FLOAT_MINUS(x1,x2)	(x1) - (x2)

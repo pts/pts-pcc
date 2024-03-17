@@ -163,6 +163,15 @@ extern int negrel[];
 #define	MBLOCK(p,b,t,d,a) block(PMCONV, p, b, t, d, a)
 #endif
 
+static ld96_t float_narrow(ld96_t ld, TWORD type) {
+  return FLOAT_NARROW(ld, type);
+}
+
+static ld96_t float_from_integer(CONSZ i, TWORD int_type, TWORD float_type) {
+  const ld96_t ld = FLOAT_CAST(i, int_type);
+  return float_narrow(ld, float_type);  /* Separate line to work around PCC 1.1.0 bug of nested calls to functions returning struct. */
+}
+
 NODE *
 buildtree(int o, NODE *l, NODE *r)
 {
@@ -287,9 +296,9 @@ buildtree(int o, NODE *l, NODE *r)
 				goto runtime; /* HW dependent */
 #endif
 		if (l->n_op == ICON)
-			l->n_dcon = FLOAT_CAST(l->n_lval, l->n_type);
+			l->n_dcon = float_from_integer(l->n_lval, l->n_type, r->n_type);
 		if (r->n_op == ICON)
-			r->n_dcon = FLOAT_CAST(r->n_lval, r->n_type);
+			r->n_dcon = float_from_integer(r->n_lval, r->n_type, r->n_type);
 		switch(o){
 		case PLUS:
 		case MINUS:
@@ -323,6 +332,7 @@ buildtree(int o, NODE *l, NODE *r)
 			switch (o) {
 			case EQ:
 				n = FLOAT_EQ(l->n_dcon, r->n_dcon);
+				/*printf("FLOAT_EQ(0x%08x, 0x%08x, 0x%08x) == (0x%08x, 0x%08x, 0x%08x): %d\n", ((int*)&l->n_dcon)[0], ((int*)&l->n_dcon)[1], ((int*)&l->n_dcon)[2], ((int*)&r->n_dcon)[0], ((int*)&r->n_dcon)[1], ((int*)&r->n_dcon)[2], n);*/
 				break;
 			case NE:
 				n = FLOAT_NE(l->n_dcon, r->n_dcon);
@@ -835,7 +845,7 @@ concast(NODE *p, TWORD t)
 			}
 		} else if (t <= LDOUBLE) {
 			p->n_op = FCON;
-			p->n_dcon = FLOAT_CAST(val, p->n_type);
+			p->n_dcon = float_from_integer(val, p->n_type, t);
 		}
 	} else { /* p->n_op == FCON */
 		if (t == BOOL) {
@@ -848,8 +858,9 @@ concast(NODE *p, TWORD t)
 			    (CONSZ)ld96_to_ull(p->n_dcon) : ld96_to_ll(p->n_dcon);
 			p->n_sp = NULL;
 		} else {
-			p->n_dcon = t == FLOAT ? ld96_round_f32(p->n_dcon) :
-			    t == DOUBLE ? ld96_round_f64(p->n_dcon) : p->n_dcon;
+		        /*printf("CASTING TO %d (0x%08x, 0x%08x, 0x%08x)\n", t, ((int*)&p->n_dcon)[0], ((int*)&p->n_dcon)[1], ((int*)&p->n_dcon)[2]);*/
+			p->n_dcon = float_narrow(p->n_dcon, t);
+		        /*printf("CAST    TO %d (0x%08x, 0x%08x, 0x%08x)\n", t, ((int*)&p->n_dcon)[0], ((int*)&p->n_dcon)[1], ((int*)&p->n_dcon)[2]);*/
 		}
 	}
 	p->n_type = t;
