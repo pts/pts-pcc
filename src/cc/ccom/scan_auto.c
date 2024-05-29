@@ -18,7 +18,9 @@
 /* begin standard C headers. */
 #include <stdio.h>
 #include <string.h>
-#include <errno.h>
+#ifndef CONFIG_NO_ERRNO
+#  include <errno.h>
+#endif
 #include <stdlib.h>
 
 #include "ld96.h"
@@ -750,7 +752,9 @@ char *yytext;
  */
 #line 42 "./scan.l"
 #include <stdlib.h>
-#include <errno.h>  
+#ifndef CONFIG_NO_ERRNO
+#  include <errno.h>
+#endif
 #include <string.h>
 #include <stdarg.h>
 #include <ctype.h>
@@ -758,6 +762,16 @@ char *yytext;
 #include "pass1.h"
 #include "cgram_auto.h"
 #include "unicode.h"
+
+#ifdef CONFIG_NO_ERRNO
+#  define set_errno(x) do {} while (0)
+#  define get_errno() (0)
+#  undef EINTR
+#  define EINTR 1
+#else
+#  define set_errno(errnum) (errno = (errnum))
+#  define get_errno() (errno)
+#endif
 
 static NODE *cvtdig(int radix);
 static NODE *charcon(void);
@@ -898,20 +912,20 @@ static int input (void );
 		{ \
 		int c = '*'; \
 		size_t n; \
-		errno = 0; \
+		set_errno(0); \
 		for ( n = 0; n < max_size && \
 			     (c = getc( yyin )) != EOF && c != '\n'; ++n ) \
 			buf[n] = (char) c; \
 		if ( c == '\n' ) \
 			buf[n++] = (char) c; \
-		if ( c == EOF && errno != 0 ) \
+		if ( c == EOF && get_errno() != 0 ) \
 			YY_FATAL_ERROR( "input in flex scanner failed" ); \
 		result = n; \
 		} \
 	else \
 		{ \
-		errno=0; \
-		if ( (result = fread(buf, 1, max_size, yyin))==0 && errno != 0 ) \
+		set_errno(0); \
+		if ( (result = fread(buf, 1, max_size, yyin))==0 && get_errno() != 0 ) \
 			{ \
 			YY_FATAL_ERROR( "input in flex scanner failed" ); \
 			} \
@@ -933,15 +947,15 @@ static int input (void );
 		} \
 	else \
 		{ \
-		errno=0; \
+		set_errno(errno, 0); \
 		while ( (result = fread(buf, 1, max_size, yyin))==0 && ferror(yyin)) \
 			{ \
-			if( errno != EINTR) \
+			if( get_errno() != EINTR) \
 				{ \
 				YY_FATAL_ERROR( "input in flex scanner failed" ); \
 				break; \
 				} \
-			errno=0; \
+			set_errno(0); \
 			clearerr(yyin); \
 			} \
 		}
@@ -2231,7 +2245,8 @@ extern int fileno(FILE *stream);
     static void yy_init_buffer  (YY_BUFFER_STATE  b, FILE * file )
 
 {
-	int oerrno = errno;
+	int oerrno = get_errno();
+	(void)oerrno;
     
 	yy_flush_buffer(b );
 
@@ -2249,7 +2264,7 @@ extern int fileno(FILE *stream);
 
         b->yy_is_interactive = file ? (isatty( fileno(file) ) > 0) : 0;
     
-	errno = oerrno;
+	set_errno(oerrno);
 }
 
 /** Discard all buffered characters. On the next scan, YY_INPUT will be called.

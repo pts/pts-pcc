@@ -385,6 +385,23 @@ cpp_main(int argc, char **argv)
 	return 0;
 }
 
+#ifdef CONFIG_USE_IS_DIRECTORY
+char is_directory(const char *pathname);
+static void addidir(char *idir, struct incs **ww) {
+	struct incs *w;
+	if (!is_directory(idir)) return; /* ignore */
+	if ((w = calloc(sizeof(struct incs), 1)) == NULL)
+		error("couldn't add path %s", idir);
+	if (*ww != NULL) {
+		for (w = *ww; w->next; w = w->next) {}
+		ww = &w->next;
+	}
+	w->dir = (usch *)idir;
+	w->dev = 0;
+	w->ino = 0;
+	*ww = w;
+}
+#else
 static void
 addidir(char *idir, struct incs **ww)
 {
@@ -419,6 +436,7 @@ addidir(char *idir, struct incs **ww)
 	w->ino = st.st_ino;
 	*ww = w;
 }
+#endif  /* else ifdef CONFIG_USE_IS_DIRECTORY */
 
 void
 line(void)

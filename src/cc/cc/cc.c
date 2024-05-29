@@ -89,9 +89,13 @@
 #endif
 
 #include <ctype.h>
-#include <errno.h>
+#ifndef CONFIG_MANUAL_EXEC
+#  include <errno.h>
+#endif
 #include <fcntl.h>
-#include <signal.h>
+#ifndef CONFIG_NO_SIGNAL
+#  include <signal.h>
+#endif
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -103,14 +107,23 @@ int mkstemp(char *template);
 #  include <unistd.h>
 #endif
 
-#ifdef os_win32
-#include <windows.h>
-#include <process.h>
-#include <io.h>
-#define F_OK	0x00
-#define R_OK	0x04
-#define W_OK	0x02
-#define X_OK	R_OK
+#ifdef CONFIG_NO_ACCESS
+#  define access(pathname, mode) my_access(pathname)
+  static int my_access(const char *pathname) {
+    int fd = open(pathname, O_RDONLY);
+    if (fd >= 0) { close(fd); fd = 0; }
+    return fd;
+  }
+#else
+#  ifdef os_win32
+#    include <windows.h>
+#    include <process.h>
+#    include <io.h>
+#    define F_OK	0x00
+#    define R_OK	0x04
+#    define W_OK	0x02
+#    define X_OK	R_OK
+#  endif
 #endif
 
 #include "compat.h"
@@ -236,6 +249,9 @@ static int preprocess_input(char *input, char *output, int dodep);
 static int compile_input(char *input, char *output);
 static int assemble_input(char *input, char *output);
 static int run_linker(void);
+#ifdef CONFIG_MANUAL_EXEC
+  int strlist_exec_low(struct strlist *l);
+#endif
 static int strlist_exec(struct strlist *l);
 
 char *cat(const char *, const char *);
@@ -248,7 +264,9 @@ void errorx(int, char *, ...);
 int cunlink(char *);
 void exandrm(char *);
 void dexit(int);
+#ifndef CONFIG_NO_SIGNAL
 void idexit(int);
+#endif
 char *gettmp(void);
 void oerror(char *);
 char *argnxt(char *, char *);
@@ -392,6 +410,10 @@ struct strlist assembler_flags;
 struct strlist temp_outputs;
 struct strlist compiler_flags;
 
+/* TODO(pts): Add these for Win32 as well. */
+int cpp_main(int argc, char **argv);  /* C preprocesor. */
+int ccom_main(int argc, char **argv);  /* C compiler. */
+
 int
 main(int argc, char *argv[])
 {
@@ -403,6 +425,18 @@ main(int argc, char *argv[])
 	const char *arch_define_flag = NULL;
 #endif
 	int ninput, j;
+
+#ifdef CONFIG_MANUAL_EXEC
+	if (argv[0] && argv[1] && argv[2] && strcmp(argv[1], "--exec") == 0) {
+		if (strcmp(argv[2], PREPROCESSOR) == 0) {
+			argv += 2; argc -= 2;
+			return cpp_main(argc, argv);
+		} else if (strcmp(argv[2], COMPILER) == 0) {
+			argv += 2; argc -= 2;
+			return ccom_main(argc, argv);
+		}
+	}
+#endif
 
 	lav = argv;
 	lac = argc;
@@ -893,10 +927,12 @@ main(int argc, char *argv[])
 		errorx(8, "to make dependencies needs -M");
 
 
+#ifndef CONFIG_NO_SIGNAL
 	if (signal(SIGINT, SIG_IGN) != SIG_IGN)	/* interrupt */
 		signal(SIGINT, idexit);
 	if (signal(SIGTERM, SIG_IGN) != SIG_IGN)	/* terminate */
 		signal(SIGTERM, idexit);
+#endif
 
 	/* after arg parsing */
 	strlist_append(&progdirs, LIBEXECDIR);
@@ -1052,6 +1088,7 @@ main(int argc, char *argv[])
 	return 0;
 }
 
+#ifndef CONFIG_NO_SIGNAL
 /*
  * exit and cleanup after interrupt.
  */
@@ -1061,6 +1098,7 @@ idexit(int arg)
 	(void)arg;
 	dexit(100);
 }
+#endif
 
 /*
  * exit and cleanup.
@@ -1111,6 +1149,7 @@ find_file(const char *file, struct strlist *path, int mode)
 	char *f;
 	size_t lf, lp;
 	int need_sep;
+	(void)mode;
 
 	lf = strlen(file);
 	STRLIST_FOREACH(s, path) {
@@ -1294,6 +1333,25 @@ setsuf(char *s, char ch)
 	return rp;
 }
 
+#ifdef CONFIG_MANUAL_EXEC
+static int strlist_exec(struct strlist *l) {
+	char **argv;
+	size_t argc;
+	int exit_code;
+	if (vflag) {
+		strlist_make_array(l, &argv, &argc);
+		printf("Calling ");
+		strlist_print(l, stdout);
+		printf("\n");
+		while (argc-- > 0)
+			free(argv[argc]);
+		free(argv);
+	}
+	exit_code = strlist_exec_low(l);
+	if (exit_code != 0) errorx(1, "%s terminated with status %d", l->first->value, exit_code);
+	return exit_code != 0;
+}
+#else
 #ifdef os_win32
 
 static int
@@ -1336,10 +1394,6 @@ strlist_exec(struct strlist *l)
 }
 
 #else
-
-/* TODO(pts): Add these for Win32 as well. */
-int cpp_main(int argc, char **argv);  /* C preprocesor. */
-int ccom_main(int argc, char **argv);  /* C compiler. */
 
 static int
 strlist_exec(struct strlist *l)
@@ -1391,6 +1445,7 @@ strlist_exec(struct strlist *l)
 }
 
 #endif
+#endif
 
 /* __STRICT_ANSI__ is by `gcc -ansi', _NO_EXT_KEYS is by OpenWatcom `wcc386 -za'. */
 #if defined(__STRICT_ANSI__) || defined(_NO_EXT_KEYS)
@@ -1419,6 +1474,10 @@ cunlink(char *f)
 		return(0);
 	return (unlink(f));
 }
+
+#ifdef CONFIG_NO_ERRNO
+#  define strerror(errnum) "failed"
+#endif
 
 #ifdef os_win32
 char *

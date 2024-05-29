@@ -2957,10 +2957,7 @@ ssagain:
 		nblock = tmpalloc(tbits * sizeof(REGW));
 
 		nblock -= tempmin;
-#ifdef HAVE_C99_FORMAT
-		RDEBUG(("nblock %p num %d size %zu\n",
-		    (void*)nblock, tbits, (size_t)(tbits * sizeof(REGW))));
-#endif
+		RDEBUG(("nblock %p num %d size %lu\n", (void*)nblock, tbits, (unsigned long)(tbits * sizeof(REGW))));
 	}
 	live = tmpalloc(BIT2BYTE(xbits));
 

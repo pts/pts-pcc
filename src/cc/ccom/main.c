@@ -31,10 +31,16 @@
 #ifdef HAVE_UNISTD_H
 #  include <unistd.h>
 #endif
-#include <signal.h>
+#ifndef CONFIG_NO_SIGNAL
+#  include <signal.h>
+#endif
 #include <string.h>
 #include <stdlib.h>
-#include <errno.h>
+#ifdef CONFIG_NO_ERRNO
+#  define strerror(errnum) "failed"
+#else
+#  include <errno.h>
+#endif
 #include <stdio.h>
 
 #include "pass1.h"
@@ -67,6 +73,7 @@ usage(void)
 	exit(1);
 }
 
+#ifndef CONFIG_NO_SIGNAL
 static void
 segvcatch(int a)
 {
@@ -78,6 +85,7 @@ segvcatch(int a)
 	(void)!write(STDERR_FILENO, buf, strlen(buf));
 	_exit(1);
 }
+#endif
 
 static void
 xopt(char *str)
@@ -290,10 +298,12 @@ ccom_main(int argc, char *argv[])
 	}
 
 	mkdope();
+#ifndef CONFIG_NO_SIGNAL
 	signal(SIGSEGV, segvcatch);
 #ifdef SIGBUS
 	signal(SIGBUS, segvcatch);
 #endif
+#endif  /* ifndef CONFIG_NO_SIGNAL */
 	fregs = FREGS;	/* number of free registers */
 	lineno = 1;
 #ifdef GCC_COMPAT
